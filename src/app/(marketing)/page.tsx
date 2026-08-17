@@ -99,7 +99,7 @@ export default function HomePage() {
       <ExhibitorProfileGrid />
       <WhyExhibit />
       <WhyVisit />
-      <ConcurrentEvents />
+      {/* <ConcurrentEvents /> */}
       <GalleryPreview />
       <VenueMap />
     </>

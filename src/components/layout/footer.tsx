@@ -65,7 +65,7 @@ export default function Footer() {
           <div className="flex flex-col items-center justify-between gap-6 py-10 md:flex-row md:py-12">
             <div>
               <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Ready to be part of Nepal&rsquo;s biggest wood expo?
+                Ready to be part of Nepal Wood International Expo?
               </h3>
               <p className="mt-1.5 text-xs sm:text-sm text-zinc-300">
                 Secure your spot at the 12th edition &mdash; {site.dates}
@@ -125,18 +125,18 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 shrink-0 text-[#F4C87A] mt-0.5" />
                   <span>{site.venue || "Bhrikuti Mandap, Kathmandu, Nepal"}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
+                {/* <div className="flex items-center gap-2.5">
                   <Mail className="h-4 w-4 shrink-0 text-[#F4C87A]" />
                   <a href={`mailto:${contactDetails.generalEmail}`} className="transition-colors hover:text-[#F4C87A]">
                     {contactDetails.generalEmail}
                   </a>
-                </div>
-                <div className="flex items-center gap-2.5">
+                </div> */}
+                {/* <div className="flex items-center gap-2.5">
                   <Phone className="h-4 w-4 shrink-0 text-[#F4C87A]" />
                   <a href={`tel:${contactDetails.indiaContacts[0]?.phone}`} className="transition-colors hover:text-[#F4C87A]">
                     {contactDetails.indiaContacts[0]?.phone}
                   </a>
-                </div>
+                </div> */}
               </div>
 
               {/* Social Icons */}
