@@ -57,7 +57,7 @@ export default function SupportedByStrip() {
                 <ShieldCheck className="h-3.5 w-3.5" /> Industry Endorsements
               </span>
               <h2 className="mt-2.5 font-display text-2xl font-bold text-brand-brown sm:text-3xl tracking-tight">
-                Supported By Leading Association
+               Lanyard Sponsor
               </h2>
             </div>
 
