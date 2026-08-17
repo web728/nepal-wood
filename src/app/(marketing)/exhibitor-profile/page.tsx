@@ -24,77 +24,68 @@ import {
 const groups = [
   {
     icon: Trees,
-    badge: "Materials & Surfaces",
+    badge: "Raw Materials",
     title: "Wood & Panel Products",
     items: [
-      "Plywood & commercial plywood",
-      "Blockboard & flush doors",
-      "MDF, HDF & particleboard",
-      "Veneers & veneered panels",
-      "Decorative laminates & surfaces",
-      "Timber & solid wood logs",
+      "Plywood",
+      "Blockboard & MDF",
+      "Laminates & Decorative Surfaces",
+      "Veneers & Engineered Wood",
     ],
   },
   {
     icon: Cpu,
-    badge: "Equipment & Automation",
+    badge: "Machinery & Automation",
     title: "Woodworking Machinery",
     items: [
-      "CNC routers & machining centres",
-      "Panel saws & beam saws",
-      "Edge-banding machines",
-      "Sanding & finishing systems",
-      "Dust extraction & air filtration",
-      "Sawmilling equipment",
+      "CNC Machines",
+      "Panel Saws & Cutting Machines",
+      "Edge Banding Machines",
+      "Drilling, Routing & Finishing Machines",
+      "Automation & Robotics",
     ],
   },
   {
     icon: Armchair,
-    badge: "Production Tech",
-    title: "Furniture Production Technology",
+    badge: "Production & Assembly",
+    title: "Furniture & Production Technology",
     items: [
-      "Modular-furniture systems",
-      "Kitchen & wardrobe manufacturing",
-      "Upholstery machinery",
-      "Production planning software",
-      "3D design & nesting software",
-      "Hardware fitting machinery",
+      "Modular Furniture Systems",
+      "Furniture Manufacturing Technology",
+      "Upholstery & Accessories",
+      "Office, Residential & Commercial Furniture",
     ],
   },
   {
     icon: Layers,
-    badge: "Interiors & Décor",
+    badge: "Interiors & Finishing",
     title: "Furnishing & Interior Products",
     items: [
-      "Wooden & vinyl flooring solutions",
-      "Doors, windows & frames",
-      "Decorative wall panels & acoustic louvers",
-      "Interior décor materials",
-      "Architectural hardware & handles",
-      "Edge bands & profiles",
+      "Flooring Solutions",
+      "Doors, Windows & Hardware",
+      "Decorative Panels & Wall Solutions",
+      "Interior Décor Materials",
     ],
   },
   {
     icon: Hammer,
-    badge: "Consumables & Tools",
+    badge: "Tools & Components",
     title: "Tools, Hardware & Raw Materials",
     items: [
-      "Power tools & hand tools",
-      "Blades, cutters & abrasives",
-      "Fasteners, hinges & drawer slides",
-      "Adhesives, glues & coatings",
-      "Wood preservatives & lacquers",
-      "Woodpolishes & stains",
+      "Woodworking Tools & Equipment",
+      "Adhesives & Coatings",
+      "Furniture Fittings & Hardware",
+      "Raw Materials & Components",
     ],
   },
 ];
 
 const categoryInterest = [
-  { label: "Woodworking Machinery & Dust Control", value: 82 },
-  { label: "Plywood, Veneers, MDF & Laminates", value: 74 },
-  { label: "Hardwood, Softwood & Timber", value: 61 },
-  { label: "Flooring, Doors, Furniture & Fittings", value: 55 },
-  { label: "Coatings, Paints & Adhesives", value: 43 },
+  { label: "Woodworking Machinery", value: 82 },
+  { label: "Plywood, Laminates, MDF & Veneers", value: 74 },
+  { label: "Furniture Manufacturing Technology", value: 68 },
+  { label: "Flooring, Doors, Windows & Hardware", value: 61 },
+  { label: "Tools, Hardware & Raw Materials", value: 55 },
 ];
 
 // Minimal & Smooth Animation Variants
@@ -124,7 +115,7 @@ export default function ExhibitorProfilePage() {
       <PageBanner
         kicker="Exhibitor Profile"
         title="Who Should Exhibit at Nepal Wood 2027?"
-        subtitle="A comprehensive commercial platform for manufacturers, distributors, and suppliers of woodworking machinery, raw materials, hardware, and furniture production tech."
+        subtitle="A comprehensive commercial platform for manufacturers, distributors, and suppliers of woodworking machinery, raw materials, hardware, and furniture production technology."
         bgImage="/images/gallery/stand-detail-4.webp"
       />
 
@@ -146,14 +137,13 @@ export default function ExhibitorProfilePage() {
               <SectionHeading
                 kicker="Product Spectrum"
                 title="Explore Key Exhibitor Categories"
-                subtitle="Position your brand in front of thousands of decision-makers and regional buyers."
+                subtitle="Position your brand in front of thousands of decision-makers and regional buyers across five major product segments."
               />
             </div>
 
             <div className="hidden lg:block shrink-0">
               <CTAButton href="/exhibitor-registration" className="shadow-md">
                 Book Booth Space
-            
               </CTAButton>
             </div>
           </motion.div>
@@ -216,10 +206,10 @@ export default function ExhibitorProfilePage() {
                   Custom Category
                 </span>
                 <h3 className="mt-4 font-display text-lg sm:text-xl font-bold text-white leading-snug">
-                  Have a Specialized Wood Solution?
+                  Have a Specialized Solution?
                 </h3>
                 <p className="mt-2.5 text-xs leading-relaxed text-white/80 sm:text-sm">
-                  The profile listed above is indicative. If your company offers allied machinery, software, chemical treatments, or hardware, Nepal Wood provides a tailor-made booth configuration.
+                  If your company offers allied machinery, software, chemical treatments, hardware, or specialized components related to the wood and furniture industry, we offer tailor-made booth configurations.
                 </p>
               </div>
 
@@ -253,15 +243,15 @@ export default function ExhibitorProfilePage() {
               className="lg:col-span-5"
             >
               <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-brown/10 border border-brand-brown/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-brown mb-3">
-                <BarChart3 className="h-3.5 w-3.5 text-brand-amber" /> Post-Show Market Analysis
+                <BarChart3 className="h-3.5 w-3.5 text-brand-amber" /> Market Analysis
               </div>
               <SectionHeading
                 kicker="Visitor Demand"
-                title="Concentration of Trade Visitor Interest"
-                subtitle="Data based on registration analysis from previous editions showing key product search trends of trade buyers."
+                title="Trade Visitor Interest by Category"
+                subtitle="Data based on registration analysis showing key product search trends of trade buyers and decision-makers."
               />
               <p className="mt-3.5 text-xs leading-relaxed text-brand-brown/75 sm:text-sm">
-                High demand for automated woodworking machinery and premium panels (plywood, laminates, MDF) dominates buyer search queries during the 4-day exhibition.
+                High demand for automated woodworking machinery, premium panels, furniture manufacturing technology, and specialty hardware dominates buyer search queries during the 4-day exhibition.
               </p>
             </motion.div>
 
@@ -301,7 +291,7 @@ export default function ExhibitorProfilePage() {
               Does Your Company Serve the Wood, Furniture or Interior Industry?
             </h2>
             <p className="mt-3.5 text-sm sm:text-base text-brand-cream/80 leading-relaxed max-w-2xl mx-auto">
-              Book your exhibition stall today to secure prime floor location at Bhrikuti Mandap, Kathmandu.
+              Book your exhibition stall today to secure prime floor location at Bhrikuti Mandap, Kathmandu. Connect with 5,000+ trade visitors, manufacturers, and retail buyers.
             </p>
 
             <div className="mt-7 flex flex-col justify-center gap-3.5 sm:flex-row sm:items-center">

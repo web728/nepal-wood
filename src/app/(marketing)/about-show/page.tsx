@@ -68,7 +68,7 @@ export default function AboutShowPage() {
 
               <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  "100+ Leading Exhibitors",
+                  "150+ Leading Exhibitors",
                   "Live Equipment Demos",
                   "Focused B2B Matchmaking",
                   "Architect & Builder Forums",

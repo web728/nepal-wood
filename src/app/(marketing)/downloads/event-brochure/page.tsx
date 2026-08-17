@@ -44,15 +44,15 @@ export default function BrochurePage() {
                 <ul className="space-y-4 text-sm text-brand-brown/85">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-5 w-5 text-brand-amber shrink-0 mt-0.5" />
-                    <span>Complete breakdown of **Exhibitor Categories & Profiles**</span>
+                    <span>Complete breakdown of Exhibitor Categories & Profiles</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-5 w-5 text-brand-amber shrink-0 mt-0.5" />
-                    <span>Comprehensive **Visitor Demographics & Expected Footfall**</span>
+                    <span>Comprehensive Visitor Demographics & Expected Footfall</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-5 w-5 text-brand-amber shrink-0 mt-0.5" />
-                    <span>Detailed **Venue Layout & Exhibition Stall Tariffs**</span>
+                    <span>Detailed Venue Layout & Exhibition Stall Tariffs</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-5 w-5 text-brand-amber shrink-0 mt-0.5" />

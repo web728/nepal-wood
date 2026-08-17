@@ -26,7 +26,7 @@ const organizers = [
     id: "mediaspace",
     logo: "/logo/Media-Space.png",
     alt: "Media Space Solutions",
-    url: "https://www.mediaspace.com.np/",
+    url: "https://mss.com.np/",
     width: 250,
     height: 100,
     // IN VALUES KO CHANGE KARKE SIZE MANUALLY ADJUST KARO:

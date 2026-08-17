@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | Nepal Wood International Expo 2027",
   },
   description:
-    "Nepal Wood International Expo 2027 — the 12th edition. South Asia's leading B2B trade exhibition for woodworking machinery, plywood, laminates, furniture hardware & technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
+    "Nepal Wood International Expo 2027 — the 12th edition. Nepal's leading B2B trade exhibition for woodworking machinery, plywood, laminates, furniture hardware & technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
   keywords: [
     "Nepal Wood Expo",
     "Nepal Wood International Expo 2027",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nepal Wood International Expo 2027 | Kathmandu",
     description:
-      "South Asia's leading B2B platform for wood, furniture & woodworking technology. 250+ brands, 15,000+ trade visitors. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
+      "Nepal's leading B2B platform for wood, furniture & woodworking technology. 250+ brands, 15,000+ trade visitors. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
     url: "https://www.nepalwoodexpo.com",
     siteName: "Nepal Wood International Expo 2027",
     images: [
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nepal Wood International Expo 2027 | Kathmandu",
     description:
-      "South Asia's leading B2B platform for wood, furniture & woodworking technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
+      "Nepal's leading B2B platform for wood, furniture & woodworking technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu.",
     images: ["/images/og-default.jpg"],
   },
   alternates: {
@@ -94,12 +94,6 @@ export default function RootLayout({
       >
         <Providers>
           <PreloaderIntro />
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-brand-amber focus:px-4 focus:py-2 focus:text-white"
-          >
-            Skip to content
-          </a>
           <Header />
           <main id="main-content" className="flex-1">
             <PageTransitionMain>{children}</PageTransitionMain>

@@ -65,7 +65,7 @@ export default function Footer() {
           <div className="flex flex-col items-center justify-between gap-6 py-10 md:flex-row md:py-12">
             <div>
               <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Ready to be part of Nepal Wood International Expo?
+                Ready to be part of Nepal's Largest Wood & Woodworking Expo?
               </h3>
               <p className="mt-1.5 text-xs sm:text-sm text-zinc-300">
                 Secure your spot at the 12th edition &mdash; {site.dates}

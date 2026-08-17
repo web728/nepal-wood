@@ -13,7 +13,7 @@ import VenueMap from "@/components/sections/venue-map";
 export const metadata: Metadata = {
   title: "Nepal Wood International Expo 2027 | 28-31 Jan, Kathmandu",
   description:
-    "12th Nepal Wood International Expo 2027 — South Asia's leading B2B trade exhibition for woodworking machinery, plywood, laminates, furniture hardware & technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu, Nepal.",
+    "12th Nepal Wood International Expo 2027 — Nepal's leading B2B trade exhibition for woodworking machinery, plywood, laminates, furniture hardware & technology. 28-31 January 2027, Bhrikuti Mandap, Kathmandu, Nepal.",
   alternates: {
     canonical: "https://www.nepalwoodexpo.com",
   },

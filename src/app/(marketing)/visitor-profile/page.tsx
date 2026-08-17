@@ -23,47 +23,38 @@ import {
 const visitorCategories = [
   {
     icon: Compass,
-    title: "Design & Construction",
+    title: "Architects, Interior Designers, Builders & Developers",
     badge: "Specifiers",
-    items: [
-      "Architects & Interior Designers",
-      "Builders, Developers & Civil Contractors",
-      "Turnkey Project Consultants",
-      "Structural Engineers & Specifiers",
-    ],
+  },
+  {
+    icon: Users,
+    title: "Consultants & Government Officers",
+    badge: "Government",
   },
   {
     icon: Factory,
-    title: "Manufacturing & Production",
-    badge: "Industry Leaders",
-    items: [
-      "Furniture & Kitchen Manufacturers",
-      "Modular Wardrobe Producers",
-      "Saw Millers & Primary Timber Processors",
-      "OEM Machinery Operators & Technicians",
-    ],
+    title: "Manufacturers & Traders of furniture, kitchens, wood products hardware, fittings, tools & accessories",
+    badge: "Producers",
   },
   {
     icon: PackageCheck,
-    title: "Supply Chain & Trade",
+    title: "Dealers & Distributors of woodworking machines, furniture, kitchen & wood products, laminates, hardware, and fittings",
     badge: "Distribution",
-    items: [
-      "Dealers & Distributors of Woodworking Machinery",
-      "Board, Timber & Plywood Stockists",
-      "Laminates & Veneer Surface Suppliers",
-      "Hardware, Fittings & Tool Traders",
-    ],
   },
   {
     icon: Building2,
-    title: "Commercial & Institutional",
-    badge: "Bulk Procurement",
-    items: [
-      "Hotels, Restaurants & Resort Buyers",
-      "Office Space & Real-Estate Project Purchasing",
-      "Industry Association & Government Delegates",
-      "Design Academics & Technical Institutes",
-    ],
+    title: "Office Furniture Manufacturers",
+    badge: "Manufacturers",
+  },
+  {
+    icon: Factory,
+    title: "Saw Millers, Board & Timber Traders, Plywood & Packaging Professionals",
+    badge: "Traders",
+  },
+  {
+    icon: Award,
+    title: "Industry Associations & Importers of laminates and related products",
+    badge: "Associations",
   },
 ];
 
@@ -137,13 +128,13 @@ export default function VisitorProfilePage() {
       </div>
     </motion.div>
 
-    {/* Compact Categorized Cards Grid */}
+    {/* Categorized Cards Grid */}
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3"
     >
       {visitorCategories.map((cat) => {
         const Icon = cat.icon;
@@ -165,22 +156,9 @@ export default function VisitorProfilePage() {
                 </span>
               </div>
 
-              <h3 className="font-display text-sm font-bold text-brand-brown">
+              <h3 className="font-display text-sm font-bold text-brand-brown leading-snug">
                 {cat.title}
               </h3>
-
-              {/* Compact List */}
-              <ul className="mt-2.5 space-y-1.5 border-t border-brand-brown/10 pt-2.5">
-                {cat.items.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-1.5 text-xs font-medium text-brand-brown/80"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-brand-amber shrink-0 mt-0.5" />
-                    <span className="line-clamp-1">{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </motion.div>
         );
@@ -263,7 +241,7 @@ export default function VisitorProfilePage() {
       className="max-w-2xl mx-auto relative z-10"
     >
       <span className="inline-block rounded-full bg-brand-amber/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-amber border border-brand-amber/20 mb-2">
-        Join Nepal’s Largest Wood & Interiors Expo
+        Join Nepal's Largest Wood & Interiors Expo
       </span>
       <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white leading-snug">
         If Your Business Involves Wood, Furniture or Interiors — Nepal Wood 2027 is Essential.

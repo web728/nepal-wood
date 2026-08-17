@@ -61,7 +61,7 @@ export default function ExhibitorRegistrationPage() {
       <section className="bg-white py-10 sm:py-14 md:py-16 overflow-hidden">
         <Container>
           {/* Top Quick Benefits Strip */}
-          <motion.div
+          {/* <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
@@ -98,7 +98,7 @@ export default function ExhibitorRegistrationPage() {
                 </motion.div>
               ))}
             </motion.div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Main Form & Sidebar Grid */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
@@ -158,7 +158,7 @@ export default function ExhibitorRegistrationPage() {
                 </div>
 
                 <h3 className="font-display text-base sm:text-lg font-bold text-brand-brown">
-                  Official Event Sales Prospectus
+                  Download The Brochure
                 </h3>
                 <p className="mt-1.5 text-xs leading-relaxed text-brand-brown/75 sm:text-sm">
                   Review floor plan layouts, stall options, attendee demographics, and sponsorship opportunities.
@@ -267,7 +267,7 @@ export default function ExhibitorRegistrationPage() {
                       Custom Heavy Machinery Requirements?
                     </h4>
                     <p className="mt-1 text-xs text-brand-brown/80 leading-relaxed">
-                      If you require high-voltage power lines, overhead crane access, or custom pavilion spaces over 50 sqm, please mention it in the form comments.
+                      If you require high-voltage power lines, overhead crane access, or custom pavilion spaces over 36 sqm, please mention it in the form comments.
                     </p>
                   </div>
                 </div>

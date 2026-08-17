@@ -58,7 +58,7 @@ export const organizers: Organizer[] = [
     logoHeight: 80,
     blurb:
       "Operating in Nepal since 2009, contributing local market knowledge, industry relationships, promotional reach and on-ground operational expertise to professionally managed trade exhibitions in Nepal.",
-    href: "#",
+    href: "https://mss.com.np/",
   },
 ];
 

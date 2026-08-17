@@ -119,44 +119,44 @@ export default function Header() {
         hiddenByScroll && !isMenuOpen ? "-translate-y-full" : "translate-y-0"
       )}
     >
-      {/* Top Announcement Bar */}
-      <div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-2 text-xs font-medium text-white/80 overflow-hidden">
-        <div className="container-expo flex items-center justify-between gap-4 px-4 sm:px-6">
-          <div className="relative flex-1 min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-            <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
-              <MarqueeGroup />
-              <MarqueeGroup />
-              <MarqueeGroup />
-              <MarqueeGroup />
-            </div>
+    {/* Top Announcement Bar */}
+<div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-3 text-sm sm:text-base font-semibold text-white overflow-hidden shadow-sm">
+  <div className="container-expo flex items-center justify-between gap-4 px-4 sm:px-6">
+    <div className="relative flex-1 min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
+      <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform gap-12 items-center">
+        {/* Content Group - Duplicate 2-3 times for seamless looping */}
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center gap-6">
+            <span className="text-brand-amber font-bold text-base sm:text-lg">
+              12th Nepal Wood International Expo 2027
+            </span>
+            <span className="opacity-40">•</span>
+            <span>28–31 January 2027</span>
+            <span className="opacity-40">•</span>
+            <span>Bhrikuti Mandap, Kathmandu</span>
           </div>
-
-          <Link
-            href="/downloads/event-brochure"
-            className="shrink-0 flex items-center gap-1.5 text-white/90 hover:text-brand-amber transition-colors font-semibold"
-          >
-            <Download className="h-3.5 w-3.5" /> Download Event Brochure
-          </Link>
-        </div>
-
-        <style jsx>{`
-          @keyframes marquee {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
-          }
-          .animate-marquee {
-            animation: marquee 22s linear infinite;
-          }
-          .animate-marquee:hover {
-            animation-play-state: paused;
-          }
-        `}</style>
+        ))}
       </div>
+    </div>
+  </div>
 
+  <style jsx>{`
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-33.33%);
+      }
+    }
+    .animate-marquee {
+      animation: marquee 20s linear infinite;
+    }
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+  `}</style>
+</div>
       {/* Main Navbar */}
       <Navbar
         isMenuOpen={isMenuOpen}
