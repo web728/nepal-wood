@@ -10,11 +10,11 @@ import { Sparkles, ArrowRight, Calendar, MapPin } from "lucide-react";
 
 // Definitions for the animated background images
 const bgImages = [
-  { src: "/images/hero/exhibition-hall-wide.webp", alt: "Nepal Wood Expo hall 1" },
-  { src: "/images/hero/woodworking-machines.webp", alt: "Nepal Wood Expo hall 2" },
-  { src: "/images/hero/furniture-hardware.webp", alt: "Nepal Wood Expo hall 3" },
-  { src: "/images/hero/plywood-raw-materials.webp", alt: "Nepal Wood Expo hall 4" },
-  { src: "/images/hero/hero-collage-1.png", alt: "Nepal Wood Expo hall 5" },
+  { src: "/images/gallery/img-43.jpeg", alt: "Nepal Wood Expo hall 1" },
+  { src: "/images/gallery/img-16.jpeg", alt: "Nepal Wood Expo hall 2" },
+  { src: "/images/gallery/img-30.jpg", alt: "Nepal Wood Expo hall 3" },
+  { src: "/images/gallery/img-44.jpg", alt: "Nepal Wood Expo hall 4" },
+  { src: "/images/gallery/img-45.jpg", alt: "Nepal Wood Expo hall 5" },
 ];
 
 export default function HomeHero() {
@@ -167,8 +167,8 @@ export default function HomeHero() {
       </div>
 
       {/* Multi-layer Premium Vignette & Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/95 via-brand-dark/70 to-brand-dark/95" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-brand-dark/50 to-brand-dark" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/55 via-brand-dark/20 to-brand-dark/25" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-brand-dark/10 to-brand-dark" />
 
       {/* Premium Ambient Lights/Glows */}
       <div className="pointer-events-none absolute -top-10 left-1/2 h-[450px] w-[600px] -translate-x-1/2 rounded-full bg-brand-amber/15 blur-[140px]" />
@@ -240,49 +240,48 @@ export default function HomeHero() {
 
       </div>
 
-      {/* BOTTOM FLOATING METRICS CARD (RESPONSIVE & ULTRA-PREMIUM) */}
-      <div 
-        ref={metricsRef} 
-        className="container-expo relative z-10 w-full max-w-3xl mx-auto mt-8 sm:mt-12 rounded-2xl border border-white/15 bg-white/[0.05] backdrop-blur-2xl p-3.5 sm:p-6 shadow-2xl shadow-black/50 overflow-hidden"
-      >
-        {/* Card Ambient Glow behind numbers */}
-        <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 h-24 w-1/2 rounded-full bg-brand-amber/10 blur-xl" />
+   {/* BOTTOM FLOATING METRICS CARD (RESPONSIVE & ULTRA-PREMIUM) */}
+<div 
+  ref={metricsRef} 
+  className="container-expo relative z-10 w-full max-w-2xl mx-auto mt-6 sm:mt-10 rounded-2xl border border-white/15 bg-white/[0.05] backdrop-blur-2xl p-4 sm:p-5 shadow-2xl shadow-black/50 overflow-hidden"
+>
+  {/* Card Ambient Glow behind numbers */}
+  <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 h-24 w-1/2 rounded-full bg-brand-amber/10 blur-xl" />
 
-        <div className="grid grid-cols-3 gap-1 sm:gap-6 items-center">
-          
-          {/* Metric 1 */}
-          <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-6">
-            <p ref={count1Ref} className="font-display text-xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-none">
-              0+
-            </p>
-            <p className="text-[9px] sm:text-xs text-zinc-300/90 font-semibold uppercase tracking-wider font-body mt-1.5 sm:mt-2.5 leading-tight">
-              Global Brands
-            </p>
-          </div>
+  <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center">
+    
+    {/* Metric 1 */}
+    <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-4">
+      <p ref={count1Ref} className="font-display text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+        0+
+      </p>
+      <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+        Global Brands
+      </p>
+    </div>
 
-          {/* Metric 2 */}
-          <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-6">
-            <p ref={count2Ref} className="font-display text-xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-none">
-              0+
-            </p>
-            <p className="text-[9px] sm:text-xs text-zinc-300/90 font-semibold uppercase tracking-wider font-body mt-1.5 sm:mt-2.5 leading-tight">
-              B2B Visitors
-            </p>
-          </div>
+    {/* Metric 2 */}
+    <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-4">
+      <p ref={count2Ref} className="font-display text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+        0+
+      </p>
+      <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+        B2B Visitors
+      </p>
+    </div>
 
-          {/* Metric 3 */}
-          <div className="text-center px-1 sm:px-3">
-            <p ref={count3Ref} className="font-display text-lg sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-none">
-              0 SQM
-            </p>
-            <p className="text-[9px] sm:text-xs text-zinc-300/90 font-semibold uppercase tracking-wider font-body mt-1.5 sm:mt-2.5 leading-tight">
-              Expo Area
-            </p>
-          </div>
+    {/* Metric 3 */}
+    <div className="text-center px-1 sm:px-3">
+      <p ref={count3Ref} className="font-display text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+        0 SQM
+      </p>
+      <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+        Expo Area
+      </p>
+    </div>
 
-        </div>
-      </div>
-
+  </div>
+</div>
     </section>
   );
 }
