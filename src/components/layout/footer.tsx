@@ -27,9 +27,9 @@ const aboutLinks = [
 ];
 
 const social = [
-  { label: "Facebook", href: "https://facebook.com", Icon: FacebookIcon },
-  { label: "Instagram", href: "https://instagram.com", Icon: InstagramIcon },
-  { label: "LinkedIn", href: "https://linkedin.com", Icon: LinkedinIcon },
+  { label: "Facebook", href: " https://www.facebook.com/nepalwoodexpo/", Icon: FacebookIcon },
+  { label: "Instagram", href: " https://www.instagram.com/nepalwoodexpo/", Icon: InstagramIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/nepalwoodexpo/", Icon: LinkedinIcon },
 ];
 
 export default function Footer() {
@@ -41,7 +41,7 @@ export default function Footer() {
       {/* Background Image Layer */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/gallery/footer.png"
+          src="/images/hero/footer.png"
           alt="Nepal Wood Expo background"
           fill
           sizes="100vw"

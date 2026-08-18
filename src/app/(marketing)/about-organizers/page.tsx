@@ -11,7 +11,6 @@ import {
   Building2,
   Globe2,
   CheckCircle2,
-  ExternalLink,
   Award,
   Users2,
   CalendarCheck,
@@ -55,12 +54,11 @@ export default function AboutOrganizersPage() {
         <Container>
           <div className="mb-8 sm:mb-10 text-center">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-amber/10 border border-brand-amber/20 px-3.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-brand-amber mb-2.5">
-              <Handshake className="h-3.5 w-3.5" /> Powerful Synergy
+              <Handshake className="h-3.5 w-3.5" /> CONCURRENT EVENT
             </div>
             <SectionHeading
-              kicker="Joint Venture"
+              kicker="About The Organisers"
               title="Meet the Organizers"
-              // subtitle="Two premier trade show managers united to deliver an exceptional B2B trade experience."
               align="center"
             />
           </div>
@@ -74,37 +72,33 @@ export default function AboutOrganizersPage() {
                 {/* Background Accent Pill */}
                 <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-brand-amber/10 blur-xl transition-all group-hover:bg-brand-amber/20" />
 
-                <div className="overflow-visible">
-                  {/* Flexible Logo Container */}
-                  <div className="mb-6 flex min-h-[5rem] w-full max-w-[280px] items-center justify-start rounded-xl border border-brand-brown/10 bg-brand-cream/20 p-3 shadow-xs transition-all group-hover:border-brand-amber/40 group-hover:bg-brand-cream/40">
-                    {org.logo ? (
-                      <Image
-                        src={org.logo as string}
-                        alt={org.name}
-                        width={org.logoWidth || 200}
-                        height={org.logoHeight || 70}
-                        style={{
-                          width: org.logoWidth ? `${org.logoWidth}px` : "auto",
-                          height: org.logoHeight ? `${org.logoHeight}px` : "auto",
-                        }}
-                        className="object-contain"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-brand-brown font-bold text-sm">
-                        <Building2 className="h-6 w-6 text-brand-amber" />
-                        <span>{org.name}</span>
-                      </div>
-                    )}
-                  </div>
+             <div className="overflow-visible">
+  {/* Flexible Logo Container */}
+  <div className="mb-6 flex min-h-[5.5rem] w-full items-center justify-center rounded-xl border border-brand-brown/10 bg-brand-cream/20 p-3 shadow-xs transition-all duration-300 group-hover:border-brand-amber/40 group-hover:bg-brand-cream/40 overflow-hidden">
+    {org.logo ? (
+      <Image
+        src={org.logo as string}
+        alt={org.name}
+        width={org.logoWidth || 200}
+        height={org.logoHeight || 70}
+        style={{
+          width: org.logoWidth ? `${org.logoWidth}px` : "auto",
+          height: org.logoHeight ? `${org.logoHeight}px` : "auto",
+        }}
+        className="max-w-full object-contain transition-transform duration-300 ease-in-out group-hover:scale-105"
+      />
+    ) : (
+      <div className="flex items-center gap-2 text-brand-brown font-bold text-sm">
+        <Building2 className="h-6 w-6 text-brand-amber" />
+        <span>{org.name}</span>
+      </div>
+    )}
+  </div>
 
-                  <h3 className="font-display text-xl sm:text-2xl font-bold text-brand-brown leading-snug">
-                    {org.name}
-                  </h3>
-
-                  <p className="mt-3 text-xs sm:text-sm leading-relaxed text-brand-brown/80">
-                    {org.blurb}
-                  </p>
-                </div>
+  <p className="mt-3 text-xs sm:text-sm leading-relaxed text-brand-brown/80">
+    {org.blurb}
+  </p>
+</div>
 
                 <div className="mt-8 pt-5 border-t border-brand-brown/10 flex items-center justify-between">
                   <span className="text-xs font-semibold text-brand-brown/60">
@@ -119,7 +113,6 @@ export default function AboutOrganizersPage() {
                     className="h-9 px-4 border-brand-brown/20 hover:border-brand-amber text-xs font-bold"
                   >
                     Visit Website
-                    {/* <ExternalLink className="ml-1.5 h-3.5 w-3.5" /> */}
                   </CTAButton>
                 </div>
               </AnimatedCard>
@@ -128,8 +121,34 @@ export default function AboutOrganizersPage() {
         </Container>
       </section>
 
+      {/* Mega Promotion Banner */}
+      <section className="bg-brand-brown py-8 text-white border-y border-amber-500/20">
+        <Container>
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-black uppercase tracking-widest text-brand-amber">
+              Mega Promotion FOR MEGA REACH
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <div className="flex flex-col items-center text-center rounded-lg border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
+              <span className="text-2xl font-black text-brand-amber">3,00,000</span>
+              <span className="mt-1 text-xs font-bold text-white/80 uppercase tracking-wide">
+                SKILLED & SEMI-SKILLED PEOPLE INVOLVED
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center text-center rounded-lg border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
+              <span className="text-2xl font-black text-brand-amber">14.6 MILLION</span>
+              <span className="mt-1 text-xs font-bold text-white/80 uppercase tracking-wide">
+                WENT UP BY PLYWOOD, VENEERED AND PANELS
+              </span>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       {/* Joint Strength Matrix */}
-      <section className="relative overflow-hidden bg-brand-cream/30 py-10 sm:py-14 border-y border-brand-brown/10">
+      <section className="relative overflow-hidden bg-brand-cream/30 py-10 sm:py-14 border-b border-brand-brown/10">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-8">
             <SectionHeading

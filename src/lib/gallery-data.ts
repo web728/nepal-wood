@@ -1,252 +1,47 @@
-import { GalleryImage } from "@/components/shared/lightbox-gallery";
+import fs from "fs";
+import path from "path";
 
-export const galleryImages: GalleryImage[] = [
-  {
-    src: "/images/gallery/img-1.jpeg",
-    w: 1200,
-    h: 800,
-  },
-  {
-    src: "/images/gallery/img-2.jpeg",
-    w: 1200,
-    h: 800,
-    
-  },
-  {
-    src: "/images/gallery/img-33.jpg",
-    w: 1200,
-    h: 800,
- 
-  },
-  {
-    src: "/images/gallery/img-13.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Grand opening ceremony of Nepal Wood International Expo",
-    
-  },
-  {
-    src: "/images/gallery/img-5.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Inaugural ribbon cutting by distinguished guests",
-    
-  },
-  {
-    src: "/images/gallery/img-6.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Award ceremony recognizing industry excellence",
-    
-  },
-  {
-    src: "/images/gallery/img-7.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Award presentation to outstanding exhibitors",
-    
-  },
-  {
-    src: "/images/gallery/img-8.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Bustling exhibition aisle with visitors exploring stalls",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-9.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "B2B trade stalls and laminate displays",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-10.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Packed exhibition hall with industry professionals",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-11.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Premium exhibitor stand showcasing latest products",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-12.jpeg",
-    w: 1200,
-    h: 800,
-    caption: "Plywood and panel product display showcase",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-38.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Engineered wood panel collection at exhibitor booth",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/laminate-display.webp",
-    w: 1200,
-    h: 800,
-    caption: "Premium laminate textures and finishes on display",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-35.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Interior decoration solutions and design booth",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-36.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Hardware tools and fasteners exhibition booth",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-21.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Close-up of exhibitor product display",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-22.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Detailed product showcase at exhibition stand",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-23.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Wood finishing samples and material display",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/img-24.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Innovative wood technology products on display",
-    category: "Exhibits",
-  },
-  {
-    src: "/images/gallery/stand-browsing-1.webp",
-    w: 1200,
-    h: 800,
-    caption: "Visitors browsing exhibition stands for new products",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/stand-browsing-2.webp",
-    w: 1200,
-    h: 800,
-    caption: "Industry buyers examining product catalogues",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/crowd-aisle-1.webp",
-    w: 1200,
-    h: 800,
-    caption: "Visitors navigating the busy exhibition aisles",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/crowd-aisle-2.webp",
-    w: 1200,
-    h: 800,
-    caption: "Steady flow of trade visitors through the expo",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/crowd-aisle-3.webp",
-    w: 1200,
-    h: 800,
-    caption: "High footfall at the exhibition entrance area",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/img-35.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Visitors crowding around a popular exhibition booth",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/visitors-1.webp",
-    w: 1200,
-    h: 800,
-    caption: "Trade visitors exploring woodworking technology",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/visitors-2.webp",
-    w: 1200,
-    h: 800,
-    caption: "International delegates at the expo",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/visitors-3.webp",
-    w: 1200,
-    h: 800,
-    caption: "Industry professionals networking at the event",
-    category: "Visitors",
-  },
-  {
-    src: "/images/gallery/img-36.jpg",
-    w: 1200,
-    h: 800,
-    caption: "B2B business meeting between exhibitor and buyer",
-    category: "Networking",
-  },
-  {
-    src: "/images/gallery/exhibitor-talk-1.webp",
-    w: 1200,
-    h: 800,
-    caption: "Exhibitor explaining product features to buyers",
-    category: "Networking",
-  },
-  {
-    src: "/images/gallery/img-39.jpg",
-    w: 1200,
-    h: 800,
-    caption: "One-on-one product consultation at the booth",
-    category: "Networking",
-  },
-  {
-    src: "/images/gallery/floor-conversation-1.webp",
-    w: 1200,
-    h: 800,
-    caption: "On-floor business discussions and deal-making",
-    category: "Networking",
-  },
-  {
-    src: "/images/gallery/img-40.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Collaborative discussions at networking tables",
-    category: "Networking",
-  },
-  {
-    src: "/images/gallery/img-26.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Industry seminar and panel discussion session",
-    
-  },
-  {
-    src: "/images/gallery/img-25.jpg",
-    w: 1200,
-    h: 800,
-    caption: "Exhibition hall panoramic view",
-    category: "Exhibits",
-  },
-];
+export interface GalleryImage {
+  src: string;
+  w: number;
+  h: number;
+  caption?: string;
+  category?: string;
+}
+
+export function getGalleryImages(): GalleryImage[] {
+  const galleryDir = path.join(process.cwd(), "public/images/gallery");
+
+  // Agar directory exist na kare toh empty array return hoga
+  if (!fs.existsSync(galleryDir)) {
+    return [];
+  }
+
+  // Folder ki saari real files read kar raha hai
+  const files = fs.readdirSync(galleryDir);
+
+  // Sirf images ko filter karke list bana rahe hain (.jpg, .png, .webp, .jpeg)
+  const imageFiles = files.filter((file) =>
+    /\.(jpg|jpeg|png|webp|JPG|PNG|WEBP)$/i.test(file)
+  );
+
+  // Files ko numerically sort kar rahe hain (img-1, img-2, img-10...)
+  imageFiles.sort((a, b) => {
+    const numA = parseInt(a.match(/\d+/)?.[0] || "0", 10);
+    const numB = parseInt(b.match(/\d+/)?.[0] || "0", 10);
+    return numA - numB;
+  });
+
+  return imageFiles.map((file, i) => {
+    const isPortrait = i % 3 === 0;
+    const isLandscape = i % 2 === 0;
+
+    return {
+      src: `/images/gallery/${file}`,
+      w: isPortrait ? 800 : isLandscape ? 1200 : 1000,
+      h: isPortrait ? 1200 : isLandscape ? 800 : 1000,
+      caption: `Nepal Wood Expo Showcase Image ${i + 1}`,
+      category: i % 4 === 0 ? "Machinery" : i % 3 === 0 ? "Stalls" : "Demos",
+    };
+  });
+}

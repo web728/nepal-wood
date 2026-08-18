@@ -7,44 +7,43 @@ import StatCounter from "@/components/shared/stat-counter";
 import CTAButton from "@/components/shared/cta-button";
 import { useBatchReveal } from "@/hooks/useBatchReveal";
 import {
+  Users2Icon,
   Handshake,
-  Rocket,
-  Globe2,
   TrendingUp,
   MessageSquareCheck,
-  Users2Icon,
-  ArrowRight,
+  Globe2,
+  Rocket,
 } from "lucide-react";
 
 const benefits = [
   {
-    title: "Purchasing-Authority Visitors",
-    body: "Reach trade professionals with real purchasing and specification influence.",
+    title: "Access to 17,000+ Trade Professionals",
+    body: "Access to over 17,000 quality trade professionals from Nepal and beyond to promote and showcase your latest products and services.",
     icon: Users2Icon,
   },
   {
-    title: "Distribution Partnerships",
-    body: "Meet potential agents, importers, distributors and dealers.",
+    title: "Purchasing-Authority Visitors",
+    body: "Connect with key visitors in the wood industry who hold purchasing authority.",
     icon: Handshake,
   },
   {
-    title: "Product & Technology Launch",
-    body: "Demonstrate machinery and new products to a concentrated professional audience.",
-    icon: Rocket,
-  },
-  {
-    title: "Market Entry & Expansion",
-    body: "Understand local demand and identify partners across Nepal's wood and furniture sectors.",
+    title: "Expand Business Reach",
+    body: "Establish new contacts and expand your business reach by meeting relevant partners such as suppliers, manufacturers, trade associations, and institutions.",
     icon: Globe2,
   },
   {
-    title: "Brand Visibility",
-    body: "Position your company among domestic and international suppliers.",
+    title: "Industry Trends & Knowledge",
+    body: "Stay updated on the latest industry trends, technologies, and products through interactions with industry experts.",
+    icon: Rocket,
+  },
+  {
+    title: "Grow Market Presence",
+    body: "Increase your marketing presence in one of the fastest-growing construction markets in the region.",
     icon: TrendingUp,
   },
   {
-    title: "Qualified Enquiries",
-    body: "Hold face-to-face discussions with manufacturers, buyers and decision-makers.",
+    title: "Target Major Decision-Makers",
+    body: "Enhance your visibility among decision-makers from major construction projects in Nepal.",
     icon: MessageSquareCheck,
   },
 ];
@@ -69,15 +68,15 @@ export default function WhyExhibit() {
             <div>
               <SectionHeading
                 kicker="Why Exhibit"
-                title="Put your brand in front of the industry"
-                subtitle="A focused environment to meet buyers, appoint partners and demonstrate technology."
+                title="NEPAL WOOD INTERNATIONAL EXPO"
+                subtitle="YOUR GATEWAY TO ONE OF THE FASTEST EXPANDING MARKETS IN THE REGION"
               />
 
               {/* Compact Visual Feature Card */}
               <div className="relative mt-6 overflow-hidden rounded-xl border border-brand-amber/15 bg-gradient-to-br from-brand-brown via-brand-brown/95 to-brand-dark shadow-md">
                 <div className="absolute inset-0 opacity-20">
                   <Image
-                    src="/images/gallery/crowd-booth-1.webp"
+                    src="/images/hero/crowd-booth-1.webp"
                     alt="Exhibitors engaging with visitors"
                     fill
                     sizes="(max-width: 768px) 100vw, 400px"
@@ -87,10 +86,10 @@ export default function WhyExhibit() {
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-brown/95 via-brand-brown/80 to-transparent" />
                 <div className="relative z-10 p-5">
                   <h4 className="font-display text-base font-bold text-white">
-                    Premier Industry Expo
+                    Nepal Wood International Expo
                   </h4>
                   <p className="mt-1 text-xs leading-relaxed text-white/75">
-                    Connect directly with timber traders, furniture manufacturers, architects, and government stakeholders under one roof.
+                    Your gateway to one of the fastest expanding markets in the region.
                   </p>
                 </div>
               </div>
@@ -98,10 +97,9 @@ export default function WhyExhibit() {
               {/* Key stat counter */}
               <div className="mt-5 border-t border-brand-brown/10 pt-4">
                 <StatCounter
-                  value={75}
+                  value={94.2}
                   suffix="%"
-                  label="Visitors in senior-management roles"
-                  note="Previous edition"
+                  label="OF THE EXHIBITOR ARE SATISFIED WITH OVERALL PERFORMANCE OF THE ORGANIZER"
                 />
               </div>
             </div>
@@ -109,7 +107,6 @@ export default function WhyExhibit() {
             <div className="mt-6">
               <CTAButton href="/exhibitor-registration" className="h-11 px-5 text-sm">
                 Register to Exhibit
-            
               </CTAButton>
             </div>
           </div>

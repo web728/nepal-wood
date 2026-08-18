@@ -2,7 +2,7 @@ import Image from "next/image";
 import Container from "@/components/shared/container";
 import SectionHeading from "@/components/shared/section-heading";
 import CTAButton from "@/components/shared/cta-button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export default function AboutExpoIntro() {
   return (
@@ -15,10 +15,16 @@ export default function AboutExpoIntro() {
           {/* Left Text Content */}
           <div className="lg:col-span-6">
             <SectionHeading
-              kicker="About the Expo"
-              title="A specialised platform for wood, furniture and woodworking technology"
-              subtitle="Nepal Wood International Expo 2027 brings manufacturers, suppliers, distributors, architects and industry buyers together to discover products, demonstrate technology and build long-term commercial relationships in Nepal and the wider region."
+              kicker="Welcome To"
+              title="THE 12th EDITION OF NEPAL WOOD INTERNATIONAL EXPO 2027"
+              subtitle="Nepal Wood & Furniture International Expo is the region's most specialized and prestigious platform dedicated to the wood and furniture industry. Scheduled from 28th to 31st January 2027, the 12th edition brings together manufacturers, importers, traders, distributors, converters, and end-users on a single powerful stage."
             />
+
+            <div className="mt-4 flex flex-col gap-3 font-body text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <p>
+                Building on the remarkable success of the 11th edition, this year's expo has doubled its exhibition space to meet growing demand. With over 17,000 trade visitors expected and exhibitors from more than 7 countries, Nepal Wood 2027 is set to be the most impactful edition yet.
+              </p>
+            </div>
 
             <div className="mt-6 flex flex-wrap gap-3.5">
               <CTAButton href="/about-show" className="h-11 px-5 text-sm font-semibold shadow-md">
@@ -37,7 +43,7 @@ export default function AboutExpoIntro() {
               {/* Main Image Container */}
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100 shadow-xl">
                 <Image
-                  src="/images/gallery/about.png"
+                  src="/images/gallery/img-80.jpg"
                   alt="Business conversation at Nepal Wood International Expo"
                   fill
                   priority
@@ -49,7 +55,7 @@ export default function AboutExpoIntro() {
               {/* Compact Floating Thumbnail */}
               <div className="absolute -bottom-4 -left-4 hidden h-28 w-28 overflow-hidden rounded-xl border-4 border-white shadow-xl lg:block">
                 <Image
-                  src="/images/gallery/about-small.jpg"
+                  src="/images/gallery/img-71.jpg"
                   alt="Exhibition crowd at Nepal Wood Expo"
                   fill
                   sizes="112px"

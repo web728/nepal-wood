@@ -4,7 +4,7 @@ import { Images, Sparkles, Camera, Award, ShieldCheck } from "lucide-react";
 import PageBanner from "@/components/shared/page-banner";
 import Container from "@/components/shared/container";
 import LightboxGallery from "@/components/shared/lightbox-gallery";
-import { galleryImages } from "@/lib/gallery-data";
+import { getGalleryImages } from "@/lib/gallery-data";
 
 export const metadata: Metadata = {
   title: "Gallery | Nepal Wood International Expo 2027",
@@ -19,6 +19,7 @@ const highlights = [
 ];
 
 export default function GalleryPage() {
+  const images = getGalleryImages();
   return (
     <>
       {/* Hero Page Banner */}
@@ -69,7 +70,7 @@ export default function GalleryPage() {
           </div>
 
           {/* Optimized Lightbox Gallery with Lazy Loading */}
-          <LightboxGallery images={galleryImages} />
+       <LightboxGallery images={images} />
         </Container>
       </section>
     </>

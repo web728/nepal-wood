@@ -88,14 +88,14 @@ export default function HomeHero() {
           statsObj,
           {
             num1: 250,
-            num2: 15000,
-            num3: 20000,
+            num2: 17000,
+            num3: 60000,
             duration: 2,
             ease: "power2.out",
             onUpdate: () => {
               if (count1Ref.current) count1Ref.current.innerText = `${Math.floor(statsObj.num1)}+`;
               if (count2Ref.current) count2Ref.current.innerText = `${Math.floor(statsObj.num2).toLocaleString()}+`;
-              if (count3Ref.current) count3Ref.current.innerText = `${Math.floor(statsObj.num3).toLocaleString()} SQM`;
+              if (count3Ref.current) count3Ref.current.innerText = `${Math.floor(statsObj.num3).toLocaleString()}+ SQM`;
             },
           },
           "-=0.5"

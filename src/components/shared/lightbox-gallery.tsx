@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { gsap, Flip, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { ChevronLeft, ChevronRight, X, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export interface GalleryImage {
   src: string;
@@ -13,13 +13,17 @@ export interface GalleryImage {
   category?: string;
 }
 
-const ITEMS_PER_PAGE = 12;
+const INITIAL_LOAD = 16;
+const BATCH_SIZE = 12;
+const EXTENSIONS = [".jpg", ".webp", ".png", ".jpeg", ".JPG", ".PNG", ".WEBP"];
 
 export default function LightboxGallery({ images }: { images: GalleryImage[] }) {
   const [index, setIndex] = useState<number | null>(null);
-  const [visibleCount, setVisibleCount] = useState<number>(ITEMS_PER_PAGE);
+  const [visibleCount, setVisibleCount] = useState<number>(INITIAL_LOAD);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  
+  const [imageSources, setImageSources] = useState<Record<string, string>>({});
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
   const flipStateRef = useRef<ReturnType<typeof Flip.getState> | null>(null);
   const lightboxImageWrapRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -27,6 +31,24 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
   // Mobile Touch Swipe Handling
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  // Fallback Extension Switcher
+  const handleImageError = (originalSrc: string) => {
+    const currentSrc = imageSources[originalSrc] || originalSrc;
+    const baseName = originalSrc.substring(0, originalSrc.lastIndexOf("."));
+    const currentExt = currentSrc.substring(currentSrc.lastIndexOf("."));
+    const currentIndex = EXTENSIONS.indexOf(currentExt);
+
+    if (currentIndex !== -1 && currentIndex < EXTENSIONS.length - 1) {
+      const nextExt = EXTENSIONS[currentIndex + 1];
+      const nextSrc = `${baseName}${nextExt}`;
+      setImageSources((prev) => ({ ...prev, [originalSrc]: nextSrc }));
+    }
+  };
+
+  const handleImageLoad = (src: string) => {
+    setLoadedImages((prev) => ({ ...prev, [src]: true }));
+  };
 
   // Filter Categories
   const categories = useMemo(() => {
@@ -47,17 +69,18 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
     return filteredImages.slice(0, visibleCount);
   }, [filteredImages, visibleCount]);
 
-  // Infinite Scroll Observer
+  // Early Pre-fetching via IntersectionObserver (rootMargin 600px ahead)
   useEffect(() => {
     if (visibleCount >= filteredImages.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 8, filteredImages.length));
+          // Pre-fetch next batch before user reaches bottom
+          setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, filteredImages.length));
         }
       },
-      { threshold: 0.1, rootMargin: "300px" }
+      { threshold: 0.01, rootMargin: "600px" } // Early trigger for instant scroll feel
     );
 
     const currentRef = loadMoreRef.current;
@@ -90,7 +113,7 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
       requestAnimationFrame(() => {
         Flip.from(state, {
           targets: thumbEl,
-          duration: 0.4,
+          duration: 0.35,
           ease: EASE.premium,
           absolute: true,
           scale: true,
@@ -127,7 +150,7 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
     };
   }, [index, closeLightbox, handlePrev, handleNext]);
 
-  // GSAP Entrance Animation
+  // Lightbox Entrance GSAP
   useEffect(() => {
     if (index === null || prefersReducedMotion()) return;
     const el = lightboxImageWrapRef.current;
@@ -139,7 +162,7 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
     if (state) {
       Flip.from(state, {
         targets: el,
-        duration: 0.45,
+        duration: 0.4,
         ease: EASE.premium,
         absolute: true,
         scale: true,
@@ -148,36 +171,30 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
       gsap.fromTo(
         el,
         { opacity: 0, scale: 0.95 },
-        { opacity: 1, scale: 1, duration: 0.3, ease: EASE.premium }
+        { opacity: 1, scale: 1, duration: 0.25, ease: EASE.premium }
       );
     }
   }, [index]);
 
-  // Mobile Touch Controls
+  // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
-
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
   };
-
   const handleTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
     const distance = touchStartX.current - touchEndX.current;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) handleNext();
-    if (isRightSwipe) handlePrev();
-
+    if (distance > 50) handleNext();
+    if (distance < -50) handlePrev();
     touchStartX.current = null;
     touchEndX.current = null;
   };
 
   return (
     <>
-      {/* Category Filter Pills */}
+      {/* Category Pills */}
       {categories.length > 1 && (
         <div className="mb-8 flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -185,11 +202,11 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
               key={cat}
               onClick={() => {
                 setSelectedCategory(cat);
-                setVisibleCount(ITEMS_PER_PAGE);
+                setVisibleCount(INITIAL_LOAD);
               }}
               className={`rounded-full px-5 py-2 text-xs font-bold tracking-wide transition-all duration-300 ${
                 selectedCategory === cat
-                  ? "bg-brand-brown text-brand-amber shadow-premium border border-brand-brown scale-105"
+                  ? "bg-brand-brown text-brand-amber shadow-sm border border-brand-brown scale-105"
                   : "bg-white text-brand-brown/70 hover:bg-brand-brown/5 hover:text-brand-brown border border-brand-brown/10"
               }`}
             >
@@ -199,38 +216,46 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
         </div>
       )}
 
-      {/* Masonry Grid - Pure Clean Images */}
+      {/* Masonry Grid */}
       <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4 [&>*]:mb-4">
-        {visibleImages.map((img, i) => (
-          <button
-            key={`${img.src}-${i}`}
-            data-gallery-index={i}
-            onClick={(e) => openAt(i, e.currentTarget)}
-            className="group relative block w-full overflow-hidden rounded-2xl border border-brand-brown/10 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-brand-amber/40 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-amber"
-            style={{ breakInside: "avoid" }}
-          >
-            <div
-              className="relative w-full overflow-hidden"
-              style={{ aspectRatio: `${img.w} / ${img.h}` }}
+        {visibleImages.map((img, i) => {
+          const imgSrc = imageSources[img.src] || img.src;
+          const isLoaded = loadedImages[imgSrc];
+
+          return (
+            <button
+              key={`${img.src}-${i}`}
+              data-gallery-index={i}
+              onClick={(e) => openAt(i, e.currentTarget)}
+              className="group relative block w-full overflow-hidden rounded-2xl border border-brand-brown/10 bg-slate-200/60 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-brand-amber/40 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-amber"
+              style={{ breakInside: "avoid" }}
             >
-              <Image
-                src={img.src}
-                alt={img.caption || "Gallery image"}
-                fill
-                loading="lazy"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            </div>
-          </button>
-        ))}
+              <div
+                className="relative w-full overflow-hidden"
+                style={{ aspectRatio: `${img.w} / ${img.h}` }}
+              >
+                <Image
+                  src={imgSrc}
+                  alt={img.caption || "Gallery image"}
+                  fill
+                  quality={65} // Fast loading compressed quality
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                  loading={i < 8 ? "eager" : "lazy"} // First 8 load instantly
+                  onLoad={() => handleImageLoad(imgSrc)}
+                  onError={() => handleImageError(img.src)}
+                  className={`object-cover transition-all duration-500 ease-out group-hover:scale-105 ${
+                    isLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-95"
+                  }`}
+                />
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Load More Indicator */}
+      {/* Invisible Pre-fetch Trigger Area */}
       {visibleCount < filteredImages.length && (
-        <div ref={loadMoreRef} className="mt-12 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="h-5 w-5 animate-spin text-brand-amber" />
-        </div>
+        <div ref={loadMoreRef} className="h-20 w-full" />
       )}
 
       {/* Lightbox Modal */}
@@ -245,7 +270,7 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
           onTouchEnd={handleTouchEnd}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-brown/95 backdrop-blur-xl p-4 sm:p-8 cursor-pointer animate-in fade-in duration-200"
         >
-          {/* Top Control Bar - Only Close Button */}
+          {/* Top Control Bar */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="absolute top-4 right-4 flex items-center justify-end z-30"
@@ -272,7 +297,7 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
             <ChevronLeft className="h-6 w-6" />
           </button>
 
-          {/* Main Image Container (Only Image) */}
+          {/* Main Image Container */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-5xl flex items-center justify-center cursor-default max-h-[85vh]"
@@ -282,8 +307,9 @@ export default function LightboxGallery({ images }: { images: GalleryImage[] }) 
               className="relative flex items-center justify-center max-h-[85vh] w-auto max-w-full overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black/30"
             >
               <img
-                src={visibleImages[index].src}
+                src={imageSources[visibleImages[index].src] || visibleImages[index].src}
                 alt={visibleImages[index].caption || "Full view image"}
+                onError={() => handleImageError(visibleImages[index].src)}
                 className="max-h-[85vh] w-auto max-w-full object-contain select-none"
               />
             </div>

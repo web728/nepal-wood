@@ -39,12 +39,12 @@ const keyPillars = [
 export default function AboutShowPage() {
   return (
     <>
-      <PageBanner
-        kicker="About the Show"
-        title="Where Innovation, Technology & Business Opportunity Meet"
-        subtitle="Nepal's premier specialized trade exhibition for wood, plywood, laminates, woodworking machinery, furniture-production technology, and allied sectors."
-        bgImage="/images/gallery/img-16.jpeg"
-      />
+    <PageBanner
+  kicker="12th Edition | 28–31 January 2027"
+  title="Nepal's Largest Wood & Furniture Industry Platform"
+  subtitle="Connecting global manufacturers, technology leaders, and trade buyers at the region's premier woodworking & furniture international expo."
+  bgImage="/images/gallery/img-16.jpeg"
+/>
 
       {/* Overview & Key Pillars Section */}
       <section className="relative bg-white py-12 sm:py-16 md:py-20 overflow-hidden">

@@ -46,18 +46,18 @@ export const organizers: Organizer[] = [
     name: "Futurex Trade Fair and Events Pvt. Ltd.",
     logo: "/logo/futurex.png", 
     logoWidth: 240,  // <-- Yahan se Futurex logo ki size badlein (Pixels)
-    logoHeight: 100,
-    blurb:
-      "Established in 2011 and headquartered in New Delhi, an international exhibition and corporate-events organiser with experience across South Asia, having executed more than 300 exhibitions and conferences across sectors including woodworking, textiles, infrastructure, agriculture, power, education and packaging.",
+    logoHeight: 120,
+  blurb:
+      "Established in 2011, FUTUREX TRADE FAIR AND EVENTS PVT. LTD. is a premier international exhibition and corporate events organizer headquartered in New Delhi, India. The company has successfully executed 300+ international and domestic trade exhibitions and conferences both globally and across India, establishing itself as the largest show organizer in SAARC countries. Specializing in sectors including Woodworking, Textile, Building and Infrastructure, Agriculture, Power, Education, and Packaging, Futurex creates focused B2B platforms that connect manufacturers, suppliers, and buyers worldwide. Backed by seasoned professionals and strong government associations, Futurex continues to redefine excellence in Nepal's exhibition industry. Futurex: Where Business Meets Opportunities.",
     href: "https://futurextrade.com",
   },
   {
     name: "Media Space Solutions Pvt. Ltd.",
     logo: "/logo/Media-Space.png",
-    logoWidth: 200,  // <-- Yahan se Media Space logo ki size badlein
-    logoHeight: 80,
-    blurb:
-      "Operating in Nepal since 2009, contributing local market knowledge, industry relationships, promotional reach and on-ground operational expertise to professionally managed trade exhibitions in Nepal.",
+    logoWidth: 220,  // <-- Yahan se Media Space logo ki size badlein
+    logoHeight: 100,
+   blurb:
+      "MEDIA SPACE SOLUTIONS has been a key player in the industry since 2009, initially focusing on digital media and event management. Today, we manage a diverse portfolio of exhibitions and mobile networks, making us the largest commercial trade show company in Nepal. Our exhibitions span crucial sectors like infrastructure, engineering, and agriculture, among others, with partnerships from industry-leading brands. Leveraging our global marketing network, organizational expertise, and local connections, we consistently deliver top-tier trade shows of international standards, attracting qualified visitors.",
     href: "https://mss.com.np/",
   },
 ];
