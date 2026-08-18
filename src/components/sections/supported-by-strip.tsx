@@ -102,36 +102,41 @@ export default function SupportedByStrip() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto items-stretch">
-              {organizers.map((org) => (
-                <a
-                  key={org.id}
-                  href={org.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="reveal-card group relative flex flex-col items-center justify-center rounded-2xl border border-brand-brown/10 bg-brand-cream/30 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-amber/40 hover:bg-white hover:shadow-md"
-                >
-                  <div className="relative flex min-h-[120px] w-full items-center justify-center overflow-hidden">
-                    <Image
-                      src={org.logo}
-                      alt={org.alt}
-                      width={org.width}
-                      height={org.height}
-                      style={{
-                        // Dynamic manual height controls
-                        "--mobile-h": org.sizes.mobile,
-                        "--tablet-h": org.sizes.tablet,
-                        "--laptop-h": org.sizes.laptop,
-                      } as React.CSSProperties}
-                      className="w-auto object-contain transition-transform duration-300 group-hover:scale-105 h-[var(--mobile-h)] sm:h-[var(--tablet-h)] lg:h-[var(--laptop-h)]"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  </div>
-                </a>
-              ))}
-            </div>
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto items-stretch">
+  {organizers.map((org) => (
+    <a
+      key={org.id}
+      href={org.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="reveal-card group relative flex flex-col items-center justify-between rounded-2xl border border-brand-brown/10 bg-brand-cream/30 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-amber/40 hover:bg-white hover:shadow-md"
+    >
+      <div className="relative flex min-h-[120px] w-full items-center justify-center overflow-hidden">
+        <Image
+          src={org.logo}
+          alt={org.alt}
+          width={org.width}
+          height={org.height}
+          style={{
+            // Dynamic manual height controls
+            "--mobile-h": org.sizes.mobile,
+            "--tablet-h": org.sizes.tablet,
+            "--laptop-h": org.sizes.laptop,
+          } as React.CSSProperties}
+          className="w-auto object-contain transition-transform duration-300 group-hover:scale-105 h-[var(--mobile-h)] sm:h-[var(--tablet-h)] lg:h-[var(--laptop-h)]"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
+      </div>
+
+      {/* Organizer Name below Logo */}
+      <p className="mt-3 text-center font-body text-xs sm:text-sm font-semibold leading-tight text-brand-brown transition-colors group-hover:text-brand-amber">
+        {org.alt}
+      </p>
+    </a>
+  ))}
+</div>
           </div>
 
           {/* DIVIDER */}
