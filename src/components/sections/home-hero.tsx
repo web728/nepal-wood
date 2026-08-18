@@ -200,7 +200,7 @@ export default function HomeHero() {
         >
           Nepal&rsquo;s definitive platform for{" "}
           <span className="font-semibold text-white">Woodworking Machinery</span>,{" "}
-          <span className="font-semibold text-white">Furniture Hardware</span>, Plywood, Laminates &amp; Raw Materials.
+          <span className="font-semibold text-white">Furniture Hardware, Plywood, Laminates &amp; Raw Materials.</span>
         </p>
 
         {/* Date, Duration & Location Glass Pill Badges */}
@@ -226,11 +226,11 @@ export default function HomeHero() {
           className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md mx-auto"
         >
           <CTAButton
-            href="/visitor-registration"
+            href="/exhibitor-registration"
             size="lg"
             className="w-full h-12 sm:h-13 justify-center text-sm font-bold shadow-2xl shadow-brand-amber/30 hover:shadow-brand-amber/40 transition-all !px-6 border border-brand-amber/40"
           >
-            Book Visitor Pass
+            Book a Stand
           </CTAButton>
 
           <CTAButton

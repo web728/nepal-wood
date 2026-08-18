@@ -37,12 +37,12 @@ export default function WhyVisit() {
             </div>
 
             <div className="mt-2 w-full">
-              <SectionHeading
-                kicker="Why Visit"
-                title="SHOW HIGHLIGHTS OF PREVIOUS EDITION"
-                subtitle="Discover key achievements, trade opportunities, and international participation from our successful past edition."
-                light
-              />
+           <SectionHeading
+  kicker="Why Visit"
+  title="Show Highlights of Previous Edition"
+  subtitle="Discover key achievements, trade opportunities, and international participation from our successful past edition."
+  light
+/>
             </div>
 
             {/* Feature Highlight Box */}

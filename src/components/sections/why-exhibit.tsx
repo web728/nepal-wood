@@ -66,11 +66,11 @@ export default function WhyExhibit() {
           {/* Left Column Content */}
           <div className="flex flex-col justify-between lg:col-span-5">
             <div>
-              <SectionHeading
-                kicker="Why Exhibit"
-                title="NEPAL WOOD INTERNATIONAL EXPO"
-                subtitle="YOUR GATEWAY TO ONE OF THE FASTEST EXPANDING MARKETS IN THE REGION"
-              />
+            <SectionHeading
+  kicker="Why Exhibit"
+  title="Nepal Wood International Expo"
+  subtitle="Your gateway to one of the fastest expanding markets in the region"
+/>
 
               {/* Compact Visual Feature Card */}
               <div className="relative mt-6 overflow-hidden rounded-xl border border-brand-amber/15 bg-gradient-to-br from-brand-brown via-brand-brown/95 to-brand-dark shadow-md">

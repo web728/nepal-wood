@@ -16,7 +16,7 @@ export default function AboutExpoIntro() {
           <div className="lg:col-span-6">
             <SectionHeading
               kicker="Welcome To"
-              title="THE 12th EDITION OF NEPAL WOOD INTERNATIONAL EXPO 2027"
+              title="The 12th Edition of Nepal Wood International Expo 2027"
               subtitle="Nepal Wood & Furniture International Expo is the region's most specialized and prestigious platform dedicated to the wood and furniture industry. Scheduled from 28th to 31st January 2027, the 12th edition brings together manufacturers, importers, traders, distributors, converters, and end-users on a single powerful stage."
             />
 

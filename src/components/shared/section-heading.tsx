@@ -132,7 +132,7 @@ export default function SectionHeading({
         <div
           ref={kickerRef}
           className={cn(
-            "inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.25em]",
+            "inline-flex items-center gap-2.5 text-xs font-bold normal-case tracking-normal",
             light ? "text-brand-amberLight" : "text-brand-maroon",
             align === "center" ? "justify-center" : "justify-start"
           )}
