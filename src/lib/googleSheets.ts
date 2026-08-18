@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import type { SheetRow } from "@/types/forms";
 
-const SHEET_TAB_NAME = "Website Enquries"; // exact spelling per spec — do not "fix" the typo
+const SHEET_TAB_NAME = "Website Enquiries";
 
 function getAuth() {
   const privateKeyBase64 = process.env.GOOGLE_PRIVATE_KEY;
