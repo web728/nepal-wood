@@ -6,7 +6,7 @@ import { gsap, SplitText, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { hasShownPreloader, PRELOADER_DONE_EVENT } from "@/lib/preloader-state";
 import CTAButton from "@/components/shared/cta-button";
 import { site } from "@/lib/site-data";
-import { Sparkles, ArrowRight, Calendar, MapPin, Clock } from "lucide-react";
+import { Sparkles, Calendar, MapPin, Clock } from "lucide-react";
 
 // Definitions for the animated background images
 const bgImages = [
@@ -47,16 +47,12 @@ export default function HomeHero() {
       const bgElements = bgRefs.current.filter(Boolean);
 
       const runEntrance = () => {
-        const imageOpacity = 0.22; // Slightly higher contrast for crisp visuals
+        const imageOpacity = 0.22;
 
         if (prefersReducedMotion()) {
           gsap.set(
             [badgeRef.current, headline, subRef.current, locationRef.current, metricsRef.current, ...ctaChildren],
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-            }
+            { opacity: 1, y: 0, scale: 1 }
           );
 
           if (bgElements.length > 0) {
@@ -177,7 +173,7 @@ export default function HomeHero() {
       {/* MAIN CENTER CONTENT */}
       <div className="container-expo relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center my-auto py-4">
 
-        {/* Top Badge - Highlighted 4 Days & 12th Edition */}
+        {/* Top Badge */}
         <div ref={badgeRef} className="flex items-center justify-center mb-4 sm:mb-6">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#F4C87A]/40 bg-[#F4C87A]/15 px-4 py-1.5 text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-[#F4C87A] backdrop-blur-2xl shadow-lg shadow-[#F4C87A]/10">
             <Sparkles className="h-3.5 w-3.5 text-[#F4C87A]" />
@@ -205,7 +201,6 @@ export default function HomeHero() {
 
         {/* Date, Duration & Location Glass Pill Badges */}
         <div ref={locationRef} className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-semibold text-white/95">
-          {/* Highlighted 4-Days Badge */}
           <span className="inline-flex items-center gap-2 rounded-full border border-[#F4C87A]/50 bg-[#F4C87A]/20 px-4 py-2 text-[#F4C87A] font-bold backdrop-blur-xl shadow-md">
             <Clock className="h-4 w-4" />
             First Time Ever — 4 Days Event
@@ -250,37 +245,45 @@ export default function HomeHero() {
         ref={metricsRef} 
         className="container-expo relative z-10 w-full max-w-2xl mx-auto mt-6 sm:mt-10 rounded-2xl border border-white/15 bg-white/[0.05] backdrop-blur-2xl p-4 sm:p-5 shadow-2xl shadow-black/50 overflow-hidden"
       >
-        {/* Card Ambient Glow */}
         <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 h-24 w-1/2 rounded-full bg-brand-amber/10 blur-xl" />
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center">
+        <div className="grid grid-cols-3 gap-1 sm:gap-4 items-center">
           
           {/* Metric 1 */}
-          <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-4">
-            <p ref={count1Ref} className="font-display text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+          <div className="text-center px-0.5 sm:px-3 border-r border-white/10">
+            <p 
+              ref={count1Ref} 
+              className="font-display tabular-nums text-base min-[380px]:text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none whitespace-nowrap"
+            >
               0+
             </p>
-            <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+            <p className="text-[9px] min-[380px]:text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
               Global Brands
             </p>
           </div>
 
           {/* Metric 2 */}
-          <div className="text-center px-1 sm:px-3 border-r border-white/10 pr-2 sm:pr-4">
-            <p ref={count2Ref} className="font-display text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+          <div className="text-center px-0.5 sm:px-3 border-r border-white/10">
+            <p 
+              ref={count2Ref} 
+              className="font-display tabular-nums text-base min-[380px]:text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none whitespace-nowrap"
+            >
               0+
             </p>
-            <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+            <p className="text-[9px] min-[380px]:text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
               B2B Visitors
             </p>
           </div>
 
           {/* Metric 3 */}
-          <div className="text-center px-1 sm:px-3">
-            <p ref={count3Ref} className="font-display text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">
+          <div className="text-center px-0.5 sm:px-3">
+            <p 
+              ref={count3Ref} 
+              className="font-display tabular-nums text-sm min-[380px]:text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none whitespace-nowrap"
+            >
               0 SQM
             </p>
-            <p className="text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
+            <p className="text-[9px] min-[380px]:text-[10px] sm:text-xs text-zinc-300/80 font-medium uppercase tracking-wider font-body mt-1.5 sm:mt-2 leading-tight">
               Expo Area
             </p>
           </div>
