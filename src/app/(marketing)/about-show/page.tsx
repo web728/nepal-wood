@@ -20,13 +20,13 @@ const keyPillars = [
     icon: Cpu,
     title: "Advanced Machinery & Tech",
     description: "Live demonstrations of CNC routers, edgebanders, sawmills, and automated woodworking machinery.",
-    image: "/images/texture/advanced.JFIF",
+    image: "/images/texture/advanced.jpg",
   },
   {
     icon: Layers,
     title: "Raw Materials & Supplies",
     description: "Explore wide varieties of premium plywood, decorative laminates, veneers, adhesives, and hardware.",
-    image: "/images/texture/raw-materials.JFIF",
+    image: "/images/texture/raw-materials.jpg",
   },
   {
     icon: Users2,
@@ -86,7 +86,7 @@ export default function AboutShowPage() {
               <div className="relative overflow-hidden rounded-2xl border border-brand-brown/10 bg-brand-cream/30 p-2 shadow-xl">
                 <div className="relative h-72 sm:h-96 w-full overflow-hidden rounded-xl">
                   <Image
-                    src="/images/gallery/katmandu.png"
+                    src="/expo/expo-54.jpeg"
                     alt="Exhibition Floor Highlights"
                     fill
                     className="object-cover transition-transform duration-700 hover:scale-105"

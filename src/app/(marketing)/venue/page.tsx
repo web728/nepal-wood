@@ -191,7 +191,7 @@ export default function VenuePage() {
               <div className="relative overflow-hidden rounded-2xl border border-brand-brown/10 bg-brand-cream/30 p-2 sm:p-2.5 shadow-xl">
                 <div className="relative h-64 sm:h-80 w-full overflow-hidden rounded-xl">
                   <Image
-                    src="/images/gallery/exhibitor-center.png"
+                    src="/expo/expo-56.jpeg"
                     alt="Bhrikuti Mandap Exhibition Floor"
                     fill
                     className="object-cover transition-transform duration-700 hover:scale-105"

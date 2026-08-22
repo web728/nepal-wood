@@ -43,7 +43,7 @@ export default function AboutExpoIntro() {
               {/* Main Image Container */}
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100 shadow-xl">
                 <Image
-                  src="/images/gallery/img-80.jpg"
+                  src="/expo/expo-45.jpeg"
                   alt="Business conversation at Nepal Wood International Expo"
                   fill
                   priority

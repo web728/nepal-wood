@@ -53,7 +53,7 @@ export default function VisitorRegistrationPage() {
         kicker="Visit Nepal Wood 2027"
         title="Register for Visitor Pass"
         subtitle="Complete the form below to receive your official visitor confirmation badge and exclusive expo insights."
-        bgImage="/images/gallery/stand-detail-4.webp"
+        bgImage="/expo/expo-41.jpeg"
       />
 
       <section className="bg-slate-50/50 py-12 lg:py-16">

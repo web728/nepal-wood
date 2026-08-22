@@ -32,7 +32,7 @@ export default function ContactPage() {
         kicker="Reach Out To Us"
         title="We’re Here to Help You Connect"
         subtitle="Have questions about stall booking, visitor passes, or event sponsorships? Our dedicated team is available to assist you."
-        bgImage="/images/gallery/crowd-aisle-2.webp"
+        bgImage="/expo/expo-15.jpeg"
       />
 
       <section className="relative overflow-hidden bg-white section-premium">

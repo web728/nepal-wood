@@ -116,7 +116,7 @@ export default function ExhibitorProfilePage() {
         kicker="Exhibitor Profile"
         title="Who Should Exhibit at Nepal Wood 2027?"
         subtitle="A comprehensive commercial platform for manufacturers, distributors, and suppliers of woodworking machinery, raw materials, hardware, and furniture production technology."
-        bgImage="/images/hero/stand-detail-4.webp"
+        bgImage="/expo/expo-54.jpeg"
       />
 
       {/* Main Categories Grid Section */}

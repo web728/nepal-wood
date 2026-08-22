@@ -17,12 +17,19 @@ export default function VenueMap() {
 
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // Hydration safe guard
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
+
+  // Safe client-side mount check
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Dynamic Mouse Parallax Movement for Ambient Blobs
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -51,56 +58,53 @@ export default function VenueMap() {
   };
 
   useEffect(() => {
+    if (!isMounted) return;
+
     let ctx: gsap.Context;
 
-    const rafId = requestAnimationFrame(() => {
-      if (!sectionRef.current) return;
+    ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".venue-animate",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
 
-      ctx = gsap.context(() => {
-        gsap.fromTo(
-          ".venue-animate",
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+      gsap.to(".blob-top-right-inner", {
+        scaleX: 1.2,
+        scaleY: 0.85,
+        rotation: 20,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.easeInOut",
+      });
 
-        gsap.to(".blob-top-right-inner", {
-          scaleX: 1.2,
-          scaleY: 0.85,
-          rotation: 20,
-          duration: 6,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.easeInOut",
-        });
-
-        gsap.to(".blob-bottom-left-inner", {
-          scaleX: 0.85,
-          scaleY: 1.2,
-          rotation: -20,
-          duration: 7,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.easeInOut",
-        });
-      }, sectionRef);
-    });
+      gsap.to(".blob-bottom-left-inner", {
+        scaleX: 0.85,
+        scaleY: 1.2,
+        rotation: -20,
+        duration: 7,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.easeInOut",
+      });
+    }, sectionRef);
 
     return () => {
-      cancelAnimationFrame(rafId);
       if (ctx) ctx.revert();
     };
-  }, []);
+  }, [isMounted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -300,14 +304,16 @@ export default function VenueMap() {
                   />
                 </div>
 
-                {/* ReCAPTCHA Container */}
-                <div className="pt-1 overflow-x-auto">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                    onChange={(token) => setCaptchaToken(token)}
-                    theme="dark"
-                  />
+                {/* ReCAPTCHA Container - Only renders after client-side hydration */}
+                <div className="pt-1 overflow-x-auto min-h-[78px]">
+                  {isMounted && (
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                      onChange={(token) => setCaptchaToken(token)}
+                      theme="dark"
+                    />
+                  )}
                 </div>
 
                 <button

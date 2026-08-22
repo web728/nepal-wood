@@ -95,7 +95,7 @@ export default function VisitorProfilePage() {
         kicker="Visitor Profile"
         title="Who Should Attend Nepal Wood 2027?"
         subtitle="Connect with key decision-makers, specifiers, and trade buyers across the woodworking, furniture production, and interior design sectors."
-        bgImage="/images/gallery/DSC_7509-1024x683.jpg"
+        bgImage="/images/gallery/img-91.jpg"
       />
 
       {/* Target Visitors Section (Compact) */}

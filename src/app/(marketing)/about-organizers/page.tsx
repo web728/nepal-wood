@@ -46,7 +46,7 @@ export default function AboutOrganizersPage() {
         kicker="The Organizers"
         title="Organized by Industry-Leading Exhibition Pioneers"
         subtitle="Combining international trade fair expertise with unparalleled regional market knowledge to deliver Nepal's largest wood & technology platform."
-        bgImage="/images/gallery/seminar-discussion.webp"
+        bgImage="/expo/expo-56.jpeg"
       />
 
       {/* Main Organizers Profile Cards */}

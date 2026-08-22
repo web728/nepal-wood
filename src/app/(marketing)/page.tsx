@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import HomeHero from "@/components/sections/home-hero";
 import StatsBar from "@/components/sections/stats-bar";
 import SupportedByStrip from "@/components/sections/supported-by-strip";
@@ -9,6 +10,8 @@ import WhyVisit from "@/components/sections/why-visit";
 import ConcurrentEvents from "@/components/sections/concurrent-events";
 import GalleryPreview from "@/components/sections/gallery-preview";
 import VenueMap from "@/components/sections/venue-map";
+
+
 
 export const metadata: Metadata = {
   title: "Nepal Wood International Expo 2027 | 28-31 Jan, Kathmandu",

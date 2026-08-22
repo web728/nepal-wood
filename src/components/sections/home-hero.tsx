@@ -10,11 +10,11 @@ import { Sparkles, Calendar, MapPin, Clock } from "lucide-react";
 
 // Definitions for the animated background images
 const bgImages = [
-  { src: "/images/gallery/img-43.jpeg", alt: "Nepal Wood Expo hall 1" },
-  { src: "/images/gallery/img-16.jpeg", alt: "Nepal Wood Expo hall 2" },
-  { src: "/images/gallery/img-30.jpg", alt: "Nepal Wood Expo hall 3" },
-  { src: "/images/gallery/img-44.jpg", alt: "Nepal Wood Expo hall 4" },
-  { src: "/images/gallery/img-45.jpg", alt: "Nepal Wood Expo hall 5" },
+  { src: "/expo/expo-30.jpeg", alt: "Nepal Wood Expo hall 1" },
+  { src: "/expo/expo-50.jpeg", alt: "Nepal Wood Expo hall 2" },
+  { src: "/expo/expo-19.jpeg", alt: "Nepal Wood Expo hall 3" },
+  { src: "/expo/expo-44.jpeg", alt: "Nepal Wood Expo hall 4" },
+  { src: "/expo/expo-45.jpeg", alt: "Nepal Wood Expo hall 5" },
 ];
 
 export default function HomeHero() {

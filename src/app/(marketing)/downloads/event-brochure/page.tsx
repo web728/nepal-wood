@@ -16,7 +16,7 @@ export default function BrochurePage() {
         kicker="Downloads"
         title="2027 Event Brochure"
         subtitle="Fill in your details to instantly get the comprehensive event profile, floor plan, and exhibitor details."
-         bgImage="/images/gallery/img-38.jpg"
+         bgImage="/images/gallery/img-99.jpg"
       />
 
       <section className="bg-white py-12 md:py-20">
