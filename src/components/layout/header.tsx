@@ -119,44 +119,44 @@ export default function Header() {
         hiddenByScroll && !isMenuOpen ? "-translate-y-full" : "translate-y-0"
       )}
     >
-    {/* Top Announcement Bar */}
-<div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-3 text-sm sm:text-base font-semibold text-white overflow-hidden shadow-sm">
-  <div className="container-expo flex items-center justify-between gap-4 px-4 sm:px-6">
-    <div className="relative flex-1 min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
-      <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform gap-12 items-center">
-        {/* Content Group - Duplicate 2-3 times for seamless looping */}
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="flex items-center gap-6">
-            <span className="text-brand-amber font-bold text-base sm:text-lg">
-              12th Nepal Wood International Expo 2027
-            </span>
-            <span className="opacity-40">•</span>
-            <span>28–31 January 2027</span>
-            <span className="opacity-40">•</span>
-            <span>Bhrikuti Mandap, Kathmandu</span>
+      {/* Top Announcement Bar */}
+      <div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-3 text-sm sm:text-base font-semibold text-white overflow-hidden shadow-sm">
+        <div className="container-expo flex items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="relative flex-1 min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
+            <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform gap-12 items-center">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-6">
+                  <span className="text-brand-amber font-bold text-base sm:text-lg">
+                    12th Nepal Wood International Expo 2027
+                  </span>
+                  <span className="opacity-40">•</span>
+                  <span>28–31 January 2027</span>
+                  <span className="opacity-40">•</span>
+                  <span>Bhrikuti Mandap, Kathmandu</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
+        </div>
 
-  <style jsx>{`
-    @keyframes marquee {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-33.33%);
-      }
-    }
-    .animate-marquee {
-      animation: marquee 20s linear infinite;
-    }
-    .animate-marquee:hover {
-      animation-play-state: paused;
-    }
-  `}</style>
-</div>
+        <style jsx>{`
+          @keyframes marquee {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-33.33%);
+            }
+          }
+          .animate-marquee {
+            animation: marquee 20s linear infinite;
+          }
+          .animate-marquee:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+      </div>
+
       {/* Main Navbar */}
       <Navbar
         isMenuOpen={isMenuOpen}
@@ -172,7 +172,6 @@ export default function Header() {
         <NavbarContent justify="start" className="!grow-0 pr-4">
           <NavbarBrand>
             <Link href="/" className="flex items-center py-1 group">
-              {/* Increased size for mobile view while remaining clean on desktop */}
               <div className="relative h-14 w-36 sm:h-16 sm:w-44 lg:h-18 lg:w-52 shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <Image
                   src="/logo/nepal-wood-expo-logo.png"
@@ -269,8 +268,8 @@ export default function Header() {
             <Link
               href="/"
               className={cn(
-                "block py-2 text-base font-bold text-brand-brown hover:text-brand-amber transition-colors",
-                pathname === "/" && "text-brand-amber"
+                "block py-2 text-base font-bold text-white hover:text-brand-amber transition-colors",
+                pathname === "/" && "text-brand-amber font-extrabold"
               )}
             >
               Home
@@ -278,9 +277,9 @@ export default function Header() {
           </NavbarMenuItem>
 
           {navGroups.map((group) => (
-            <NavbarMenuItem key={group.label} className="border-t border-brand-brown/10 py-2">
+            <NavbarMenuItem key={group.label} className="border-t border-white/10 py-2">
               <button
-                className="flex w-full items-center justify-between py-1 text-base font-bold text-brand-brown focus:outline-none"
+                className="flex w-full items-center justify-between py-1 text-base font-bold text-white focus:outline-none"
                 onClick={() =>
                   setMobileGroupOpen(mobileGroupOpen === group.label ? null : group.label)
                 }
@@ -289,8 +288,8 @@ export default function Header() {
                 {group.label}
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 transition-transform duration-200 text-brand-maroon",
-                    mobileGroupOpen === group.label && "rotate-180"
+                    "h-4 w-4 transition-transform duration-200 text-white/80",
+                    mobileGroupOpen === group.label && "rotate-180 text-brand-amber"
                   )}
                 />
               </button>
@@ -301,8 +300,8 @@ export default function Header() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "text-sm font-semibold text-brand-brown/80 hover:text-brand-amber transition-colors",
-                        pathname === item.href && "text-brand-amber"
+                        "text-sm font-semibold text-white/80 hover:text-white transition-colors",
+                        pathname === item.href && "text-brand-amber font-bold"
                       )}
                     >
                       {item.label}
@@ -314,12 +313,12 @@ export default function Header() {
           ))}
 
           {simpleLinks.map((link) => (
-            <NavbarMenuItem key={link.href} className="border-t border-brand-brown/10 py-2">
+            <NavbarMenuItem key={link.href} className="border-t border-white/10 py-2">
               <Link
                 href={link.href}
                 className={cn(
-                  "block py-1 text-base font-bold text-brand-brown hover:text-brand-amber transition-colors",
-                  pathname === link.href && "text-brand-amber"
+                  "block py-1 text-base font-bold text-white hover:text-brand-amber transition-colors",
+                  pathname === link.href && "text-brand-amber font-extrabold"
                 )}
               >
                 {link.label}
@@ -327,7 +326,7 @@ export default function Header() {
             </NavbarMenuItem>
           ))}
 
-          <NavbarMenuItem className="mt-6 flex flex-col gap-3 pb-8 border-t border-brand-brown/10 pt-4">
+          <NavbarMenuItem className="mt-6 flex flex-col gap-3 pb-8 border-t border-white/10 pt-4">
             <CTAButton href="/visitor-registration" arrow={false} className="w-full justify-center">
               Book Your Visit
             </CTAButton>
@@ -335,7 +334,7 @@ export default function Header() {
               href="/downloads/event-brochure"
               variant="outline"
               arrow={false}
-              className="w-full justify-center border-brand-brown/30 text-brand-brown hover:bg-brand-brown hover:text-white"
+              className="w-full justify-center border-white/30 text-white hover:bg-white hover:text-brand-brown"
             >
               <Download className="mr-2 h-4 w-4" /> Download Brochure
             </CTAButton>
