@@ -12,9 +12,7 @@ import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
-// Top-level registration execute karo (Window check ke saath)
 if (typeof window !== "undefined") {
-  // GSAP plugins ko immediately register karo
   gsap.registerPlugin(
     ScrollTrigger,
     ScrollSmoother,
@@ -30,7 +28,6 @@ if (typeof window !== "undefined") {
     ScrollToPlugin
   );
 
-  // Custom Ease Register
   if (!CustomEase.get("premium")) {
     CustomEase.create("premium", "M0,0 C0.65,0 0.35,1 1,1");
   }

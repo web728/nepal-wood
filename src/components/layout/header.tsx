@@ -62,22 +62,6 @@ const simpleLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-function MarqueeGroup() {
-  return (
-    <div className="flex items-center gap-6 shrink-0 pr-10">
-      <span className="flex items-center gap-2 text-brand-amber font-semibold tracking-wide">
-        <Sparkles className="h-3.5 w-3.5" /> 12th International Edition
-      </span>
-      <span className="hidden md:flex items-center gap-2">
-        <Calendar className="h-3.5 w-3.5 text-brand-amber" /> 28–31 January 2027
-      </span>
-      <span className="hidden lg:flex items-center gap-2">
-        <MapPin className="h-3.5 w-3.5 text-brand-amber" /> Bhrikuti Mandap, Kathmandu
-      </span>
-    </div>
-  );
-}
-
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -119,43 +103,66 @@ export default function Header() {
         hiddenByScroll && !isMenuOpen ? "-translate-y-full" : "translate-y-0"
       )}
     >
-      {/* Top Announcement Bar */}
-      <div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-3 text-sm sm:text-base font-semibold text-white overflow-hidden shadow-sm">
-        <div className="container-expo flex items-center justify-between gap-4 px-4 sm:px-6">
-          <div className="relative flex-1 min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
-            <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform gap-12 items-center">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center gap-6">
-                  <span className="text-brand-amber font-bold text-base sm:text-lg">
-                    12th Nepal Wood International Expo 2027
-                  </span>
-                  <span className="opacity-40">•</span>
-                  <span>28–31 January 2027</span>
-                  <span className="opacity-40">•</span>
-                  <span>Bhrikuti Mandap, Kathmandu</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+   {/* Top Announcement Bar */}
+<div className="hidden sm:block border-b border-brand-brown/10 bg-brand-brown py-3 text-sm sm:text-base font-semibold text-white overflow-hidden shadow-sm relative">
+  <div className="w-full overflow-hidden whitespace-nowrap flex items-center">
+    <div 
+      ref={(el) => {
+        if (!el) return;
+        // Check if animation is already running to avoid duplication
+        if (el.dataset.animRunning === "true") return;
+        el.dataset.animRunning = "true";
 
-        <style jsx>{`
-          @keyframes marquee {
-            0% {
-              transform: translateX(0);
+        let pos = 0;
+        let animationId: number;
+
+        const step = () => {
+          pos -= 0.8; // Speed control: Jitna chota number utna slow scroll hoga
+          const firstChild = el.children[0] as HTMLElement;
+          if (firstChild) {
+            const width = firstChild.offsetWidth;
+            // Jab pehla item poora cross ho jaye, position reset kar do seamless loop ke liye
+            if (Math.abs(pos) >= width) {
+              pos = 0;
             }
-            100% {
-              transform: translateX(-33.33%);
-            }
           }
-          .animate-marquee {
-            animation: marquee 20s linear infinite;
-          }
-          .animate-marquee:hover {
-            animation-play-state: paused;
-          }
-        `}</style>
+          el.style.transform = `translateX(${pos}px)`;
+          animationId = requestAnimationFrame(step);
+        };
+
+        animationId = requestAnimationFrame(step);
+      }}
+      className="flex items-center gap-12 w-max will-change-transform"
+    >
+      <div className="flex items-center gap-6 shrink-0">
+        <span className="text-brand-amber font-bold text-base sm:text-lg flex items-center gap-2">
+          <Sparkles className="h-4 w-4" /> 12th Nepal Wood International Expo 2027
+        </span>
+        <span className="opacity-40">•</span>
+        <span className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-brand-amber" /> 28–31 January 2027
+        </span>
+        <span className="opacity-40">•</span>
+        <span className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-brand-amber" /> Bhrikuti Mandap, Kathmandu
+        </span>
       </div>
+      <div className="flex items-center gap-6 shrink-0">
+        <span className="text-brand-amber font-bold text-base sm:text-lg flex items-center gap-2">
+          <Sparkles className="h-4 w-4" /> 12th Nepal Wood International Expo 2027
+        </span>
+        <span className="opacity-40">•</span>
+        <span className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-brand-amber" /> 28–31 January 2027
+        </span>
+        <span className="opacity-40">•</span>
+        <span className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-brand-amber" /> Bhrikuti Mandap, Kathmandu
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* Main Navbar */}
       <Navbar

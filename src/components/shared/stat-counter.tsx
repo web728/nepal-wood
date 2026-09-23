@@ -1,6 +1,7 @@
 "use client";
 
-import { useCountUp } from "@/hooks/useGsapReveal";
+import { useEffect, useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -23,19 +24,46 @@ export default function StatCounter({
   icon,
   className,
 }: StatCounterProps) {
-  const ref = useCountUp<HTMLSpanElement>(value, {
-    formatter: (n) => `${prefix}${Math.round(n).toLocaleString("en-US")}${suffix}`,
-  });
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    let startTime: number;
+    const duration = 1500; // 1.5 seconds
+
+    const animateCount = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      // Easing out effect
+      const easeOutValue = 1 - Math.pow(1 - percentage, 3);
+      setCount(Math.floor(easeOutValue * value));
+
+      if (percentage < 1) {
+        requestAnimationFrame(animateCount);
+      } else {
+        setCount(value); // Ensure exact final value
+      }
+    };
+
+    requestAnimationFrame(animateCount);
+  }, [isInView, value]);
 
   return (
-    <div
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
       className={cn(
-        // Core Layout & Border Base
         "stat-card group relative overflow-hidden rounded-2xl p-5 sm:p-6",
-        // Glassmorphism & Background Depth
         "bg-gradient-to-b from-white via-white/95 to-brand-cream/30 backdrop-blur-md",
         "border border-brand-brown/10 shadow-[0_4px_20px_-4px_rgba(74,42,22,0.05)]",
-        // Smooth Hover Dynamics
         "transition-all duration-500 ease-out",
         "hover:-translate-y-1.5 hover:border-brand-amber/40",
         "hover:shadow-[0_20px_40px_-15px_rgba(74,42,22,0.12)]",
@@ -45,7 +73,7 @@ export default function StatCounter({
       {/* Top Border Amber Accent Highlight on Hover */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-brand-amber to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-      {/* Ambient Radial Glow (Top Right Corner) */}
+      {/* Ambient Radial Glow */}
       <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-brand-amber/10 blur-2xl transition-all duration-500 group-hover:bg-brand-amber/20 group-hover:scale-125" />
 
       {/* Header Info: Icon & Note Badge */}
@@ -55,7 +83,7 @@ export default function StatCounter({
             {icon}
           </div>
         ) : (
-          <div /> // Spacer for alignment if no icon
+          <div />
         )}
 
         {note && (
@@ -66,9 +94,9 @@ export default function StatCounter({
       </div>
 
       {/* Counter Number Display */}
-      <div className="relative z-10 mt-4 font-display text-3xl font-extrabold tracking-tight text-brand-brown sm:text-4xl lg:text-5xl transition-colors duration-300 group-hover:text-brand-brown">
-        <span ref={ref} className="font-mono tabular-nums">
-          {prefix}0{suffix}
+      <div className="relative z-10 mt-4 font-display text-3xl font-extrabold tracking-tight text-brand-brown sm:text-4xl lg:text-5xl">
+        <span className="font-mono tabular-nums inline-block">
+          {prefix}{count.toLocaleString("en-US")}{suffix}
         </span>
       </div>
 
@@ -76,6 +104,6 @@ export default function StatCounter({
       <p className="relative z-10 mt-1.5 font-body text-xs sm:text-sm font-semibold leading-snug text-brand-brown/75 group-hover:text-brand-brown transition-colors duration-300">
         {label}
       </p>
-    </div>
+    </motion.div>
   );
 }

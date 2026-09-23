@@ -3,10 +3,6 @@
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, EASE, prefersReducedMotion } from "@/lib/gsap";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 export interface UseGsapRevealOptions {
   selector?: string;
   y?: number;
@@ -25,8 +21,7 @@ export function useGsapReveal<T extends HTMLElement = HTMLDivElement>(
   const ref = useRef<T | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !ScrollTrigger) return;
-    gsap.registerPlugin(ScrollTrigger);
+    if (typeof window === "undefined") return;
 
     const el = ref.current;
     if (!el) return;
@@ -41,7 +36,6 @@ export function useGsapReveal<T extends HTMLElement = HTMLDivElement>(
     } = options;
 
     const ctx = gsap.context(() => {
-      // FIX 1: Robust targets resolving using gsap.utils.toArray
       let targets: Element[] = [];
       if (selector) {
         targets = gsap.utils.toArray(selector, el);
@@ -49,7 +43,6 @@ export function useGsapReveal<T extends HTMLElement = HTMLDivElement>(
         targets = el.children.length > 0 ? Array.from(el.children) : [el];
       }
 
-      // Safeguard against missing/empty elements
       if (!targets || targets.length === 0) return;
 
       if (prefersReducedMotion()) {
@@ -57,37 +50,34 @@ export function useGsapReveal<T extends HTMLElement = HTMLDivElement>(
         return;
       }
 
-      // FIX 2: Check node connection to DOM before binding ScrollTrigger
-      if (!el.isConnected) return;
+      // Initial safe state set karo taaki element invisible na phase rahe agar JS delay ho
+      gsap.set(targets, { opacity: 0, y });
 
-      // FIX 3: Safe execution with requestAnimationFrame & end fallback
       requestAnimationFrame(() => {
         if (!el.isConnected) return;
 
-        gsap.fromTo(
-          targets,
-          { opacity: 0, y },
-          {
-            opacity: 1,
-            y: 0,
-            duration,
-            delay,
-            stagger,
-            ease: EASE?.premium ?? "power2.out",
-            scrollTrigger: {
-              trigger: el,
-              start: start,
-              end: "bottom top", // Explicit fallback prevents reading undefined 'end'
-              once: true,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
+        gsap.to(targets, {
+          opacity: 1,
+          y: 0,
+          duration,
+          delay,
+          stagger,
+          ease: EASE?.premium ?? "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: start,
+            end: "bottom top",
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Trigger refresh taaki layout shift hone par positions fix rahein
+        ScrollTrigger.refresh();
       });
     }, el);
 
     return () => ctx.revert();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return ref;
@@ -106,8 +96,7 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
   const ref = useRef<T | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !ScrollTrigger) return;
-    gsap.registerPlugin(ScrollTrigger);
+    if (typeof window === "undefined") return;
 
     const el = ref.current;
     if (!el || prefersReducedMotion()) return;
@@ -129,10 +118,11 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
           invalidateOnRefresh: true,
         },
       });
+
+      ScrollTrigger.refresh();
     }, el);
 
     return () => ctx.revert();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return ref;
@@ -151,9 +141,6 @@ export function useCountUp<T extends HTMLElement = HTMLSpanElement>(
   const ref = useRef<T | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !ScrollTrigger) return;
-    gsap.registerPlugin(ScrollTrigger);
-
     const el = ref.current;
     if (!el) return;
 
@@ -169,27 +156,28 @@ export function useCountUp<T extends HTMLElement = HTMLSpanElement>(
 
     const ctx = gsap.context(() => {
       const counter = { val: 0 };
-      const tl = gsap.timeline({
-        scrollTrigger: { 
-          trigger: el, 
-          start: "top 90%", 
-          end: "bottom top",
-          once: true 
-        },
-      });
-
-      tl.to(counter, {
+      
+      // Fallback: Agar animation trigger me issue ho toh direct gsap.to chala sakte hain 
+      // ya ScrollTrigger ka start "top 95%" karo taaki jaldi trigger ho.
+      gsap.to(counter, {
         val: value,
         duration,
         ease: EASE?.premium ?? "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 95%", // Yeh change kiya hai taaki early trigger ho jaye
+          once: true,
+          invalidateOnRefresh: true,
+        },
         onUpdate: () => {
           if (el) el.textContent = formatter(counter.val);
         },
       });
     }, el);
 
+    ScrollTrigger.refresh();
+
     return () => ctx.revert();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return ref;
@@ -210,8 +198,7 @@ export function useBatchReveal<T extends HTMLElement = HTMLDivElement>(
   const ref = useRef<T | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !ScrollTrigger) return;
-    gsap.registerPlugin(ScrollTrigger);
+    if (typeof window === "undefined") return;
 
     const container = ref.current;
     if (!container) return;
@@ -240,28 +227,28 @@ export function useBatchReveal<T extends HTMLElement = HTMLDivElement>(
       requestAnimationFrame(() => {
         if (!container.isConnected) return;
 
-   
-ScrollTrigger.batch(targets as Element[], {
-  start,
-  once: true,
-  onEnter: (batch) =>
-    gsap.to(batch, {
-      opacity: 1,
-      y: 0,
-      ...(scale !== undefined ? { scale: 1 } : {}),
-      duration,
-      stagger,
-      ease: EASE?.premium ?? "power2.out",
-      overwrite: "auto",
-    }),
-});
+        ScrollTrigger.batch(targets as Element[], {
+          start,
+          once: true,
+          onEnter: (batch) =>
+            gsap.to(batch, {
+              opacity: 1,
+              y: 0,
+              ...(scale !== undefined ? { scale: 1 } : {}),
+              duration,
+              stagger,
+              ease: EASE?.premium ?? "power2.out",
+              overwrite: "auto",
+            }),
+        });
+
+        ScrollTrigger.refresh();
       });
     }, container);
 
     return () => {
       ctx.revert();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return ref;

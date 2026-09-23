@@ -173,3 +173,21 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #C97A2B66;
 }
+@keyframes customMarquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-container {
+  display: flex;
+  width: max-content;
+  animation: customMarquee 25s linear infinite;
+}
+
+.marquee-container:hover {
+  animation-play-state: paused;
+}
