@@ -170,11 +170,9 @@ export default function SupportedByStrip() {
           {/* SECTION 3: ALL PROMOTIONS (FECOFUN & FENEFIT) */}
           <div>
             <div className="mb-6 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-amber/8 border border-brand-amber/15 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-amber">
-                <Sparkles className="h-3.5 w-3.5" /> Event Promotions
-              </span>
+              
               <h2 className="mt-2.5 font-display text-2xl font-bold text-brand-brown sm:text-3xl tracking-tight">
-                All Promotions
+                Supported By
               </h2>
             </div>
 
