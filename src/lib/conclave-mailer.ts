@@ -75,7 +75,7 @@ function buildAcknowledgementHtml(values: ConferenceRegistrationValues) {
   return emailShell(`<p>Dear <strong>${escapeHtml(values.fullName)}</strong>,</p>
     <p>Thank you for your interest in the Nepal Wood Technical Conclave 2027.</p>
     <p>${escapeHtml(message)}</p>
-    <p><strong>Important:</strong> This email acknowledges receipt only. It does not confirm attendance, a speaking slot, or any participation fee.</p>
+ 
     <p>For questions, please contact <a style="color:${brand.brown}" href="https://nepalwood.com.np/contact">the organizers</a>.</p>`);
 }
 
