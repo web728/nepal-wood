@@ -21,6 +21,7 @@ const visitLinks = [
 
 const aboutLinks = [
   { label: "The Organizers", href: "/about-organizers" },
+    { label: "Conference", href: "/conference" },
   { label: "The Show Overview", href: "/about-show" },
   { label: "Venue Details", href: "/venue" },
   { label: "Contact Us", href: "/contact" },

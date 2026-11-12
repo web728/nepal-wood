@@ -49,6 +49,7 @@ const navGroups: NavGroup[] = [
       { label: "Visitor Registration", href: "/visitor-registration" },
     ],
   },
+   
   {
     label: "Downloads",
     items: [
@@ -58,6 +59,7 @@ const navGroups: NavGroup[] = [
 ];
 
 const simpleLinks = [
+  { label: "Conference", href: "/conference" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ];

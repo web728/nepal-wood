@@ -3,7 +3,9 @@ export type RegisterAs =
   | "Exhibitor"
   | "Contact Enquiry"
   | "Cookie Consent"
-  | "Brochure Download Request"; // Added for Brochure Download
+  | "Brochure Download Request"
+  | "Conclave Speaker Application"
+  | "Conclave Attendee Interest";
 
 /** Row shape for the shared "Website Enquries" Google Sheet, columns A-O. */
 export interface SheetRow {
