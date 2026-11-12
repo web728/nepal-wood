@@ -316,7 +316,7 @@ export default function ConferencePage() {
         <Container>
           <SectionTitle headingId="register-heading" kicker="Join the conclave" title="Register your interest" subtitle="Choose your participation type. Speaker applications are subject to review; attendee participation details will be confirmed by the organizers." />
           <ConclaveRegistrationForms />
-          <p className="mt-5 text-xs leading-relaxed text-slate-500"><strong className="text-brand-brown">Registration status:</strong> Speaker applications and attendee interest submissions are collected for organizer review. Expo visitor registration and conclave participation are separate until the organizers confirm otherwise.</p>
+        
         </Container>
       </section>
 
