@@ -190,10 +190,10 @@ export default function ConferencePage() {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <CTAButton href="#register-attendee" className="min-h-11 px-5 text-sm font-bold shadow-lg shadow-brand-amber/20">
-                  Register as Attendee <ArrowUpRight aria-hidden className="h-4 w-4" />
+                  Register as Attendee 
                 </CTAButton>
                 <CTAButton href="#register-speaker" variant="outline" className="min-h-11 border-white/40 !text-white hover:!bg-white hover:!text-brand-dark px-5 text-sm font-bold">
-                  Apply as Speaker <ArrowUpRight aria-hidden className="h-4 w-4" />
+                  Apply as Speaker  
                 </CTAButton>
               </div>
               <p className="mt-5 text-xs text-white/70">Part of the 12th Nepal Wood International Expo 2027</p>
@@ -235,7 +235,7 @@ export default function ConferencePage() {
               <h2 id="about-heading" className="mt-3 max-w-xl font-display text-2xl font-extrabold leading-tight text-brand-brown sm:text-3xl lg:text-4xl">Ideas shaping the future of Nepal&apos;s wood industry.</h2>
               <p className="mt-5 text-sm leading-relaxed text-slate-600 sm:text-base">The Nepal Wood Technical Conclave brings together the full plywood and wood-processing value chain — from responsible timber cultivation and agroforestry to energy-efficient manufacturing, factory automation and stronger manufacturer–dealer partnerships.</p>
               <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">Designed for practical knowledge sharing, the programme combines five focused technical seminars with an open panel discussion and audience Q&amp;A.</p>
-              <div className="mt-6"><CTAButton href="#agenda" className="min-h-11 px-5 text-sm font-semibold">View Full Programme <ArrowDown aria-hidden className="h-4 w-4" /></CTAButton></div>
+              <div className="mt-6"><CTAButton href="#agenda" className="min-h-11 px-5 text-sm font-semibold">View Full Programme  </CTAButton></div>
             </div>
             <div ref={metricsRef} className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-5">
               {[
@@ -294,7 +294,7 @@ export default function ConferencePage() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs leading-relaxed text-slate-500">Note: Each seminar includes approximately 30 minutes of presentation and 10 minutes of Q&amp;A. The draft schedule has no scheduled refreshment or lunch break. Agenda subject to change.</p>
+          
         </Container>
       </section>
 
@@ -352,8 +352,8 @@ export default function ConferencePage() {
               <p className="mt-2 text-sm text-white/75 sm:text-base">Learn, exchange ideas and connect across the industry value chain.</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">
-              <CTAButton href="#register-attendee" className="min-h-11 px-5 text-sm font-semibold">Attendee Registration <ArrowUpRight aria-hidden className="h-4 w-4" /></CTAButton>
-              <CTAButton href="#register-speaker" variant="outline" className="min-h-11 border-white/40 !text-white hover:!bg-white hover:!text-brand-brown px-5 text-sm font-semibold">Speaker Application <ArrowUpRight aria-hidden className="h-4 w-4" /></CTAButton>
+              <CTAButton href="#register-attendee" className="min-h-11 px-5 text-sm font-semibold">Attendee Registration </CTAButton>
+              <CTAButton href="#register-speaker" variant="outline" className="min-h-11 border-white/40 !text-white hover:!bg-white hover:!text-brand-brown px-5 text-sm font-semibold">Speaker Application </CTAButton>
             </div>
           </div>
         </Container>
