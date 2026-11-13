@@ -33,18 +33,14 @@ export default async function ExhibitorRegistration({ searchParams }: { searchPa
               {contacts.slice(0, 2).map((c) => (
                 <div key={c.email} className="aside-contact">
                   <strong>{c.name}</strong>
-                  <span>{c.role}</span>
+                  {/* <span>{c.role}</span> */}
                   <a href={telHref(c.phone)}><Icon name="phone" />{c.phone}</a>
                   <a href={waHref(c.whatsapp, 'Hello, I would like to book a stand at Nepal Wood Expo 2027.')} target="_blank" rel="noopener"><Icon name="whatsapp" />WhatsApp</a>
                   <a href={`mailto:${c.email}`}><Icon name="mail" />{c.email}</a>
                 </div>
               ))}
             </div>
-            <div className="card">
-              <p className="card__kicker">Nepal secretariat</p>
-              <strong>{contacts[2].name}</strong>
-              <p><a href={telHref(contacts[2].phone)}>{contacts[2].phone}</a><br /><a href={`mailto:${contacts[2].email}`}>{contacts[2].email}</a></p>
-            </div>
+            
             <a className="dl" href={downloads.brochure.file} download>
               <span className="dl__icon"><Icon name="download" /></span>
               <span><strong>2027 brochure</strong><span>Exhibitor & visitor profile · {downloads.brochure.size}</span></span>

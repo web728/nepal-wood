@@ -19,7 +19,7 @@ export default async function TestimonialsAdmin() {
               {rows.map((r) => (
                 <tr key={String(r._id)}>
                   <td className="tbl__wide"><p className="tbl__text">“{r.quote}”</p></td>
-                  <td><strong>{r.name}</strong><br /><small>{[r.role, r.company].filter(Boolean).join(', ')}</small><br /><small>{r.edition}</small></td>
+                  <td><strong>{r.name}</strong><br /><small>{[r.company].filter(Boolean).join(', ')}</small><br /><small>{r.edition}</small></td>
                   <td>{r.published ? <span className="pill pill--booked">Published</span> : <span className="pill">Draft</span>}</td>
                   <td>
                     <details className="row-edit"><summary className="admin-link">Edit</summary><TForm entry={{ ...r, _id: String(r._id) }} /></details>
@@ -43,7 +43,7 @@ function TForm({ entry }: { entry?: Record<string, unknown> & { _id: string } })
       {entry && <input type="hidden" name="id" value={entry._id} />}
       <label className="span-2">Quote *<textarea name="quote" rows={3} required maxLength={600} defaultValue={e.quote as string} /></label>
       <label>Name *<input name="name" required defaultValue={e.name as string} /></label>
-      <label>Role<input name="role" defaultValue={e.role as string} placeholder="e.g. Managing Director" /></label>
+      {/* <label>Role<input name="role" defaultValue={e.role as string} placeholder="e.g. Managing Director" /></label> */}
       <label>Company<input name="company" defaultValue={e.company as string} /></label>
       <label>Edition<input name="edition" defaultValue={e.edition as string} placeholder="e.g. Exhibitor, 11th edition" /></label>
       <label>Order<input name="order" type="number" defaultValue={(e.order as number) ?? 0} /></label>

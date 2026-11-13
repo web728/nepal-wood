@@ -87,7 +87,6 @@ export default async function Home() {
             </div>
             <p className="hero__venue"><Icon name="pin" />{event.venue.full}, {event.venue.city}, {event.venue.country}</p>
             <div>
-              <p className="hero__count-label">Countdown to opening day <span>Nepal time (UTC+5:45)</span></p>
               <Countdown />
             </div>
           </aside>
@@ -102,12 +101,12 @@ export default async function Home() {
               </div>
             ))}
           </dl>
-          <p className="hero__note">2027 figures are projections from the official 2027 brochure.</p>
+         
         </div>
       </section>
 
       {/* ============ PATHS ============ */}
-      <section className="section paths" aria-labelledby="paths-title">
+      {/* <section className="section paths" aria-labelledby="paths-title">
         <div className="container">
           <SectionHead eyebrow="Take part" id="paths-title" title={<>Exhibit, visit or partner: <em>choose your way in.</em></>} />
           <div className="paths__grid">
@@ -129,7 +128,7 @@ export default async function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ============ ABOUT ============ */}
       <section className="section section--cream about" aria-labelledby="about-title">
@@ -146,7 +145,7 @@ export default async function Home() {
             <h2 id="about-title" className="h-lg" data-reveal>Nepal’s specialised trade show for the <em>wood and furniture</em> industry.</h2>
             <div className="about__cols">
               <p data-reveal>Nepal Wood International Expo is where manufacturers, importers, traders, distributors, converters and end-users of the wood industry meet face to face to discover products, compare suppliers and close deals.</p>
-              <p data-reveal style={{ ['--d' as string]: '.08s' }}>For the first time, the 12th edition runs for four days, with exhibitors expected from Nepal, India, China, Malaysia, Germany, Taiwan and beyond. It is organised by Futurex Trade Fair and Events (New Delhi) and Media Space Solutions (Kathmandu) and supported by Nepal’s leading industry associations.</p>
+              <p data-reveal style={{ ['--d' as string]: '.08s' }}>For the first time, the 12th edition runs for four days, with exhibitors expected from Nepal, India, China, Malaysia, Germany, Taiwan and beyond. It is organised by Futurex Trade Fair and Events Pvt. Ltd. (New Delhi) and Media Space Solutions Pvt. Ltd. (Kathmandu) and supported by Nepal’s leading industry associations.</p>
             </div>
             <div className="about__orgs" data-reveal>
               <span className="about__orgs-label">Organised by</span>
@@ -166,7 +165,7 @@ export default async function Home() {
               <Link href={`/exhibitor-profile/${c.slug}`} className={`cat${i === 0 ? ' is-open' : ''}`} data-cat key={c.slug} aria-expanded={i === 0}>
                 <Image src={c.img} alt={c.alt} fill sizes="(max-width: 900px) 100vw, 50vw" className="cat__img" />
                 <span className="cat__shade" />
-                <span className="cat__no">{c.no}</span>
+                {/* <span className="cat__no">{c.no}</span> */}
                 <span className="cat__body">
                   <span className="cat__title">{c.title}</span>
                   <span className="cat__items">{c.items.slice(0, 5).map((it) => <span key={it}>{it}</span>)}</span>
@@ -183,7 +182,7 @@ export default async function Home() {
       </section>
 
       {/* ============ GROWTH RINGS ============ */}
-      <section className="section section--dark rings" aria-labelledby="rings-title" data-rings-section>
+      {/* <section className="section section--dark rings" aria-labelledby="rings-title" data-rings-section>
         <div className="container rings__grid">
           <div className="rings__visual">
             <div className="rings__sticky">
@@ -209,37 +208,9 @@ export default async function Home() {
             <Link className="link-arrow" href="/past-editions">Explore past editions & reports<Icon name="arrow" /></Link>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      {/* ============ VISITORS ============ */}
-      <section className="section visitors" aria-labelledby="visitors-title">
-        <div className="container">
-          <SectionHead split eyebrow="Who you’ll meet" id="visitors-title" title={<>The people who buy, specify <em>and sell wood.</em></>} lead="Trade visitors come to source machinery, boards, hardware and finishes for real projects and factories." />
-          <div className="visitors__grid">
-            <ul className="visitors__list">
-              {visitorGroups.map((g, i) => <li key={g} data-reveal style={{ ['--d' as string]: `${i * 0.05}s` }}><span className="tnum">{String(i + 1).padStart(2, '0')}</span>{g}</li>)}
-            </ul>
-            <div className="visitors__data" data-reveal>
-              <div className="big-stat">
-                <span className="big-stat__num tnum"><span data-count={stats.seniorManagementPct}>{stats.seniorManagementPct}</span>%</span>
-                <p>of visitors hold senior management roles: chairman, CEO, director, VP or head of department.</p>
-              </div>
-              <h3 className="visitors__chart-title">Visitor interest by sector</h3>
-              <ul className="bars" data-bars>
-                {/* bar widths are relative to the largest share (30%) */}
-                {interest.map((b, i) => (
-                  <li className="bar" key={b.label} style={{ ['--bd' as string]: `${i * 0.06}s` }}>
-                    <span className="bar__label">{b.label}</span>
-                    <span className="bar__track"><span className="bar__fill" style={{ ['--v' as string]: b.v / 30 }} /></span>
-                    <span className="bar__val tnum">{b.v}%</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="source">Source: organiser visitor data, 10th and 11th edition post-show reports (2025).</p>
-            </div>
-          </div>
-        </div>
-      </section>
+    
 
       {/* ============ WHY EXHIBIT (sticky story) ============ */}
       <section className="section section--cream why" aria-labelledby="why-title" data-story>
@@ -277,25 +248,13 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ============ PARTICIPANTS ============ */}
-      <section className="section section--tight participants-band" aria-labelledby="part-title">
-        <div className="container">
-          <div className="section-head section-head--split">
-            <div>
-              <p className="eyebrow" data-reveal>Past participants</p>
-              <h2 id="part-title" className="h-lg" data-reveal>115+ brands exhibited <em>at the 10th edition.</em></h2>
-            </div>
-            <p className="lead" data-reveal>Plywood mills, laminate houses, machinery makers, hardware and chemical brands from Nepal, India, China and beyond.</p>
-          </div>
-        </div>
-        <ParticipantsMarquee />
-      </section>
+   
 
       {/* ============ SEMINARS ============ */}
-      <section className="section section--dark seminars" aria-labelledby="sem-title">
+      {/* <section className="section section--dark seminars" aria-labelledby="sem-title">
         <div className="seminars__bg" aria-hidden="true" data-parallax><Image src={seminarImg} alt="" fill sizes="100vw" /></div>
         <div className="container">
-          <SectionHead split eyebrow="Knowledge sessions" id="sem-title" title={<>More than a <em>trade floor.</em></>} lead="Industry seminars bring policy-makers, technologists, architects and designers together on the show days." />
+          <SectionHead split eyebrow="Knowledge sessions" id="sem-title" titleKnowledge={<>More than a <em>trade floor.</em></>} lead="Industry seminars bring policy-makers, technologists, architects and designers together on the show days." />
           <div className="seminars__grid">
             {seminars.map((s, i) => (
               <article className="seminar" key={s.slug} data-reveal style={{ ['--d' as string]: `${i * 0.08}s` }}>
@@ -312,7 +271,7 @@ export default async function Home() {
             </article>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ============ GALLERY ============ */}
       <section className="gallery-band section--darkest" aria-labelledby="gal-title">
@@ -343,7 +302,7 @@ export default async function Home() {
       </section>
 
       {/* ============ PLAN ============ */}
-      <section className="section section--cream plan" aria-labelledby="plan-title">
+      {/* <section className="section section--cream plan" aria-labelledby="plan-title">
         <div className="container">
           <SectionHead split eyebrow="Plan your visit" id="plan-title" title={<>See you at <em>Bhrikuti Mandap.</em></>} lead="Nepal’s best-known exhibition ground, in the heart of Kathmandu on Pradarshani Marg." />
           <div className="plan__grid">
@@ -362,7 +321,7 @@ export default async function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ============ FINAL CTA ============ */}
       <section className="final on-dark" aria-labelledby="final-title">
@@ -377,16 +336,7 @@ export default async function Home() {
             <Link className="btn btn--ghost" href="/visitor-registration">Register to visit</Link>
           </div>
           <div className="final__count" data-reveal><Countdown compact /></div>
-          <ul className="final__contacts">
-            {contacts.map((c, i) => (
-              <li key={c.email} data-reveal style={{ ['--d' as string]: `${i * 0.06}s` }}>
-                <strong>{c.name}</strong>
-                <span>{c.role}</span>
-                <a href={telHref(c.phone)}><Icon name="phone" />{c.phone}</a>
-                <a href={`mailto:${c.email}`}><Icon name="mail" />{c.email}</a>
-              </li>
-            ))}
-          </ul>
+         
         </div>
       </section>
     </>

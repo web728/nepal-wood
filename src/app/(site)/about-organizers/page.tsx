@@ -57,7 +57,7 @@ export default function Organisers() {
           <div className="cards">
             {contacts.map((c) => (
               <article className="card" key={c.email} data-reveal>
-                <p className="card__kicker">{c.role}</p>
+                {/* <p className="card__kicker">{c.role}</p> */}
                 <h3 className="h-sm">{c.name}</h3>
                 <p><a href={telHref(c.phone)}>{c.phone}</a><br /><a href={`mailto:${c.email}`}>{c.email}</a></p>
               </article>

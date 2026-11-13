@@ -2,12 +2,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Icon from '@/components/Icon';
 import JsonLd from '@/components/JsonLd';
+import TreeRings from '@/components/TreeRings';
+import {  editions } from '@/lib/content';
 import { PageHero, SectionHead, StatStrip, FeatureGrid, CtaBand, PartnerWall } from '@/components/blocks';
 import { pageMeta, graph, breadcrumbNode, eventNode } from '@/lib/seo';
 import { event, stats } from '@/lib/site';
 import { zones } from '@/lib/content';
 import heroImg from '@/assets/photos/machinery-hall.jpg';
 import sideImg from '@/assets/gallery/expo-34.jpg';
+import '../../home.css';
+
 
 export const metadata = pageMeta({
   title: 'About the Expo | Nepal’s Wood & Furniture Trade Show | Nepal Wood',
@@ -39,7 +43,7 @@ export default function AboutShow() {
             <div className="prose" data-reveal>
               <p>Nepal Wood International Expo is a highly specialised trade show for the wood, woodworking, furniture and interior sectors. It is a meeting ground for manufacturers, importers, traders, distributors, converters and end-users, and the launch pad for new products and technology in Nepal.</p>
               <p>The 12th edition in 2027 is the first to run for four days. It is set to welcome 250+ brands from Nepal, India, China, Malaysia, Germany, Taiwan and beyond, across {stats.areaSqft.toLocaleString('en-US')}+ sq ft at {event.venue.full}, Kathmandu. Hometex Nepal, the Home Textile & Home Decor Exhibition, runs alongside it.</p>
-              <p>The show is jointly organised by <Link href="/about-organizers">Futurex Trade Fair and Events and Media Space Solutions</Link>, and supported by Nepal’s plywood, forestry, interior-design and wood-technology associations.</p>
+              <p>The show is jointly organised by <Link href="/about-organizers">Futurex Trade Fair and Events Pvt. Ltd. and Media Space Solutions Pvt. Ltd.</Link>, and supported by Nepal’s plywood, forestry, interior-design and wood-technology associations.</p>
             </div>
           </div>
           <div className="split__media split__media--tall" data-reveal><Image src={sideImg} alt="Wall panels and veneer samples at an exhibitor stand" fill sizes="(max-width: 900px) 100vw, 45vw" /></div>
@@ -50,6 +54,36 @@ export default function AboutShow() {
         <div className="container">
           <SectionHead eyebrow="Three pillars" title={<>What defines <em>Nepal Wood.</em></>} />
           <FeatureGrid items={pillars} />
+        </div>
+      </section>
+
+      
+      {/* ============ GROWTH RINGS ============ */}
+      <section className="section section--dark rings" aria-labelledby="rings-title" data-rings-section>
+        <div className="container rings__grid">
+          <div className="rings__visual">
+            <div className="rings__sticky">
+              <TreeRings rings={12} seed={21} cracks={2} wobble={1.2} indexed className="rings__svg" />
+              <div className="rings__readout" aria-hidden="true"><span data-rings-ed>12th</span><small data-rings-year>2027</small></div>
+            </div>
+          </div>
+          <div className="rings__content">
+            <p className="eyebrow" data-reveal>Our journey</p>
+            <h2 id="rings-title" className="h-xl" data-reveal>Twelve editions. <em>Twelve growth rings.</em></h2>
+            <p className="lead" data-reveal>A tree records every year in a ring. Nepal Wood has added one with nearly every season, through the pandemic and a tenth anniversary to its first four-day show.</p>
+            <ol className="timeline">
+              {editions.map((e, i) => (
+                <li className={`timeline__item${e.current ? ' is-current' : ''}`} key={e.ed} data-edition={i} data-ed={e.ed} data-year={e.year}>
+                  <span className="timeline__ed">{e.ed}</span>
+                  <div>
+                    <p className="timeline__dates">{e.dates}</p>
+                    <p className="timeline__note">{e.note}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <Link className="link-arrow" href="/past-editions">Explore past editions & reports<Icon name="arrow" /></Link>
+          </div>
         </div>
       </section>
 
@@ -71,10 +105,10 @@ export default function AboutShow() {
           <div className="cards">
             {zones.map((z) => (
               <Link className="card card--dark-link" key={z.slug} href={`/exhibitor-profile/${z.slug}`} data-reveal>
-                <p className="card__kicker">Zone {z.no}</p>
+                
                 <h3 className="h-sm">{z.title}</h3>
                 <p>{z.short}</p>
-                <span className="link-arrow">Explore<Icon name="arrow" /></span>
+               
               </Link>
             ))}
           </div>

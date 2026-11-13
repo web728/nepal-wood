@@ -82,7 +82,7 @@ export default async function WhyExhibit() {
               </article>
             ))}
           </div>
-          <p className="small" style={{ marginTop: 20, color: 'rgba(251,241,231,.55)' }}>Shell-scheme inclusions are typical; your quote confirms exactly what’s included.</p>
+          
         </div>
       </section>
 
@@ -98,7 +98,7 @@ export default async function WhyExhibit() {
             <li><Icon name="check" />Heavy machinery: share weights, dimensions and power (including 3-phase) early so we can plan floor load and unloading.</li>
             <li><Icon name="check" />International exhibitors: our India & international desk helps with freight contacts, invitation letters and hotels.</li>
           </ul>
-          <a className="btn btn--ghost" style={{ marginTop: 28 }} href={downloads.brochure.file} download><Icon name="download" className="arrow" />2027 brochure ({downloads.brochure.size})</a>
+          <a className="btn btn--ghost" style={{ marginTop: 28 }} href={downloads.brochure.file} download><Icon name="download" className="arrow" />2027 brochure</a>
         </div>
       </section>
       <CtaBand />

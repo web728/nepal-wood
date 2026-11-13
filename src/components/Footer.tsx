@@ -35,14 +35,14 @@ export default function Footer() {
               <h3>Talk to the team</h3>
               <ul>
                 <li>
-                  <strong>Stall booking & sponsorship</strong>
+                  
                   <a href={`mailto:${contacts[0].email}`} className="small">{contacts[0].email}</a><br />
                   <a href={telHref(contacts[0].phone)} className="small">{contacts[0].phone}</a>
                 </li>
                 <li>
-                  <strong>Nepal secretariat</strong>
-                  <a href={`mailto:${contacts[2].email}`} className="small">{contacts[2].email}</a><br />
-                  <a href={telHref(contacts[2].phone)} className="small">{contacts[2].phone}</a>
+                 
+                  <a href={`mailto:${contacts[1].email}`} className="small">{contacts[1].email}</a><br />
+                  <a href={telHref(contacts[1].phone)} className="small">{contacts[1].phone}</a>
                 </li>
                 <li><Link className="small footer-all" href="/contact">All contacts →</Link></li>
               </ul>

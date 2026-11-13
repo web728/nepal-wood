@@ -37,7 +37,7 @@ export default function VisitorProfile() {
             <p className="eyebrow" data-reveal>Who attends</p>
             <h2 className="h-lg" data-reveal>The buying side of <em>the industry.</em></h2>
             <ul className="visitor-groups">
-              {visitorGroups.map((g, i) => <li key={g} data-reveal style={{ ['--d' as string]: `${i * 0.04}s` }}><span className="tnum">{String(i + 1).padStart(2, '0')}</span>{g}</li>)}
+              {visitorGroups.map((g, i) => <li key={g} data-reveal style={{ ['--d' as string]: `${i * 0.04}s` }}> {g}</li>)}
             </ul>
           </div>
           <div className="profile-panel" data-reveal>
@@ -50,21 +50,24 @@ export default function VisitorProfile() {
           </div>
         </div>
       </section>
-      <section className="section section--cream">
-        <div className="container split split--top">
-          <div>
-            <p className="eyebrow" data-reveal>Interests</p>
-            <h2 className="h-lg" data-reveal>What they <em>come to buy.</em></h2>
-            <p className="lead" data-reveal>Machinery and panel products lead, but every zone has its buyers.</p>
-            <Link className="btn" href="/exhibitor-registration" style={{ marginTop: 24 }}>Meet them at your stand<Icon name="arrow" className="arrow" /></Link>
-          </div>
-          <div className="profile-panel" data-reveal>
-            <h3 className="panel-title">Visitor interest by sector</h3>
-            <Bars rows={interest} max={30} />
-            <p className="source">Source: organiser visitor data, 10th and 11th edition post-show reports (2025).</p>
-          </div>
-        </div>
-      </section>
+    {/* <section className="section section--cream interest-section">
+  <div className="container split split--top interest-split">
+    <div className="interest-split__copy">
+      <p className="eyebrow" data-reveal>Interests</p>
+      <h2 className="h-lg" data-reveal>What they <em>come to buy.</em></h2>
+      <p className="lead" data-reveal>
+        Machinery and panel products lead, but every category has its buyers.
+      </p>
+      <Link className="btn" href="/exhibitor-registration" data-reveal>
+        Meet them at your stand<Icon name="arrow" className="arrow" />
+      </Link>
+    </div>
+    <div className="profile-panel" data-reveal>
+      <h3 className="panel-title">Visitor interest by sector</h3>
+      <Bars rows={interest} max={30} />
+    </div>
+  </div>
+</section> */}
       <CtaBand />
     </>
   );

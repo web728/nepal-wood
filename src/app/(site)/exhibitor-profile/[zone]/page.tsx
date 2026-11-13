@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Icon from '@/components/Icon';
 import JsonLd from '@/components/JsonLd';
 import ExhibitorForm from '@/components/forms/ExhibitorForm';
-import { PageHero, SectionHead } from '@/components/blocks';
+import { PageHero } from '@/components/blocks';
 import { pageMeta, graph, breadcrumbNode, eventNode } from '@/lib/seo';
 import { zones, interest } from '@/lib/content';
 import { event, stats } from '@/lib/site';
@@ -17,10 +17,15 @@ export async function generateMetadata({ params }: { params: Promise<{ zone: str
   const { zone } = await params;
   const z = zones.find((x) => x.slug === zone);
   if (!z) return {};
-  return pageMeta({ title: `${z.seoTitle} | Nepal Wood 2027`, description: z.seoDesc, path: `/exhibitor-profile/${z.slug}`, image: '/og/og-default.jpg' });
+  return pageMeta({
+    title: `${z.seoTitle} | Nepal Wood 2027`,
+    description: z.seoDesc,
+    path: `/exhibitor-profile/${z.slug}`,
+    image: '/og/og-default.jpg',
+  });
 }
 
-// Which visitor-interest rows matter most for each zone (organiser visitor data).
+// Which visitor-interest rows matter most for each category (organiser visitor data).
 const demand: Record<string, string[]> = {
   'wood-panel-products': ['Plywood, veneer, MDF & laminates', 'Hardwood & softwood'],
   'woodworking-machinery': ['Woodworking machinery & dust control', 'Tools, blades & cutters'],
@@ -31,26 +36,47 @@ const demand: Record<string, string[]> = {
 
 export default async function ZonePage({ params }: { params: Promise<{ zone: string }> }) {
   const { zone } = await params;
-  const z = zones.find((x) => x.slug === zone);
-  if (!z) notFound();
-  const crumbs = [{ name: 'Exhibitor profile', path: '/exhibitor-profile' }, { name: z.title, path: `/exhibitor-profile/${z.slug}` }];
+  const idx = zones.findIndex((x) => x.slug === zone);
+  if (idx === -1) notFound();
+  const z = zones[idx];
+  const crumbs = [
+    { name: 'Exhibitor profile', path: '/exhibitor-profile' },
+    { name: z.title, path: `/exhibitor-profile/${z.slug}` },
+  ];
   const rows = interest.filter((i) => demand[z.slug]?.includes(i.label));
   const others = zones.filter((x) => x.slug !== z.slug);
   return (
     <>
       <JsonLd data={graph(breadcrumbNode(crumbs), eventNode())} />
-      <PageHero seed={60 + Number(z.no)} eyebrow={`Zone ${z.no} · ${event.shortName}`} title={<>{z.title} <em>at Nepal Wood.</em></>} lead={z.intro} crumbs={crumbs} image={z.img} imageAlt={z.alt}>
-        <a className="btn btn--copper" href="#enquire">Book a stand in this zone<Icon name="arrow" className="arrow" /></a>
+      <PageHero
+        seed={60 + idx}
+        eyebrow={`Exhibitor profile · ${event.shortName}`}
+        title={<>{z.title} <em>at Nepal Wood.</em></>}
+        lead={z.intro}
+        crumbs={crumbs}
+        image={z.img}
+        imageAlt={z.alt}
+      >
+        <a className="btn btn--copper" href="#enquire">
+          Book a stand in this category<Icon name="arrow" className="arrow" />
+        </a>
       </PageHero>
 
       <section className="section">
         <div className="container split split--top">
           <div>
             <p className="eyebrow" data-reveal>On display</p>
-            <h2 className="h-lg" data-reveal>What this zone <em>covers.</em></h2>
-            <ul className="pill-list" data-reveal>{z.items.map((it) => <li key={it}>{it}</li>)}</ul>
+            <h2 className="h-lg" data-reveal>What this category <em>covers.</em></h2>
+            <ul className="pill-list" data-reveal>
+              {z.items.map((it) => <li key={it}>{it}</li>)}
+            </ul>
+            <p className="source" data-reveal style={{ marginTop: 14 }}>
+              Not restricted to the above. If your product is related, get in touch.
+            </p>
             <h3 className="h-sm" style={{ margin: '40px 0 14px' }} data-reveal>Who should exhibit here</h3>
-            <ul className="check-list" data-reveal>{z.forWho.map((w) => <li key={w}><Icon name="check" />{w}</li>)}</ul>
+            <ul className="check-list" data-reveal>
+              {z.forWho.map((w) => <li key={w}><Icon name="check" />{w}</li>)}
+            </ul>
           </div>
           <aside className="zone-demand" data-reveal>
             <p className="card__kicker">Visitor demand</p>
@@ -78,8 +104,12 @@ export default async function ZonePage({ params }: { params: Promise<{ zone: str
           </div>
           <aside className="form-aside">
             <div className="card">
-              <p className="card__kicker">Other zones</p>
-              {others.map((o) => <Link key={o.slug} className="link-arrow" style={{ marginTop: 10 }} href={`/exhibitor-profile/${o.slug}`}>{o.title}<Icon name="arrow" /></Link>)}
+              <p className="card__kicker">Other categories</p>
+              {others.map((o) => (
+                <Link key={o.slug} className="link-arrow" style={{ marginTop: 10 }} href={`/exhibitor-profile/${o.slug}`}>
+                  {o.title}<Icon name="arrow" />
+                </Link>
+              ))}
             </div>
           </aside>
         </div>

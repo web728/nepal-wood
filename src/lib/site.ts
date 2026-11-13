@@ -57,7 +57,7 @@ export const organisers = [
     id: 'futurex',
     name: 'Futurex Trade Fair and Events Pvt. Ltd.',
     short: 'Futurex',
-    logo: '/partners/futurex.svg',
+    logo: '/partners/futurex-trade-fair.png',
     url: 'https://www.futurextrade.com',
     city: 'New Delhi, India',
     since: 2011,
@@ -69,8 +69,8 @@ export const organisers = [
     id: 'mediaspace',
     name: 'Media Space Solutions Pvt. Ltd.',
     short: 'Media Space',
-    logo: '/partners/media-space.svg',
-    url: null as string | null,
+    logo: '/partners/Media-Space.png',
+    url: "https://mss.com.np/",
     city: 'Kathmandu, Nepal',
     since: 2009,
     blurb:
@@ -114,7 +114,7 @@ export const social = {
   linkedin: 'https://www.linkedin.com/company/nepalwoodexpo/',
 };
 
-export const whatsappDefault = contacts[2].whatsapp;
+export const whatsappDefault = contacts[1].whatsapp;
 
 export type NavItem = { label: string; href?: string; items?: { label: string; href: string; desc?: string }[] };
 
@@ -122,34 +122,117 @@ export const nav: NavItem[] = [
   {
     label: 'About',
     items: [
-      { label: 'About the expo', href: '/about-show', desc: 'Twelve editions of Nepal’s wood industry show' },
-      { label: 'Organisers', href: '/about-organizers', desc: 'Futurex and Media Space' },
-      { label: 'Past editions', href: '/past-editions', desc: 'Timeline, results and reports' },
-      { label: 'Gallery', href: '/gallery', desc: 'Photos from recent editions' },
+      {
+        label: 'About the Expo',
+        href: '/about-show',
+        desc: 'Learn about Nepal Wood International Expo',
+      },
+      {
+        label: 'Organisers',
+        href: '/about-organizers',
+        desc: 'Futurex and Media Space Solutions',
+      },
+      {
+        label: 'Past Editions',
+        href: '/past-editions',
+        desc: 'Explore previous editions and milestones',
+      },
+      {
+        label: 'Plan Your Visit',
+        href: '/venue',
+        desc: 'Venue, timings and travel information',
+      },
     ],
   },
   {
     label: 'Exhibit',
     items: [
-      { label: 'Why exhibit', href: '/why-exhibit', desc: 'Buyers, demos and market reach' },
-      { label: 'Exhibitor profile', href: '/exhibitor-profile', desc: 'Five product zones' },
-      { label: 'Book a stand', href: '/exhibitor-registration', desc: 'Space enquiry in two minutes' },
-      { label: 'Sponsorship', href: '/sponsorship', desc: 'Branding and partnerships' },
-      { label: 'Exhibitor list 2027', href: '/exhibitors', desc: 'Confirmed exhibitors' },
+      {
+        label: 'Why Exhibit',
+        href: '/why-exhibit',
+        desc: 'Business opportunities and market reach',
+      },
+      {
+        label: 'Exhibitor Profile',
+        href: '/exhibitor-profile',
+        desc: 'Explore product categories and sectors',
+      },
+      {
+        label: 'Book a Stand',
+        href: '/exhibitor-registration',
+        desc: 'Enquire about exhibition space',
+      },
+      {
+        label: 'Sponsorship',
+        href: '/sponsorship',
+        desc: 'Branding and partnership opportunities',
+      },
     ],
   },
   {
     label: 'Visit',
     items: [
-      { label: 'Why visit', href: '/why-visit', desc: 'Source, compare and learn' },
-      { label: 'Visitor profile', href: '/visitor-profile', desc: 'Who attends' },
-      { label: 'Register free', href: '/visitor-registration', desc: 'Get your QR entry badge' },
-      { label: 'Plan your visit', href: '/venue', desc: 'Venue, hours and travel' },
+      {
+        label: 'Why Visit',
+        href: '/why-visit',
+        desc: 'Discover products, innovations and suppliers',
+      },
+      {
+        label: 'Visitor Profile',
+        href: '/visitor-profile',
+        desc: 'Explore visitor industries and segments',
+      },
+      {
+        label: 'Register Free',
+        href: '/visitor-registration',
+        desc: 'Register for your visitor entry badge',
+      },
     ],
   },
-  { label: 'Seminars', href: '/seminars' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact', href: '/contact' },
+  {
+    label: 'Conference',
+    items: [
+      {
+        label: 'Seminars',
+        href: '/seminars',
+        desc: 'Industry sessions and expert discussions',
+      },
+      {
+        label: 'Past Edition Seminars',
+        href: '/past-edition-seminars',
+        desc: 'Highlights from previous conference sessions',
+      },
+    ],
+  },
+  {
+    label: 'Media',
+    items: [
+      {
+        label: 'Gallery',
+        href: '/gallery',
+        desc: 'Photos from previous editions',
+      },
+      {
+        label: 'Post Show Report',
+        href: '/post-show-report',
+        desc: 'Previous edition highlights and event results',
+      },
+    ],
+  },
+  {
+    label: 'Resources',
+    items: [
+      {
+        label: 'Event Brochure',
+        href: '/downloads/event-brochure',
+        desc: 'Download the event brochure',
+      },
+    ],
+  },
+  {
+    label: 'Contact',
+    href: '/contact',
+  },
 ];
 
 export const downloads = {

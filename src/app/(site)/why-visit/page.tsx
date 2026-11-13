@@ -8,6 +8,8 @@ import { whyVisit, zones, seminars } from '@/lib/content';
 import { stats, event } from '@/lib/site';
 import heroImg from '@/assets/photos/aisle-crowd.jpg';
 import demoImg from '@/assets/gallery/expo-29.jpg';
+import { visitorGroups, interest, whyExhibit } from '@/lib/content';
+import '../../home.css';
 
 export const metadata = pageMeta({
   title: 'Why Visit Nepal Wood Expo 2027 | Free Trade Visitor Entry, Kathmandu',
@@ -31,7 +33,7 @@ export default function WhyVisit() {
             { v: stats.productsOnDisplay, suffix: '+', label: 'Products & services on display' },
             { v: stats.countries, suffix: '+', label: 'Exhibitor countries' },
             { v: event.days, label: 'Days, Thursday to Sunday' },
-          ]} note="Organiser projections for 2027." />
+          ]} note="" />
         </div>
       </section>
       <section className="section section--cream">
@@ -40,6 +42,8 @@ export default function WhyVisit() {
           <FeatureGrid items={whyVisit} />
         </div>
       </section>
+         {/* ============ VISITORS ============ */}
+       
       <section className="section">
         <div className="container split">
           <div className="split__media" data-reveal><Image src={demoImg} alt="Visitors watching a live machine demonstration" fill sizes="(max-width: 900px) 100vw, 45vw" /></div>

@@ -75,7 +75,7 @@ export function StatStrip({ items, note, dark = false }: { items: { v: number; s
           </div>
         ))}
       </dl>
-      {note && <p className="stat-strip__note">{note}</p>}
+       
     </div>
   );
 }
@@ -157,7 +157,7 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
           {items.map((t, i) => (
             <figure className="quote" key={t._id} data-reveal style={{ ['--d' as string]: `${(i % 3) * 0.06}s` }}>
               <blockquote>“{t.quote}”</blockquote>
-              <figcaption><strong>{t.name}</strong>{[t.role, t.company].filter(Boolean).join(', ')}{t.edition && <span className="tag">{t.edition}</span>}</figcaption>
+              <figcaption><strong>{t.name}</strong>{[t.company].filter(Boolean).join(', ')}{t.edition && <span className="tag">{t.edition}</span>}</figcaption>
             </figure>
           ))}
         </div>

@@ -95,9 +95,32 @@
 .footer-contact li { margin-bottom: 16px; }
 .footer-contact strong { display: block; color: var(--cream-100); font-weight: 600; }
 .footer-all { color: var(--copper-300); }
-.footer-orgs { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-.footer-orgs span { background: var(--cream-100); border-radius: 6px; padding: 9px 12px; display: inline-flex; align-items: center; }
-.footer-orgs img { height: 22px; width: auto; }
+.footer-orgs {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.footer-orgs span {
+  background: var(--cream-100);
+  border-radius: 6px;
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.footer-orgs img {
+  display: block;
+  height: 23px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+  margin: 0;
+}
 .footer-bottom { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line-dark); display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; font-size: 13px; }
 .footer-bottom nav { display: flex; gap: 24px; flex-wrap: wrap; }
 .footer-bottom a:hover, .footer-bottom button:hover { color: var(--cream-50); }

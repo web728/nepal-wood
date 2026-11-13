@@ -17,21 +17,7 @@ export default function Contact() {
     <>
       <JsonLd data={graph(breadcrumbNode(crumbs), ...organizationNodes())} />
       <PageHero seed={171} dark={false} eyebrow="Contact" title={<>We’re here to help <em>you connect.</em></>} lead="Booking a stand, planning a visit, sponsoring or writing about the expo? Reach the right person directly." crumbs={crumbs} />
-      <section className="section">
-        <div className="container">
-          <div className="contact-cards">
-            {contacts.map((c) => (
-              <article className="card" key={c.email} data-reveal>
-                <p className="card__kicker">{c.role}</p>
-                <h2 className="h-sm">{c.name}</h2>
-                <a className="contact-line" href={telHref(c.phone)}><Icon name="phone" />{c.phone}</a>
-                <a className="contact-line" href={`mailto:${c.email}`}><Icon name="mail" />{c.email}</a>
-                <a className="contact-line" href={waHref(c.whatsapp)} target="_blank" rel="noopener"><Icon name="whatsapp" />WhatsApp</a>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+     
       <section className="section section--cream">
         <div className="container form-layout">
           <div className="form-card">
@@ -40,13 +26,19 @@ export default function Contact() {
             <EnquiryForm topic="other" />
           </div>
           <aside className="form-aside">
-            {offices.map((o) => (
-              <div className="card" key={o.name}>
-                <p className="card__kicker">Office</p>
-                <strong>{o.name}</strong>
-                <p>{o.lines.map((l) => <span key={l}>{l}<br /></span>)}<a href={telHref(o.phone)}>{o.phone}</a></p>
-              </div>
-            ))}
+         {contacts.map((contact) => (
+  <div className="card" key={contact.name}>
+    
+    <strong>{contact.name}</strong>
+    
+
+    <p>
+      <a href={telHref(contact.phone)}>{contact.phone}</a>
+      <br />
+      <a href={`mailto:${contact.email}`}>{contact.email}</a>
+    </p>
+  </div>
+))}
             <div className="card">
               <p className="card__kicker">Venue</p>
               <strong>{event.venue.full}</strong>
