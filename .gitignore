@@ -16,4 +16,4 @@ build/
 .env*
 !.env.example
 *.log
-.DS_Store
+.DS_Store*.tsbuildinfo
