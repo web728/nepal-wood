@@ -43,7 +43,7 @@ export const visitorSchema = z.object({
   businessType: z.string().trim().min(2, 'Please choose your business type').max(80),
   email,
   phone,
-  country: z.string().trim().min(2).max(60).default('Nepal'),
+  country: z.string().trim().min(2).max(60).default('India'),
   city: z.string().trim().min(2, 'Please enter your city').max(60),
   interests: z.array(z.string().max(80)).min(1, 'Choose at least one interest').max(10),
   heardFrom: opt(60),

@@ -1,0 +1,241 @@
+/* Scoped enhancement for EnquiryForm. Keep the existing shared form CSS. */
+.enquiry {
+  --enquiry-maroon: var(--maroon-600, #8e343c);
+  --enquiry-copper: var(--copper-500, #b87b48);
+  --enquiry-ink: var(--ink, #251b1c);
+  --enquiry-muted: var(--ink-muted, #766a66);
+  --enquiry-line: var(--line-strong, #dfd4ce);
+  width: 100%;
+  min-width: 0;
+}
+
+.enquiry__intro {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 3.5vw, 36px);
+  border: 1px solid #ebdcd3;
+  border-radius: 16px;
+  color: var(--enquiry-ink);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(192, 126, 76, .17), transparent 35%),
+    linear-gradient(135deg, #fffdfa, #f7ede6);
+}
+.enquiry__intro::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--enquiry-maroon), var(--enquiry-copper));
+}
+.enquiry__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--enquiry-maroon);
+  font: 700 11px/1.3 var(--font-body, sans-serif);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.enquiry__status-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--enquiry-maroon);
+  box-shadow: 0 0 0 4px rgba(142, 52, 60, .1);
+}
+.enquiry__intro h2 {
+  margin: 12px 0 8px;
+  color: var(--enquiry-ink);
+  font-size: clamp(29px, 3vw, 42px);
+  line-height: 1.14;
+  letter-spacing: -.035em;
+}
+.enquiry__intro > p {
+  max-width: 55ch;
+  margin: 0;
+  color: #625451;
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+.enquiry__intro-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(112, 71, 64, .14);
+  color: #786761;
+  font-size: 12px;
+  font-weight: 600;
+}
+.enquiry__form { padding: 4px 0 0; }
+.enquiry__fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.enquiry__section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 30px 0 17px;
+}
+.enquiry__section-title:not(:first-child) {
+  padding-top: 25px;
+  border-top: 1px solid var(--line, #e9dfd9);
+}
+.enquiry__section-number {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  background: #f5e8df;
+  color: var(--enquiry-maroon);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.enquiry__section-title h3 {
+  margin: 0;
+  color: var(--enquiry-ink);
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.35;
+  letter-spacing: -.015em;
+}
+.enquiry .form-grid { gap: 18px 20px; }
+.enquiry .field label,
+.enquiry .field legend {
+  color: #3b2a29;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.enquiry .field input,
+.enquiry .field textarea,
+.enquiry .field select {
+  min-height: 54px;
+  padding: 14px 16px;
+  border: 1px solid var(--enquiry-line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--enquiry-ink);
+  font-size: 15px;
+  box-shadow: 0 1px 2px rgba(33, 24, 22, .025);
+  transition: border-color .18s, box-shadow .18s, background-color .18s;
+}
+.enquiry .field textarea { min-height: 138px; line-height: 1.6; }
+.enquiry .field :is(input, select, textarea):hover:not(:disabled) {
+  border-color: #bea99b;
+}
+.enquiry .field :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--enquiry-copper);
+  box-shadow: 0 0 0 4px rgba(184, 123, 72, .16);
+}
+.enquiry .field--error :is(input, select, textarea) {
+  border-color: var(--err, #b42318);
+}
+.enquiry .field--error :is(input, select, textarea):focus-visible {
+  box-shadow: 0 0 0 4px rgba(180, 35, 24, .1);
+}
+.enquiry .select select { padding-right: 42px; }
+.enquiry__topic-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: -5px 0 0;
+  padding: 11px 13px;
+  border: 1px solid #efe2d9;
+  border-radius: 9px;
+  background: #fbf6f2;
+  color: #7c6257;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.enquiry__topic-help::before {
+  content: 'i';
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid #c89877;
+  border-radius: 50%;
+  color: #a16b49;
+  font-size: 11px;
+  font-weight: 800;
+  font-style: normal;
+}
+.enquiry__consent {
+  margin-top: 26px;
+  padding: 18px;
+  border: 1px solid #e9ded7;
+  border-radius: 12px;
+  background: #fcf8f5;
+}
+.enquiry .check label { font-size: 13.5px; line-height: 1.65; }
+.enquiry .check__box { border-radius: 6px; }
+.enquiry__submit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 24px;
+}
+.enquiry__submit-hint {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--enquiry-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.enquiry .form-nav { margin: 0; }
+.enquiry .form-nav .btn {
+  min-width: 190px;
+  min-height: 52px;
+  justify-content: center;
+  border-radius: 11px;
+  font-weight: 700;
+  box-shadow: 0 9px 22px -13px rgba(83, 26, 34, .65);
+  transition: transform .18s, box-shadow .18s;
+}
+.enquiry .form-nav .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 26px -15px rgba(83, 26, 34, .65);
+}
+.enquiry-done {
+  min-height: 360px;
+  justify-content: center;
+  padding: clamp(32px, 5vw, 60px) 20px;
+  border: 1px solid #e9ddd5;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fffdfa, #faf2eb);
+}
+.enquiry-done .form-done__ref { margin-top: 12px; }
+.enquiry-done .enquiry-done__note {
+  margin: 0;
+  color: var(--ink-muted, #766a66);
+  font-size: 12px;
+}
+@media (max-width: 640px) {
+  .enquiry__intro { padding: 23px 20px; }
+  .enquiry__intro h2 { font-size: 30px; }
+  .enquiry__intro-bottom { font-size: 11.5px; }
+  .enquiry__section-title { margin-top: 25px; }
+  .enquiry__submit-row { align-items: stretch; flex-direction: column; }
+  .enquiry .form-nav { width: 100%; }
+  .enquiry .form-nav .btn { width: 100%; }
+  .enquiry__submit-hint { max-width: none; }
+  .enquiry__consent { padding: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .enquiry .field :is(input, select, textarea),
+  .enquiry .form-nav .btn { transition: none; }
+}
