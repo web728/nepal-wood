@@ -101,7 +101,7 @@ export const partners = {
 
 export const contacts = [
   { name: 'Mr. Namit Gupta', role: 'Stall booking · India & international', phone: '+91 98108 55697', email: 'namit@futurextrade.com', whatsapp: '919810855697' },
-  { name: 'Ms. Jagriti Pandey', role: 'Stall booking & sponsorship', phone: '+91 88512 28446', email: 'jagriti@futurextrade.com', whatsapp: '918851228446' },
+  
   { name: 'Mr. Srijal Bhattarai', role: 'Nepal secretariat · visitors & local exhibitors', phone: '+977 980-1171141', email: 'info@mss.com.np', whatsapp: '9779801171141' },
 ];
 
