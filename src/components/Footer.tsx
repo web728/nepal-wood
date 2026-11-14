@@ -48,7 +48,7 @@ export default function Footer() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-brand">
-              <img src="/brand/logo-reverse.svg" alt="Nepal Wood International Expo" width={150} height={64} loading="lazy" />
+              <img src="/logo/nepal-wood-expo-logo-color-and-white.png" alt="Nepal Wood International Expo" width={180} height={88} loading="lazy" />
               <p>Nepal’s specialised B2B exhibition for plywood, laminates, woodworking machinery, furniture technology, tools and raw materials.</p>
               <p className="small footer-brand__when">{event.datesLabel} · {event.venue.name}, {event.venue.city}</p>
               <div className="footer-orgs" aria-label="Organised by">
