@@ -1,5 +1,5 @@
-import 'server-only';
-import nodemailer, { type Transporter } from 'nodemailer';
+import "server-only";
+import nodemailer, { type Transporter } from "nodemailer";
 
 let transporter: Transporter | null = null;
 
@@ -21,23 +21,63 @@ function getTransport() {
   return transporter;
 }
 
-export async function sendMail(opts: { to: string | string[]; subject: string; html: string; text: string; replyTo?: string }) {
+export async function sendMail(opts: {
+  to: string | string[];
+  subject: string;
+  html: string;
+  text: string;
+  replyTo?: string;
+}): Promise<{
+  ok: boolean;
+  messageId?: string;
+  skipped?: boolean;
+  error?: string;
+}> {
   const t = getTransport();
-  if (!t) return { ok: false, skipped: true };
+
+  if (!t) {
+    return {
+      ok: false,
+      skipped: true,
+      error: "SMTP is not configured",
+    };
+  }
+
   try {
-    await t.sendMail({ from: process.env.MAIL_FROM || process.env.SMTP_USER, ...opts });
-    return { ok: true };
-  } catch (e) {
-    console.error('[mail] send failed', e);
-    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    const info = await t.sendMail({
+      from: process.env.MAIL_FROM || process.env.SMTP_USER,
+      ...opts,
+    });
+
+    return {
+      ok: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("[mail] send failed", error);
+
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
 export function leadRecipients() {
-  return (process.env.LEADS_NOTIFY_TO || '').split(',').map((s) => s.trim()).filter(Boolean);
+  return (process.env.LEADS_NOTIFY_TO || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
-const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+const esc = (s: unknown) =>
+  String(s ?? "").replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ] as string,
+  );
 
 /** Minimal branded email shell that renders in Gmail/Outlook. */
 export function emailShell(title: string, bodyHtml: string) {
@@ -52,9 +92,12 @@ export function emailShell(title: string, bodyHtml: string) {
 
 export function rowsTable(rows: [string, unknown][]) {
   return `<table role="presentation" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:14px;width:100%">${rows
-    .filter(([, v]) => v !== undefined && v !== null && v !== '')
-    .map(([k, v]) => `<tr><td style="color:#75645a;border-bottom:1px solid #f3e4d4;width:38%;vertical-align:top">${esc(k)}</td><td style="border-bottom:1px solid #f3e4d4">${esc(Array.isArray(v) ? v.join(', ') : v)}</td></tr>`)
-    .join('')}</table>`;
+    .filter(([, v]) => v !== undefined && v !== null && v !== "")
+    .map(
+      ([k, v]) =>
+        `<tr><td style="color:#75645a;border-bottom:1px solid #f3e4d4;width:38%;vertical-align:top">${esc(k)}</td><td style="border-bottom:1px solid #f3e4d4">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`,
+    )
+    .join("")}</table>`;
 }
 
 export { esc };

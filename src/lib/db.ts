@@ -17,6 +17,20 @@ export const COLLECTIONS = {
   testimonials: 'testimonials',
 } as const;
 
+
+
+export const LEAD_COLLECTIONS = [
+  COLLECTIONS.exhibitors,
+  COLLECTIONS.visitors,
+  COLLECTIONS.enquiries,
+  COLLECTIONS.brochure,
+] as const;
+
+export type LeadCollection =
+  (typeof LEAD_COLLECTIONS)[number];
+
+
+
 export function dbConfigured() {
   return Boolean(uri);
 }
@@ -49,3 +63,5 @@ export async function getDb(): Promise<Db> {
   }
   return db;
 }
+
+ 

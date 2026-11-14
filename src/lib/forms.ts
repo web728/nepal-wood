@@ -14,42 +14,71 @@ const consent = z.literal(true, { error: 'Please accept the privacy policy to co
 // Anti-spam fields every form posts: a honeypot that must stay empty, and the time the form was rendered.
 export const antiSpam = z.object({ website_url: z.string().max(0).optional().or(z.literal('')), startedAt: z.number().optional() });
 
+
 export const exhibitorSchema = z.object({
-  company: z.string().trim().min(2, 'Please enter your company name').max(120),
-  website: opt(160),
-  country: z.string().trim().min(2, 'Please choose a country').max(60),
-  city: z.string().trim().min(2, 'Please enter your city').max(60),
-  zones: z.array(z.string().max(80)).min(1, 'Choose at least one product zone').max(8),
-  products: opt(600),
-  standType: z.enum(['shell', 'raw', 'premium', 'not-sure']),
-  areaSqm: z.coerce.number().int().min(9, 'Minimum stand size is 9 sqm').max(2000),
-  heavyMachinery: z.boolean().default(false),
-  powerNeeds: opt(300),
-  sponsorship: z.boolean().default(false),
-  name,
-  designation: z.string().trim().min(2, 'Please enter your designation').max(80),
-  email,
+  company: z.string().trim()
+    .min(2, 'Enter company name')
+    .max(120),
+
+  designation: z.string().trim()
+    .min(2, 'Enter designation')
+    .max(80),
+
+  name: z.string().trim()
+    .min(2, 'Enter contact person name')
+    .max(80),
+
+  email: z.email('Enter a valid business email')
+    .trim()
+    .toLowerCase()
+    .max(120),
+
   phone,
-  whatsappSame: z.boolean().default(true),
-  message: opt(1200),
-  updates: z.boolean().default(true),
+
+  country: z.string().trim()
+    .min(2, 'Enter country')
+    .max(60),
+
+  // Free text: no minimum length or content rules.
+  products: z.string().default(''),
+
+  // Optional, including custom dimensions.
+  boothSize: z.string().trim().max(100).default(''),
+
   consent,
 });
 
 export const visitorSchema = z.object({
-  name,
-  designation: z.string().trim().min(2, 'Please enter your designation').max(80),
-  company: z.string().trim().min(2, 'Please enter your company or practice name').max(120),
-  businessType: z.string().trim().min(2, 'Please choose your business type').max(80),
-  email,
+  name: z.string().trim()
+    .min(2, 'Enter full name')
+    .max(80),
+
+  company: z.string().trim()
+    .min(2, 'Enter company / organisation')
+    .max(120),
+
+  designation: z.string().trim()
+    .min(2, 'Enter designation')
+    .max(80),
+
   phone,
-  country: z.string().trim().min(2).max(60).default('India'),
-  city: z.string().trim().min(2, 'Please enter your city').max(60),
-  interests: z.array(z.string().max(80)).min(1, 'Choose at least one interest').max(10),
-  heardFrom: opt(60),
-  updates: z.boolean().default(true),
+
+  email: z.email('Enter a valid email')
+    .trim()
+    .toLowerCase()
+    .max(120),
+
+  businessType: z.string().trim()
+    .max(100)
+    .default(''),
+
+  country: z.string().trim()
+    .min(2, 'Enter country')
+    .max(60),
+
   consent,
 });
+
 
 export const enquirySchema = z.object({
   topic: z.enum(['exhibiting', 'sponsorship', 'visiting', 'media', 'other']),
