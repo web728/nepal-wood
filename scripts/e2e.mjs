@@ -10,7 +10,7 @@ const fail = (m) => { out.problems.push(m); console.log('  ✗', m); };
 const ok = (m) => console.log('  ✓', m);
 
 const pages = ['/', '/about-show', '/about-organizers', '/past-editions', '/why-exhibit', '/exhibitor-profile', '/exhibitor-profile/woodworking-machinery', '/exhibitor-registration',
-  '/sponsorship', '/exhibitors', '/why-visit', '/visitor-profile', '/visitor-registration', '/venue', '/seminars', '/gallery', '/faq', '/contact', '/downloads/event-brochure', '/privacy-policy'];
+  '/sponsorship', '/exhibitors', '/why-visit', '/visitor-profile', '/visitor-registration', '/venue','/conference', '/seminars', '/gallery', '/faq', '/contact', '/downloads/event-brochure', '/privacy-policy'];
 
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const page = await browser.newPage();

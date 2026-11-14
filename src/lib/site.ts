@@ -189,21 +189,28 @@ export const nav: NavItem[] = [
       },
     ],
   },
-  {
-    label: 'Conference',
-    items: [
-      {
-        label: 'Seminars',
-        href: '/seminars',
-        desc: 'Industry sessions and expert discussions',
-      },
-      {
-        label: 'Past Edition Seminars',
-        href: '/past-edition-seminars',
-        desc: 'Highlights from previous conference sessions',
-      },
-    ],
-  },
+
+{
+  label: 'Conference',
+  items: [
+    {
+      label: 'Technical Conclave 2027',
+      href: '/conference',
+      desc: 'Five technical seminars, industry panel and registrations',
+    },
+    {
+      label: 'Seminars',
+      href: '/seminars',
+      desc: 'Industry sessions and expert discussions',
+    },
+    {
+      label: 'Past Edition Seminars',
+      href: '/past-edition-seminars',
+      desc: 'Highlights from previous conference sessions',
+    },
+  ],
+},
+
   {
     label: 'Media',
     items: [
