@@ -195,16 +195,16 @@ export const nav: NavItem[] = [
   label: 'Conference',
   items: [
    
-    {
-      label: 'Seminars',
-      href: '/seminars',
-      desc: 'Industry sessions and expert discussions',
-    },
-     {
-      label: 'Conferences',
-      href: '/conference',
-      desc: 'Industry sessions and expert discussions',
-    },
+   {
+  label: 'Seminars',
+  href: '/seminars',
+  desc: 'Expert-led sessions on industry trends, innovations and insights',
+},
+{
+  label: 'Conferences',
+  href: '/conference',
+  desc: 'Industry leaders sharing knowledge, ideas and future opportunities',
+},
     // {
     //   label: 'Past Conferences 2025',
     //   href: '/past-conferences',
