@@ -1,6 +1,8 @@
 
 import 'server-only';
 
+import { google } from 'googleapis';
+
 export type SheetTab = 'Website Enquiries';
 
 export type SheetRow = Record<
@@ -14,7 +16,7 @@ export type SheetResult = {
   error?: string;
   skipped?: boolean;
   updatedRange?: string;
-  provider?: 'google-api' | 'apps-script';
+  provider?: 'google-api';
 };
 
 const TAB: SheetTab = 'Website Enquiries';
@@ -43,398 +45,441 @@ const HEADERS = [
 ] as const;
 
 const ID_HEADER = 'Lead ID';
+const API_TIMEOUT_MS = 10000;
 
-const B64 = () =>
+const getBase64 = () =>
   process.env.GOOGLE_SERVICE_ACCOUNT_BASE64 ||
   process.env.GOOGLE_CREDENTIALS_BASE64;
 
-const SHEET_ID = () =>
+const getSheetId = () =>
   process.env.GOOGLE_SHEET_ID ||
   process.env.GOOGLE_SHEETS_ID;
 
-export function sheetsConfigured(): boolean {
-  return Boolean(
-    (B64() && SHEET_ID()) ||
-    process.env.SHEETS_WEBHOOK_URL
-  );
-}
-
-function errorMessage(error: unknown): string {
+function getError(error: unknown): string {
   return error instanceof Error
     ? error.message
     : String(error);
 }
 
-function cleanValue(
-  input: SheetRow[string]
-): string | number | boolean {
-  if (input === undefined || input === null) {
-    return '';
+export function sheetsConfigured(): boolean {
+  return Boolean(getBase64() && getSheetId());
+}
+
+/* =====================================
+   SERVICE ACCOUNT AUTHENTICATION
+===================================== */
+
+function getCredentials(): {
+  client_email: string;
+  private_key: string;
+} {
+  const encoded = getBase64();
+
+  if (!encoded) {
+    throw new Error(
+      'GOOGLE_SERVICE_ACCOUNT_BASE64 is missing'
+    );
   }
 
-  return input;
-}
+  let parsed: unknown;
 
-function rowValues(row: SheetRow): (
-  string | number | boolean
-)[] {
-  return [
-    ...HEADERS.map((header) =>
-      cleanValue(row[header])
-    ),
-    String(row.ID || ''),
-  ];
-}
-
-function validateRow(
-  tab: SheetTab,
-  row: SheetRow
-): void {
-  if (tab !== TAB) {
+  try {
+    parsed = JSON.parse(
+      Buffer.from(
+        encoded.trim(),
+        'base64'
+      ).toString('utf8')
+    );
+  } catch {
     throw new Error(
-      `Unexpected sheet tab: ${tab}`
+      'Invalid Base64 Google Service Account JSON'
     );
   }
 
   if (
-    typeof row.ID !== 'string' ||
-    !row.ID.trim()
+    !parsed ||
+    typeof parsed !== 'object' ||
+    !('client_email' in parsed) ||
+    !('private_key' in parsed)
   ) {
     throw new Error(
-      'MongoDB Lead ID is required for Sheets append'
+      'Service Account email or private key missing'
     );
   }
-}
 
-function checkHeaders(existing: string[]): void {
-  if (!existing.length) return;
+  const data = parsed as {
+    client_email?: unknown;
+    private_key?: unknown;
+  };
 
-  for (let index = 0; index < HEADERS.length; index++) {
-    const expected = HEADERS[index];
-    const actual = (existing[index] || '').trim();
-
-    if (actual !== expected) {
-      throw new Error(
-        `Sheet header mismatch at column ${index + 1}: ` +
-        `expected "${expected}", found "${actual}"`
-      );
-    }
-  }
-
-  const idHeader = (existing[20] || '').trim();
-
-  if (idHeader && idHeader !== ID_HEADER) {
+  if (
+    typeof data.client_email !== 'string' ||
+    typeof data.private_key !== 'string'
+  ) {
     throw new Error(
-      `Column U is already in use: "${idHeader}"`
+      'Invalid Service Account credentials'
+    );
+  }
+
+  return {
+    client_email: data.client_email,
+    private_key: data.private_key.replace(
+      /\\n/g,
+      '\n'
+    ),
+  };
+}
+
+function createSheetsClient() {
+  const credentials = getCredentials();
+
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: [
+      'https://www.googleapis.com/auth/spreadsheets',
+    ],
+  });
+
+  return google.sheets({
+    version: 'v4',
+    auth,
+  });
+}
+
+/* =====================================
+   ROW FORMATTING
+===================================== */
+
+function sheetValue(
+  input: SheetRow[string]
+): string | number | boolean {
+  return input === null || input === undefined
+    ? ''
+    : input;
+}
+
+function makeValues(
+  row: SheetRow
+): Array<string | number | boolean> {
+  return [
+    ...HEADERS.map((header) =>
+      sheetValue(row[header])
+    ),
+    String(row.ID),
+  ];
+}
+
+function validateHeaders(existing: string[]) {
+  if (existing.length === 0) {
+    return;
+  }
+
+  for (let i = 0; i < HEADERS.length; i++) {
+    const actual = String(
+      existing[i] || ''
+    ).trim();
+
+    if (actual !== HEADERS[i]) {
+      throw new Error(
+        `Website Enquiries column ${i + 1} ` +
+        `header mismatch. Expected "${HEADERS[i]}", ` +
+        `found "${actual}".`
+      );
+    }
+  }
+
+  const columnU = String(
+    existing[20] || ''
+  ).trim();
+
+  if (
+    columnU &&
+    columnU !== ID_HEADER
+  ) {
+    throw new Error(
+      'Column U is already used. ' +
+      'Reserve column U for Lead ID.'
     );
   }
 }
 
-/* =========================================
-   GOOGLE SHEETS API
-========================================= */
+/* =====================================
+   CHECK FOR EXISTING LEAD
+===================================== */
 
-async function appendGoogleApi(
-  tab: SheetTab,
-  row: SheetRow
-): Promise<SheetResult> {
-  const at = new Date();
-
-  try {
-    validateRow(tab, row);
-
-    const encoded = B64();
-    const spreadsheetId = SHEET_ID();
-
-    if (!encoded || !spreadsheetId) {
-      throw new Error(
-        'Google Sheets credentials or ID missing'
-      );
-    }
-
-    let credentials: {
-      client_email?: string;
-      private_key?: string;
-    };
-
-    try {
-      credentials = JSON.parse(
-        Buffer.from(
-          encoded.trim(),
-          'base64'
-        ).toString('utf8')
-      );
-    } catch {
-      throw new Error(
-        'Invalid Base64 Google credentials'
-      );
-    }
-
-    if (
-      !credentials.client_email ||
-      !credentials.private_key
-    ) {
-      throw new Error(
-        'Invalid Google service-account credentials'
-      );
-    }
-
-    credentials.private_key =
-      credentials.private_key.replace(/\\n/g, '\n');
-
-    const { google } = await import('googleapis');
-
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: [
-        'https://www.googleapis.com/auth/spreadsheets',
-      ],
-    });
-
-    const sheets = google.sheets({
-      version: 'v4',
-      auth,
-    });
-
-    const quotedTab = "'Website Enquiries'";
-
-    // Read only the header row.
-    const headerResponse =
-      await sheets.spreadsheets.values.get(
-        {
-          spreadsheetId,
-          range: `${quotedTab}!A1:U1`,
-        },
-        {
-          timeout: 8000,
-        }
-      );
-
-    const existingHeaders = (
-      headerResponse.data.values?.[0] || []
-    ).map(String);
-
-    checkHeaders(existingHeaders);
-
-    // Create headers only when sheet is empty.
-    // Never replace the user's existing A:T headings.
-    if (!existingHeaders.length) {
-      await sheets.spreadsheets.values.update(
-        {
-          spreadsheetId,
-          range: `${quotedTab}!A1:U1`,
-          valueInputOption: 'RAW',
-          requestBody: {
-            values: [[...HEADERS, ID_HEADER]],
-          },
-        },
-        {
-          timeout: 8000,
-        }
-      );
-    } else if (!existingHeaders[20]) {
-      // U is reserved for an internal unique lead ID.
-      await sheets.spreadsheets.values.update(
-        {
-          spreadsheetId,
-          range: `${quotedTab}!U1`,
-          valueInputOption: 'RAW',
-          requestBody: {
-            values: [[ID_HEADER]],
-          },
-        },
-        {
-          timeout: 8000,
-        }
-      );
-    }
-
-    // Retry safety: check whether this MongoDB lead
-    // already exists in the hidden ID column.
-    const idsResponse =
-      await sheets.spreadsheets.values.get(
-        {
-          spreadsheetId,
-          range: `${quotedTab}!U2:U`,
-        },
-        {
-          timeout: 8000,
-        }
-      );
-
-    const leadId = String(row.ID);
-
-    const existingIndex = (
-      idsResponse.data.values || []
-    ).findIndex(
-      (cells: string[]) =>
-        String(cells[0] || '') === leadId
+async function findLeadRow(
+  sheets: ReturnType<typeof createSheetsClient>,
+  spreadsheetId: string,
+  leadId: string
+): Promise<number | null> {
+  const result =
+    await sheets.spreadsheets.values.get(
+      {
+        spreadsheetId,
+        range: "'Website Enquiries'!U2:U",
+      },
+      {
+        timeout: API_TIMEOUT_MS,
+      }
     );
 
-    if (existingIndex !== -1) {
-      // Already appended successfully.
-      // Do not overwrite any of its fields.
-      return {
-        ok: true,
-        at,
-        provider: 'google-api',
-        updatedRange: `${quotedTab}!A${existingIndex + 2}:U${existingIndex + 2}`,
-      };
-    }
+  const ids: unknown[][] =
+    result.data.values || [];
 
-    // Append new row at the bottom of the table.
-    const response =
-      await sheets.spreadsheets.values.append(
-        {
-          spreadsheetId,
-          range: `${quotedTab}!A:U`,
-          valueInputOption: 'RAW',
-          insertDataOption: 'INSERT_ROWS',
-          requestBody: {
-            values: [rowValues(row)],
-          },
-        },
-        {
-          timeout: 8000,
-        }
-      );
-
-    const updates = response.data.updates;
-
-    if (updates?.updatedRows !== 1) {
-      throw new Error(
-        'Google Sheets did not confirm one appended row'
-      );
-    }
-
-    return {
-      ok: true,
-      at,
-      provider: 'google-api',
-      updatedRange: updates.updatedRange || undefined,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      at,
-      provider: 'google-api',
-      error: errorMessage(error),
-    };
-  }
-}
-
-/* =========================================
-   GOOGLE APPS SCRIPT WEBHOOK
-========================================= */
-
-async function appendAppsScript(
-  tab: SheetTab,
-  row: SheetRow
-): Promise<SheetResult> {
-  const at = new Date();
-  const url = process.env.SHEETS_WEBHOOK_URL;
-
-  if (!url) {
-    return {
-      ok: false,
-      at,
-      skipped: true,
-      error: 'SHEETS_WEBHOOK_URL not configured',
-    };
-  }
-
-  const controller = new AbortController();
-
-  const timeout = setTimeout(
-    () => controller.abort(),
-    10000
+  const index = ids.findIndex(
+    (cells) =>
+      String(cells[0] || '') === leadId
   );
 
-  try {
-    validateRow(tab, row);
+  return index >= 0 ? index + 2 : null;
+}
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
+/* =====================================
+   PREPARE SHEET HEADERS
+===================================== */
+
+async function prepareSheet(
+  sheets: ReturnType<typeof createSheetsClient>,
+  spreadsheetId: string
+): Promise<void> {
+  const metadata =
+    await sheets.spreadsheets.get(
+      {
+        spreadsheetId,
+        fields:
+          'sheets(properties(sheetId,title,gridProperties(columnCount)))',
       },
-      body: JSON.stringify({
-        secret: process.env.SHEETS_WEBHOOK_SECRET || '',
-        action: 'append',
-        tab,
-        row,
-      }),
-      redirect: 'follow',
-      signal: controller.signal,
-      cache: 'no-store',
-    });
+      {
+        timeout: API_TIMEOUT_MS,
+      }
+    );
 
-    const raw = await response.text();
+  const target = metadata.data.sheets?.find(
+    (item) =>
+      item.properties?.title === TAB
+  );
 
-    let result: {
-      ok?: boolean;
-      error?: string;
-      updatedRange?: string;
-    };
+  if (!target?.properties) {
+    throw new Error(
+      'Google Sheet tab "Website Enquiries" not found'
+    );
+  }
 
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      throw new Error(
-        `Apps Script returned invalid JSON (HTTP ${response.status})`
-      );
-    }
+  const sheetId = target.properties.sheetId;
 
-    if (!response.ok || !result.ok) {
-      throw new Error(
-        result.error ||
-          `Apps Script returned HTTP ${response.status}`
-      );
-    }
+  if (
+    sheetId === null ||
+    sheetId === undefined
+  ) {
+    throw new Error(
+      'Unable to resolve Google Sheet tab ID'
+    );
+  }
 
-    return {
-      ok: true,
-      at,
-      provider: 'apps-script',
-      updatedRange: result.updatedRange,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      at,
-      provider: 'apps-script',
-      error: errorMessage(error),
-    };
-  } finally {
-    clearTimeout(timeout);
+  const columnCount =
+    target.properties.gridProperties
+      ?.columnCount ?? 0;
+
+  // Add only missing columns, if column U
+  // does not exist in the sheet grid yet.
+  if (columnCount < 21) {
+    await sheets.spreadsheets.batchUpdate(
+      {
+        spreadsheetId,
+        requestBody: {
+          requests: [
+            {
+              appendDimension: {
+                sheetId,
+                dimension: 'COLUMNS',
+                length: 21 - columnCount,
+              },
+            },
+          ],
+        },
+      },
+      {
+        timeout: API_TIMEOUT_MS,
+      }
+    );
+  }
+
+  const headerResponse =
+    await sheets.spreadsheets.values.get(
+      {
+        spreadsheetId,
+        range: "'Website Enquiries'!A1:U1",
+      },
+      {
+        timeout: API_TIMEOUT_MS,
+      }
+    );
+
+  const existing: string[] = (
+    headerResponse.data.values?.[0] || []
+  ).map(String);
+
+  validateHeaders(existing);
+
+  const completelyEmpty =
+    existing.length === 0 ||
+    existing.every(
+      (header) => !header.trim()
+    );
+
+  if (completelyEmpty) {
+    await sheets.spreadsheets.values.update(
+      {
+        spreadsheetId,
+        range: "'Website Enquiries'!A1:U1",
+        valueInputOption: 'RAW',
+        requestBody: {
+          values: [
+            [...HEADERS, ID_HEADER],
+          ],
+        },
+      },
+      {
+        timeout: API_TIMEOUT_MS,
+      }
+    );
+
+    return;
+  }
+
+  // Do not modify the existing A:T headers.
+  if (!existing[20]) {
+    await sheets.spreadsheets.values.update(
+      {
+        spreadsheetId,
+        range: "'Website Enquiries'!U1",
+        valueInputOption: 'RAW',
+        requestBody: {
+          values: [[ID_HEADER]],
+        },
+      },
+      {
+        timeout: API_TIMEOUT_MS,
+      }
+    );
   }
 }
 
-/* =========================================
-   PUBLIC DELIVERY FUNCTION
-========================================= */
+/* =====================================
+   APPEND-ONLY GOOGLE SHEETS DELIVERY
+===================================== */
 
 export async function upsertSheetRow(
   tab: SheetTab,
   row: SheetRow
 ): Promise<SheetResult> {
-  // Function name kept for compatibility with
-  // existing lead-delivery.ts / admin actions.
-  //
-  // Behaviour is now append-only with ID check.
+  const at = new Date();
 
-  if (B64() && SHEET_ID()) {
-    return appendGoogleApi(tab, row);
+  if (!sheetsConfigured()) {
+    return {
+      ok: false,
+      at,
+      skipped: true,
+      provider: 'google-api',
+      error:
+        'Google Service Account or Sheet ID not configured',
+    };
   }
 
-  if (process.env.SHEETS_WEBHOOK_URL) {
-    return appendAppsScript(tab, row);
-  }
+  try {
+    if (tab !== TAB) {
+      throw new Error(
+        `Unexpected Google Sheet tab: ${tab}`
+      );
+    }
 
-  return {
-    ok: false,
-    at: new Date(),
-    skipped: true,
-    error: 'No Google Sheets provider configured',
-  };
+    if (
+      typeof row.ID !== 'string' ||
+      !row.ID.trim()
+    ) {
+      throw new Error(
+        'MongoDB Lead ID is required'
+      );
+    }
+
+    const spreadsheetId = getSheetId();
+
+    if (!spreadsheetId) {
+      throw new Error(
+        'GOOGLE_SHEET_ID is missing'
+      );
+    }
+
+    const sheets = createSheetsClient();
+
+    await prepareSheet(
+      sheets,
+      spreadsheetId
+    );
+
+    // If this lead was appended earlier,
+    // do not overwrite or append it again.
+    const existingRow = await findLeadRow(
+      sheets,
+      spreadsheetId,
+      row.ID
+    );
+
+    if (existingRow !== null) {
+      return {
+        ok: true,
+        at,
+        provider: 'google-api',
+        updatedRange:
+          `'Website Enquiries'!A${existingRow}:U${existingRow}`,
+      };
+    }
+
+    const result =
+      await sheets.spreadsheets.values.append(
+        {
+          spreadsheetId,
+          range: "'Website Enquiries'!A:U",
+          valueInputOption: 'RAW',
+          insertDataOption: 'INSERT_ROWS',
+          requestBody: {
+            values: [makeValues(row)],
+          },
+        },
+        {
+          timeout: API_TIMEOUT_MS,
+        }
+      );
+
+    if (
+      result.data.updates?.updatedRows !== 1
+    ) {
+      throw new Error(
+        'Google Sheets did not confirm an appended row'
+      );
+    }
+
+    return {
+      ok: true,
+      at,
+      provider: 'google-api',
+      updatedRange:
+        result.data.updates.updatedRange ||
+        undefined,
+    };
+  } catch (error) {
+    const message = getError(error);
+
+    console.error(
+      '[Google Sheets] Delivery failed:',
+      message
+    );
+
+    return {
+      ok: false,
+      at,
+      provider: 'google-api',
+      error: message,
+    };
+  }
 }

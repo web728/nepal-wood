@@ -2,9 +2,22 @@
 import 'server-only';
 
 import type { Document } from 'mongodb';
-import { COLLECTIONS, type LeadCollection } from './db';
-import { emailShell, rowsTable, leadRecipients } from './mail';
-import type { SheetRow, SheetTab } from './sheets';
+
+import {
+  COLLECTIONS,
+  type LeadCollection,
+} from './db';
+
+import {
+  emailShell,
+  rowsTable,
+  leadRecipients,
+} from './mail';
+
+import type {
+  SheetRow,
+  SheetTab,
+} from './sheets';
 
 type MailContent = {
   to: string | string[];
@@ -21,161 +34,216 @@ type SheetMapping = {
 
 const EVENT = 'Nepal Wood International Expo 2027';
 
-function value(input: unknown): string {
-  if (input === null || input === undefined) return '';
-  if (Array.isArray(input)) return input.map(value).join(', ');
-  if (input instanceof Date) return input.toISOString();
-  if (typeof input === 'object') return JSON.stringify(input);
-  return String(input);
+function value(v: unknown): string {
+  if (v === null || v === undefined) return '';
+  if (v instanceof Date) return v.toISOString();
+  if (Array.isArray(v)) {
+    return v.map(value).join(', ');
+  }
+  if (typeof v === 'object') {
+    return JSON.stringify(v);
+  }
+  return String(v);
 }
 
-function date(input: unknown): string {
+function sheetDate(input: unknown): string {
   if (!input) return '';
 
-  const d =
-    input instanceof Date
-      ? input
-      : new Date(String(input));
+  const d = input instanceof Date
+    ? input
+    : new Date(String(input));
 
-  return Number.isNaN(d.getTime())
-    ? ''
-    : d.toISOString();
+  if (Number.isNaN(d.getTime())) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kathmandu',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(d);
 }
 
-function id(doc: Document): string {
-  return value(doc._id);
-}
-
-function metadata(doc: Document): Record<string, unknown> {
+function meta(doc: Document): Record<string, unknown> {
   const m = doc.meta;
 
-  if (m && typeof m === 'object' && !Array.isArray(m)) {
+  if (
+    m &&
+    typeof m === 'object' &&
+    !Array.isArray(m)
+  ) {
     return m as Record<string, unknown>;
   }
 
   return {};
 }
 
-function commonRow(doc: Document): SheetRow {
-  const m = metadata(doc);
+/* =====================================
+   SHARED GOOGLE SHEETS COLUMNS
+===================================== */
+
+function baseRow(
+  doc: Document,
+  registerAs: string
+): SheetRow {
+  const m = meta(doc);
 
   return {
-    ID: id(doc),
-    Reference: value(doc.ref ?? doc.badgeId),
-    'Created At': date(doc.createdAt),
-    Name: value(doc.name),
-    Email: value(doc.email),
-    Phone: value(doc.phone),
-    Company: value(doc.company),
-    Country: value(doc.country),
-    Source: value(m.source),
-    Medium: value(m.medium),
-    Campaign: value(m.campaign),
-    Page: value(m.page),
-    Referrer: value(m.referrer),
-  };
-}
+    ID: value(doc._id),
 
-/* ======================================
-   GOOGLE SHEETS ROW MAPPINGS
-====================================== */
-
-export function exhibitorRow(doc: Document): SheetRow {
-  return {
-    ID: id(doc),
-    Reference: value(doc.ref),
-    'Created At': date(doc.createdAt),
+    Date: sheetDate(doc.createdAt),
+    Platform: 'Website',
+    'Register As': registerAs,
 
     'Company Name': value(doc.company),
-    Designation: value(doc.designation),
     'Contact Person': value(doc.name),
-    'Business Email': value(doc.email),
-    'Mobile / WhatsApp': value(doc.phone),
-    Country: value(doc.country),
-    'Products and Services': value(doc.products),
-    'Preferred Booth Size': value(doc.boothSize),
-
-    Status: value(doc.status),
-    Notes: value(doc.notes),
-    'Updated At': date(doc.updatedAt),
-  };
-}
-
-export function visitorRow(doc: Document): SheetRow {
-  return {
-    ID: id(doc),
-    'Badge ID': value(doc.badgeId),
-    'Created At': date(doc.createdAt),
-
-    'Full Name': value(doc.name),
-    'Company / Organisation': value(doc.company),
     Designation: value(doc.designation),
-    'Mobile / WhatsApp': value(doc.phone),
-    Email: value(doc.email),
-    'Business / Category': value(doc.businessType),
+    'Email Id': value(doc.email),
+    'Mobile No.': value(doc.phone),
+    Website: value(doc.website),
+    Address: value(doc.address),
     Country: value(doc.country),
 
-    'Checked In At': date(doc.checkedInAt),
+    'Area of Interest': '',
+    'Info. Get From': value(
+      m.source || m.medium || m.referrer
+    ),
+    Message: '',
+
+    Corrections: '',
+    'STATUS 1': '',
+    'STATUS 2': '',
+    'STATUS 3': '',
+    'STATUS 4': '',
+    'STATUS 5': '',
   };
 }
 
-export function enquiryRow(doc: Document): SheetRow {
+/* =====================================
+   EXHIBITOR REGISTRATION
+===================================== */
+
+export function exhibitorRow(
+  doc: Document
+): SheetRow {
   return {
-    ...commonRow(doc),
-    Topic: value(doc.topic),
+    ...baseRow(doc, 'Exhibitor'),
+
+    'Area of Interest': value(doc.products),
+
+    Message: [
+      doc.boothSize
+        ? `Preferred booth size: ${value(doc.boothSize)}`
+        : '',
+      doc.ref
+        ? `Reference: ${value(doc.ref)}`
+        : '',
+    ].filter(Boolean).join(' | '),
+  };
+}
+
+/* =====================================
+   VISITOR REGISTRATION
+===================================== */
+
+export function visitorRow(
+  doc: Document
+): SheetRow {
+  return {
+    ...baseRow(doc, 'Visitor'),
+
+    'Area of Interest': value(
+      doc.businessType
+    ),
+
+    Message: doc.badgeId
+      ? `Badge ID: ${value(doc.badgeId)}`
+      : '',
+  };
+}
+
+/* =====================================
+   GENERAL ENQUIRY
+===================================== */
+
+export function enquiryRow(
+  doc: Document
+): SheetRow {
+  return {
+    ...baseRow(doc, 'Enquiry'),
+
+    'Area of Interest': value(doc.topic),
     Message: value(doc.message),
-    Status: value(doc.status),
-    Notes: value(doc.notes),
-    'Updated At': date(doc.updatedAt),
   };
 }
 
-export function brochureRow(doc: Document): SheetRow {
+/* =====================================
+   BROCHURE DOWNLOAD
+===================================== */
+
+export function brochureRow(
+  doc: Document
+): SheetRow {
   return {
-    ...commonRow(doc),
-    Interest: value(doc.interest),
-    Updates: value(doc.updates),
+    ...baseRow(doc, 'Brochure Download'),
+
+    'Area of Interest': value(doc.interest),
+
+    Message: doc.ref
+      ? `Reference: ${value(doc.ref)}`
+      : '',
   };
 }
+
+/* =====================================
+   ALL FORMS -> SAME SHEET TAB
+===================================== */
 
 export const sheetFor: Record<
   LeadCollection,
   SheetMapping
 > = {
   [COLLECTIONS.exhibitors]: {
-    tab: 'Exhibitor enquiries',
+    tab: 'Website Enquiries',
     row: exhibitorRow,
   },
 
   [COLLECTIONS.visitors]: {
-    tab: 'Visitors',
+    tab: 'Website Enquiries',
     row: visitorRow,
   },
 
   [COLLECTIONS.enquiries]: {
-    tab: 'Enquiries',
+    tab: 'Website Enquiries',
     row: enquiryRow,
   },
 
   [COLLECTIONS.brochure]: {
-    tab: 'Brochure downloads',
+    tab: 'Website Enquiries',
     row: brochureRow,
   },
 };
 
-/* ======================================
-   EMAIL UTILITIES
-====================================== */
+/* =====================================
+   EMAIL HELPERS
+===================================== */
 
-function textTable(rows: [string, unknown][]): string {
+function textTable(
+  rows: [string, unknown][]
+): string {
   return rows
-    .filter(
-      ([, v]) =>
-        v !== null &&
-        v !== undefined &&
-        v !== ''
+    .filter(([, v]) =>
+      v !== null &&
+      v !== undefined &&
+      v !== ''
     )
-    .map(([key, v]) => `${key}: ${value(v)}`)
+    .map(([key, v]) =>
+      `${key}: ${value(v)}`
+    )
     .join('\n');
 }
 
@@ -186,42 +254,39 @@ function createEmail(
   rows: [string, unknown][],
   replyTo?: string
 ): MailContent {
-  const html = emailShell(
-    title,
-    `
-      <p style="margin:0 0 20px;font-size:14px;
-                line-height:1.7;color:#75645a">
-        Nepal Wood International Expo 2027
-      </p>
-      ${rowsTable(rows)}
-    `
-  );
-
   return {
     to,
     subject,
-    html,
-    text: `${title}\n\n${textTable(rows)}\n\n${EVENT}`,
+
+    html: emailShell(
+      title,
+      rowsTable(rows)
+    ),
+
+    text:
+      `${title}\n\n` +
+      `${textTable(rows)}\n\n${EVENT}`,
+
     ...(replyTo ? { replyTo } : {}),
   };
 }
 
-function leadDetails(doc: Document): [string, unknown][] {
+function details(
+  doc: Document
+): [string, unknown][] {
   return [
-    ['Reference', doc.ref ?? doc.badgeId],
-    ['Name', doc.name],
-    ['Email', doc.email],
-    ['Mobile / WhatsApp', doc.phone],
-    ['Company', doc.company],
+    ['Company Name', doc.company],
+    ['Contact Person', doc.name],
     ['Designation', doc.designation],
+    ['Email Id', doc.email],
+    ['Mobile No.', doc.phone],
     ['Country', doc.country],
   ];
 }
 
-/* ======================================
-   ADMIN EMAILS
-   Sent to LEADS_NOTIFY_TO recipients
-====================================== */
+/* =====================================
+   ADMIN EMAIL NOTIFICATIONS
+===================================== */
 
 export function adminEmail(
   collection: LeadCollection,
@@ -229,7 +294,7 @@ export function adminEmail(
 ): MailContent | null {
   const recipients = leadRecipients();
 
-  if (recipients.length === 0) {
+  if (!recipients.length) {
     return null;
   }
 
@@ -245,7 +310,8 @@ export function adminEmail(
       `New Exhibitor Enquiry | ${EVENT}`,
       'New exhibitor enquiry received',
       [
-        ...leadDetails(doc),
+        ['Reference', doc.ref],
+        ...details(doc),
         ['Products and Services', doc.products],
         ['Preferred Booth Size', doc.boothSize],
       ],
@@ -260,13 +326,8 @@ export function adminEmail(
       'New visitor registration received',
       [
         ['Badge ID', doc.badgeId],
-        ['Full Name', doc.name],
-        ['Company / Organisation', doc.company],
-        ['Designation', doc.designation],
-        ['Mobile / WhatsApp', doc.phone],
-        ['Email', doc.email],
+        ...details(doc),
         ['Business / Category', doc.businessType],
-        ['Country', doc.country],
       ],
       replyTo
     );
@@ -278,7 +339,7 @@ export function adminEmail(
       `New Website Enquiry | ${EVENT}`,
       'New website enquiry received',
       [
-        ...leadDetails(doc),
+        ...details(doc),
         ['Topic', doc.topic],
         ['Message', doc.message],
       ],
@@ -289,9 +350,9 @@ export function adminEmail(
   return null;
 }
 
-/* ======================================
-   CUSTOMER CONFIRMATION EMAILS
-====================================== */
+/* =====================================
+   USER CONFIRMATION EMAILS
+===================================== */
 
 export function userEmail(
   collection: LeadCollection,
@@ -307,16 +368,15 @@ export function userEmail(
     return createEmail(
       recipient,
       `Exhibitor Enquiry Received | ${EVENT}`,
-      'We have received your exhibitor enquiry',
+      'Your exhibitor enquiry has been received',
       [
         ['Contact Person', doc.name],
         ['Company', doc.company],
         ['Reference', doc.ref],
-        ['Products and Services', doc.products],
         ['Preferred Booth Size', doc.boothSize],
         [
           'Next Step',
-          'Our exhibition team will review your request and contact you.',
+          'Our exhibition team will review your enquiry and contact you.',
         ],
       ]
     );
@@ -329,14 +389,10 @@ export function userEmail(
       'Your visitor registration is confirmed',
       [
         ['Full Name', doc.name],
-        ['Company / Organisation', doc.company],
+        ['Company', doc.company],
         ['Badge ID', doc.badgeId],
         ['Event Dates', '28–31 January 2027'],
         ['Venue', 'Bhrikuti Mandap, Kathmandu'],
-        [
-          'Next Step',
-          'Use your registration badge details when visiting the expo.',
-        ],
       ]
     );
   }
