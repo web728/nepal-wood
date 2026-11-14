@@ -2,11 +2,43 @@ import Link from 'next/link';
 import Icon from './Icon';
 import { event, contacts, social, organisers, telHref, waHref, whatsappDefault } from '@/lib/site';
 
+
 const cols = [
-  { h: 'Exhibit', links: [['Why exhibit', '/why-exhibit'], ['Exhibitor profile', '/exhibitor-profile'], ['Book a stand', '/exhibitor-registration'], ['Sponsorship', '/sponsorship'], ['Exhibitor list 2027', '/exhibitors'], ['2027 brochure', '/downloads/event-brochure']] },
-  { h: 'Visit', links: [['Why visit', '/why-visit'], ['Visitor profile', '/visitor-profile'], ['Register free', '/visitor-registration'], ['Plan your visit', '/venue'], ['Seminars', '/seminars'], ['FAQ', '/faq']] },
-  { h: 'About', links: [['About the expo', '/about-show'], ['Organisers', '/about-organizers'], ['Past editions', '/past-editions'], ['Gallery', '/gallery'], ['Contact', '/contact']] },
+  {
+    h: 'Exhibit',
+    links: [
+      ['Why exhibit', '/why-exhibit'],
+      ['Exhibitor profile', '/exhibitor-profile'],
+      ['Book a stand', '/exhibitor-registration'],
+      ['Sponsorship', '/sponsorship'],
+      ['Exhibitor list 2027', '/exhibitors'],
+      ['2027 brochure', '/downloads/event-brochure'],
+    ],
+  },
+  {
+    h: 'Visit',
+    links: [
+      ['Why visit', '/why-visit'],
+      ['Visitor profile', '/visitor-profile'],
+      ['Register free', '/visitor-registration'],
+      ['Plan your visit', '/venue'],
+      ['Seminars', '/seminars'],
+      ['FAQ', '/faq'],
+    ],
+  },
+  {
+    h: 'About',
+    links: [
+      ['About the expo', '/about-show'],
+      ['Organisers', '/about-organizers'],
+      ['Past editions', '/past-editions'],
+      ['Past Conferences 2025', '/past-conferences'],
+      ['Gallery', '/gallery'],
+      ['Contact', '/contact'],
+    ],
+  },
 ];
+
 
 export default function Footer() {
   const year = new Date().getFullYear();

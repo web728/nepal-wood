@@ -190,6 +190,7 @@ export const nav: NavItem[] = [
     ],
   },
 
+
 {
   label: 'Conference',
   items: [
@@ -204,12 +205,18 @@ export const nav: NavItem[] = [
       desc: 'Industry sessions and expert discussions',
     },
     {
+      label: 'Past Conferences 2025',
+      href: '/past-conferences',
+      desc: 'Explore the 2025 Timber Transformation and Interior Designers’ Day conferences',
+    },
+    {
       label: 'Past Edition Seminars',
       href: '/past-edition-seminars',
       desc: 'Highlights from previous conference sessions',
     },
   ],
 },
+
 
   {
     label: 'Media',
