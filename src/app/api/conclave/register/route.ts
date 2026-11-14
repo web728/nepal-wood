@@ -1,192 +1,75 @@
-
 import { NextRequest, NextResponse } from 'next/server';
-
 import { conferenceSchema } from '@/lib/conference';
 import { fieldErrors } from '@/lib/forms';
+import { dbConfigured } from '@/lib/db';
+import { saveConclaveRegistration } from '@/lib/conclave-leads';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
+import type { LeadMeta } from '@/lib/leads';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get('origin');
-
   if (origin && origin !== request.nextUrl.origin) {
-    return NextResponse.json(
-      { ok: false, error: 'Invalid request origin.' },
-      { status: 403 }
-    );
+    return NextResponse.json({ ok: false, error: 'Invalid request origin.' }, { status: 403 });
   }
 
-  const length = Number(
-    request.headers.get('content-length') || 0
-  );
-
-  if (length > 18_000) {
-    return NextResponse.json(
-      { ok: false, error: 'Request too large.' },
-      { status: 413 }
-    );
+  const contentLength = Number(request.headers.get('content-length') || 0);
+  if (contentLength > 18_000) {
+    return NextResponse.json({ ok: false, error: 'Request too large.' }, { status: 413 });
   }
 
   let body: unknown;
-
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { ok: false, error: 'Invalid JSON.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false, error: 'Invalid JSON.' }, { status: 400 });
   }
 
-  // SERVER-SIDE VALIDATION
   const parsed = conferenceSchema.safeParse(body);
-
   if (!parsed.success) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Please check the highlighted fields.',
-        fields: fieldErrors(parsed.error),
-      },
-      { status: 422 }
-    );
-  }
-
-  const data = parsed.data;
-
-  // HONEYPOT
-  if (data.website_url) {
     return NextResponse.json({
-      ok: true,
-      ref: 'RECEIVED',
-    });
+      ok: false,
+      error: 'Please check the highlighted fields.',
+      fields: fieldErrors(parsed.error),
+    }, { status: 422 });
   }
 
-  // MINIMUM FILL TIME
-  if (data.startedAt && Date.now() - data.startedAt < 1200) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Please try submitting again.',
-      },
-      { status: 429 }
-    );
+  // Never give a false success to a submission that was not saved.
+  if (parsed.data.website_url) {
+    return NextResponse.json({ ok: false, error: 'Invalid submission.' }, { status: 400 });
   }
 
-  // EXISTING BACKEND CONFIG
-  const pipelineUrl = process.env.CONCLAVE_PIPELINE_URL;
-  const pipelineToken = process.env.CONCLAVE_PIPELINE_TOKEN;
-
-  if (!pipelineUrl || !pipelineToken) {
-    console.error('Conference pipeline is not configured');
-
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          'Registration service is not configured yet. Please contact the organisers.',
-      },
-      { status: 503 }
-    );
+  const ip = clientIp(request.headers);
+  if (!rateLimit(`conclave:${ip}`, 8)) {
+    return NextResponse.json({ ok: false, error: 'Too many submissions. Please try again later.' }, { status: 429 });
   }
 
-  if (
-    process.env.NODE_ENV === 'production' &&
-    !pipelineUrl.startsWith('https://')
-  ) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Registration service configuration error.',
-      },
-      { status: 503 }
-    );
+  if (!dbConfigured()) {
+    return NextResponse.json({ ok: false, error: 'Registration is temporarily unavailable.' }, { status: 503 });
   }
+
+  const s = (v: unknown, max = 200): string | undefined =>
+    typeof v === 'string' ? v.slice(0, max) : undefined;
+  const meta: LeadMeta = {
+    source: 'conference',
+    medium: 'website',
+    page: '/conference',
+    referrer: s(request.headers.get('referer')),
+    ip,
+    ua: s(request.headers.get('user-agent'), 300),
+  };
 
   try {
-    const controller = new AbortController();
-
-    const timer = setTimeout(
-      () => controller.abort(),
-      8000
-    );
-
-    let upstream: Response;
-
-    try {
-      upstream = await fetch(pipelineUrl, {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${pipelineToken}`,
-        },
-
-        body: JSON.stringify({
-          ...data,
-          form: 'conclave',
-          event: 'Nepal Wood Technical Conclave 2027',
-          submittedAt: new Date().toISOString(),
-        }),
-
-        signal: controller.signal,
-        cache: 'no-store',
-      });
-    } finally {
-      clearTimeout(timer);
-    }
-
-    const response = (await upstream.json().catch(
-      () => ({})
-    )) as {
-      ok?: boolean;
-      success?: boolean;
-      ref?: string;
-      error?: string;
-    };
-
-    if (
-      !upstream.ok ||
-      (response.ok !== true && response.success !== true)
-    ) {
-      console.error(
-        'Conclave pipeline failure',
-        upstream.status
-      );
-
-      return NextResponse.json(
-        {
-          ok: false,
-          error:
-            'Unable to complete registration. Please try again.',
-        },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        ok: true,
-        ref: response.ref || '',
-      },
-      { status: 200 }
-    );
+    // Only MongoDB is awaited. Email and Google Sheets run through after().
+    const result = await saveConclaveRegistration(parsed.data, meta);
+    return NextResponse.json({ ok: true, ref: result.ref });
   } catch (error) {
-    console.error(
-      'Conclave forwarding failed',
-      error instanceof Error
-        ? error.message
-        : 'Unknown'
-    );
-
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          'The registration service is unavailable. Please try again.',
-      },
-      { status: 503 }
-    );
+    console.error('[conclave] Registration failed', error);
+    return NextResponse.json({
+      ok: false,
+      error: 'Unable to save registration. Please try again.',
+    }, { status: 500 });
   }
 }
