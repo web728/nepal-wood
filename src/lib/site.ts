@@ -194,24 +194,25 @@ export const nav: NavItem[] = [
 {
   label: 'Conference',
   items: [
-    {
-      label: 'Technical Conclave 2027',
-      href: '/conference',
-      desc: 'Five technical seminars, industry panel and registrations',
-    },
+   
     {
       label: 'Seminars',
       href: '/seminars',
       desc: 'Industry sessions and expert discussions',
     },
-    {
-      label: 'Past Conferences 2025',
-      href: '/past-conferences',
-      desc: 'Explore the 2025 Timber Transformation and Interior Designers’ Day conferences',
+     {
+      label: 'Conferences',
+      href: '/conference',
+      desc: 'Industry sessions and expert discussions',
     },
+    // {
+    //   label: 'Past Conferences 2025',
+    //   href: '/past-conferences',
+    //   desc: 'Explore the 2025 Timber Transformation and Interior Designers’ Day conferences',
+    // },
     {
-      label: 'Past Edition Seminars',
-      href: '/past-edition-seminars',
+      label: 'Past Edition Conferences',
+      href: '/past-conferences',
       desc: 'Highlights from previous conference sessions',
     },
   ],
