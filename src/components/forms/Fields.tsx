@@ -72,23 +72,89 @@ export function Chips({ name, label, options, selected, onToggle, error, hint, r
   );
 }
 
-export function Choice<T extends string>({ name, label, options, value, onChange, error, className = 'span-2' }: { name: string; label: string; options: { value: T; label: string; desc?: string }[]; value: T; onChange: (v: T) => void; error?: string; className?: string }) {
+
+export function Choice<T extends string>({
+  name,
+  label,
+  options,
+  value,
+  onChange,
+  error,
+  className = 'span-2',
+}: {
+  name: string;
+  label: string;
+  options: {
+    value: T;
+    label: string;
+    desc?: string;
+  }[];
+  value: T;
+  onChange: (v: T) => void;
+  error?: string;
+  className?: string;
+}) {
   return (
-    <fieldset className={`field choice${error ? ' field--error' : ''} ${className}`} data-field={name}>
-      <legend>{label}</legend>
+    <fieldset
+      className={`field choice ${className}${error ? ' field--error' : ''}`}
+      data-field={name}
+      aria-invalid={Boolean(error)}
+    >
+      <legend className="choice__legend">
+        {label}
+      </legend>
+
       <div className="choice__list">
-        {options.map((o) => (
-          <label key={o.value} className={`choice__opt${value === o.value ? ' is-on' : ''}`}>
-            <input type="radio" name={name} value={o.value} checked={value === o.value} onChange={() => onChange(o.value)} />
-            <span className="choice__title">{o.label}</span>
-            {o.desc && <span className="choice__desc">{o.desc}</span>}
-          </label>
-        ))}
+        {options.map((option) => {
+          const selected = value === option.value;
+
+          return (
+            <label
+              key={option.value}
+              className={`choice__opt${selected ? ' is-on' : ''}`}
+            >
+              <input
+                className="choice__radio"
+                type="radio"
+                name={name}
+                value={option.value}
+                checked={selected}
+                onChange={() => onChange(option.value)}
+              />
+
+              <span className="choice__indicator" aria-hidden="true">
+                <span className="choice__indicator-dot" />
+              </span>
+
+              <span className="choice__content">
+                <span className="choice__title">
+                  {option.label}
+                </span>
+
+                {option.desc && (
+                  <span className="choice__desc">
+                    {option.desc}
+                  </span>
+                )}
+              </span>
+
+              <span className="choice__selected-icon" aria-hidden="true">
+                <Icon name="check" />
+              </span>
+            </label>
+          );
+        })}
       </div>
-      {error && <p className="field__error" role="alert">{error}</p>}
+
+      {error && (
+        <p className="field__error" role="alert">
+          {error}
+        </p>
+      )}
     </fieldset>
   );
 }
+
 
 export function Check({ name, checked, onChange, children, error }: { name: string; checked: boolean; onChange: (v: boolean) => void; children: React.ReactNode; error?: string }) {
   return (

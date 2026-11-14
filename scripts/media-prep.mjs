@@ -60,8 +60,8 @@ async function webPdf(src, dest, widthPx = 1400, quality = 74) {
   fs.writeFileSync(dest, bytes);
   console.log(dest, (bytes.length / 1048576).toFixed(1) + ' MB');
 }
-await webPdf('Nepal-Wood-Expo-2027-Brochure.pdf', 'public/downloads/nepal-wood-expo-2027-brochure.pdf', 1600, 76);
-await webPdf('10th Nepal Wood PSR 2025.pdf', 'public/downloads/nepal-wood-10th-edition-post-show-report.pdf');
-await webPdf('11th Nepal Wood PSR 2026 (1).pdf', 'public/downloads/nepal-wood-11th-edition-post-show-report.pdf');
-await webPdf('8th Nepal Wood PSR 2022.pdf', 'public/downloads/nepal-wood-8th-edition-post-show-report.pdf');
-await webPdf('NEPAL WOOD PSR 2022.pdf', 'public/downloads/nepal-wood-7th-edition-post-show-report.pdf');
+await webPdf('Nepal-Wood-Expo-2027-Brochure.pdf', 'public/downloads/12th_Nepal_Wood_International_Expo_2027_Brochure.pdf', 1600, 76);
+await webPdf('10th Nepal Wood PSR 2025.pdf', 'public/downloads/10th_Nepal_Wood_International_Expo_2025_Post_Show_Report.pdf');
+await webPdf('11th Nepal Wood PSR 2026 (1).pdf', 'public/downloads/11th_Nepal_Wood_International_Expo_2026_Post_Show_Report.pdf');
+await webPdf('8th Nepal Wood PSR 2022.pdf', 'public/downloads/8th_Nepal_Wood_International_Expo_2022_Post_Show_Report.pdf');
+await webPdf('NEPAL WOOD PSR 2022.pdf', 'public/downloads/7th_Nepal_Wood_International_Expo_2022_Post_Show_Report.pdf');

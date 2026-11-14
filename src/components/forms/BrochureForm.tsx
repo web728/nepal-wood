@@ -47,7 +47,31 @@ export default function BrochureForm() {
         <TextInput name="company" label="Company" required value={v.company} onChange={(x) => f.set('company', x)} error={f.errors.company} autoComplete="organization" />
         <TextInput name="email" label="Email" type="email" required value={v.email} onChange={(x) => f.set('email', x)} error={f.errors.email} autoComplete="email" inputMode="email" />
         <TextInput name="phone" label="Phone / WhatsApp" type="tel" required value={v.phone} onChange={(x) => f.set('phone', x)} error={f.errors.phone} autoComplete="tel" inputMode="tel" />
-        <Choice name="interest" label="I’m interested in" value={v.interest} onChange={(x) => f.set('interest', x)} options={[{ value: 'exhibiting', label: 'Exhibiting' }, { value: 'visiting', label: 'Visiting' }, { value: 'sponsoring', label: 'Sponsoring' }]} />
+       
+<Choice
+  name="interest"
+  label="I'm interested in"
+  value={v.interest}
+  onChange={(x) => f.set('interest', x)}
+  options={[
+    {
+      value: 'exhibiting',
+      label: 'Exhibiting',
+      desc: 'Book a stand',
+    },
+    {
+      value: 'visiting',
+      label: 'Visiting',
+      desc: 'Explore the expo',
+    },
+    {
+      value: 'sponsoring',
+      label: 'Sponsoring',
+      desc: 'Brand opportunities',
+    },
+  ]}
+/>
+
       </div>
       <div className="form-checks"><ConsentCheck checked={v.consent} onChange={(x) => f.set('consent', x)} error={f.errors.consent} purpose="to send me the brochure and follow up about the expo" /></div>
       <FormError message={f.status === 'error' ? f.result?.error || 'Please check the highlighted fields.' : undefined} />

@@ -226,11 +226,7 @@ export const nav: NavItem[] = [
         href: '/gallery',
         desc: 'Photos from previous editions',
       },
-      {
-        label: 'Post Show Report',
-        href: '/post-show-report',
-        desc: 'Previous edition highlights and event results',
-      },
+    
     ],
   },
   {
@@ -241,6 +237,11 @@ export const nav: NavItem[] = [
         href: '/downloads/event-brochure',
         desc: 'Download the event brochure',
       },
+        {
+        label: 'Post Show Report',
+        href: '/downloads/11th_Nepal_Wood_International_Expo_2026_Post_Show_Report.pdf',
+        desc: 'Previous edition highlights and event results',
+      },
     ],
   },
   {
@@ -250,12 +251,12 @@ export const nav: NavItem[] = [
 ];
 
 export const downloads = {
-  brochure: { file: '/downloads/nepal-wood-expo-2027-brochure.pdf', label: '2027 event brochure', size: '3.1 MB' },
+  brochure: { file: '/downloads/12th_Nepal_Wood_International_Expo_2027_Brochure.pdf', label: '2027 event brochure', size: '3.1 MB' },
   reports: [
-    { edition: '11th', dates: '19–21 Dec 2025', file: '/downloads/nepal-wood-11th-edition-post-show-report.pdf', size: '2.2 MB' },
-    { edition: '10th', dates: '17–19 Jan 2025', file: '/downloads/nepal-wood-10th-edition-post-show-report.pdf', size: '3.1 MB' },
-    { edition: '8th', dates: '27–29 Jan 2023', file: '/downloads/nepal-wood-8th-edition-post-show-report.pdf', size: '1.5 MB' },
-    { edition: '7th', dates: '7–9 Jan 2022', file: '/downloads/nepal-wood-7th-edition-post-show-report.pdf', size: '1.5 MB' },
+    { edition: '11th', dates: '19–21 Dec 2025', file: '/downloads/11th_Nepal_Wood_International_Expo_2026_Post_Show_Report.pdf', size: '2.2 MB' },
+    { edition: '10th', dates: '17–19 Jan 2025', file: '/downloads/10th_Nepal_Wood_International_Expo_2025_Post_Show_Report.pdf', size: '3.1 MB' },
+    { edition: '8th', dates: '27–29 Jan 2023', file: '/downloads/8th_Nepal_Wood_International_Expo_2023_Post_Show_Report.pdf', size: '1.5 MB' },
+    { edition: '7th', dates: '7–9 Jan 2022', file: '/downloads/7th_Nepal_Wood_International_Expo_2022_Post_Show_Report.pdf', size: '1.5 MB' },
   ],
 };
 
