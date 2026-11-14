@@ -1,9 +1,13 @@
+
 import 'server-only';
 
-// Supports either a Base64 Google service-account JSON (preferred) OR the existing
-// Apps Script webhook. Exactly one backend is selected per call: no double writes.
-export type SheetTab = 'Exhibitor enquiries' | 'Visitors' | 'Enquiries' | 'Brochure downloads';
-export type SheetRow = Record<string, string | number | boolean | null | undefined>;
+export type SheetTab = 'Website Enquiries';
+
+export type SheetRow = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
+
 export type SheetResult = {
   ok: boolean;
   at: Date;
@@ -13,159 +17,350 @@ export type SheetResult = {
   provider?: 'google-api' | 'apps-script';
 };
 
-const B64 = () => process.env.GOOGLE_SERVICE_ACCOUNT_BASE64 || process.env.GOOGLE_CREDENTIALS_BASE64;
-const SHEET_ID = () => process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_ID;
+const TAB: SheetTab = 'Website Enquiries';
+
+const HEADERS = [
+  'Date',
+  'Platform',
+  'Register As',
+  'Company Name',
+  'Contact Person',
+  'Designation',
+  'Email Id',
+  'Mobile No.',
+  'Website',
+  'Address',
+  'Country',
+  'Area of Interest',
+  'Info. Get From',
+  'Message',
+  'Corrections',
+  'STATUS 1',
+  'STATUS 2',
+  'STATUS 3',
+  'STATUS 4',
+  'STATUS 5',
+] as const;
+
+const ID_HEADER = 'Lead ID';
+
+const B64 = () =>
+  process.env.GOOGLE_SERVICE_ACCOUNT_BASE64 ||
+  process.env.GOOGLE_CREDENTIALS_BASE64;
+
+const SHEET_ID = () =>
+  process.env.GOOGLE_SHEET_ID ||
+  process.env.GOOGLE_SHEETS_ID;
 
 export function sheetsConfigured(): boolean {
-  return Boolean((B64() && SHEET_ID()) || process.env.SHEETS_WEBHOOK_URL);
+  return Boolean(
+    (B64() && SHEET_ID()) ||
+    process.env.SHEETS_WEBHOOK_URL
+  );
 }
 
-function asError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
+function errorMessage(error: unknown): string {
+  return error instanceof Error
+    ? error.message
+    : String(error);
 }
 
-function colLetter(index: number): string {
-  let n = index;
-  let result = '';
-  while (n > 0) {
-    n -= 1;
-    result = String.fromCharCode(65 + (n % 26)) + result;
-    n = Math.floor(n / 26);
+function cleanValue(
+  input: SheetRow[string]
+): string | number | boolean {
+  if (input === undefined || input === null) {
+    return '';
   }
-  return result;
+
+  return input;
 }
 
-function toValue(value: SheetRow[string]): string | number | boolean {
-  return value === null || value === undefined ? '' : value;
+function rowValues(row: SheetRow): (
+  string | number | boolean
+)[] {
+  return [
+    ...HEADERS.map((header) =>
+      cleanValue(row[header])
+    ),
+    String(row.ID || ''),
+  ];
 }
 
-async function upsertGoogleApi(tab: SheetTab, row: SheetRow): Promise<SheetResult> {
+function validateRow(
+  tab: SheetTab,
+  row: SheetRow
+): void {
+  if (tab !== TAB) {
+    throw new Error(
+      `Unexpected sheet tab: ${tab}`
+    );
+  }
+
+  if (
+    typeof row.ID !== 'string' ||
+    !row.ID.trim()
+  ) {
+    throw new Error(
+      'MongoDB Lead ID is required for Sheets append'
+    );
+  }
+}
+
+function checkHeaders(existing: string[]): void {
+  if (!existing.length) return;
+
+  for (let index = 0; index < HEADERS.length; index++) {
+    const expected = HEADERS[index];
+    const actual = (existing[index] || '').trim();
+
+    if (actual !== expected) {
+      throw new Error(
+        `Sheet header mismatch at column ${index + 1}: ` +
+        `expected "${expected}", found "${actual}"`
+      );
+    }
+  }
+
+  const idHeader = (existing[20] || '').trim();
+
+  if (idHeader && idHeader !== ID_HEADER) {
+    throw new Error(
+      `Column U is already in use: "${idHeader}"`
+    );
+  }
+}
+
+/* =========================================
+   GOOGLE SHEETS API
+========================================= */
+
+async function appendGoogleApi(
+  tab: SheetTab,
+  row: SheetRow
+): Promise<SheetResult> {
   const at = new Date();
+
   try {
+    validateRow(tab, row);
+
     const encoded = B64();
     const spreadsheetId = SHEET_ID();
-    if (!encoded || !spreadsheetId) throw new Error('Google Sheets credentials/ID missing');
-    if (typeof row.ID !== 'string' || !row.ID) throw new Error('Sheet row ID is required');
 
-    let json: { client_email?: string; private_key?: string };
+    if (!encoded || !spreadsheetId) {
+      throw new Error(
+        'Google Sheets credentials or ID missing'
+      );
+    }
+
+    let credentials: {
+      client_email?: string;
+      private_key?: string;
+    };
+
     try {
-      json = JSON.parse(Buffer.from(encoded.trim(), 'base64').toString('utf8'));
+      credentials = JSON.parse(
+        Buffer.from(
+          encoded.trim(),
+          'base64'
+        ).toString('utf8')
+      );
     } catch {
-      throw new Error('Invalid Base64 service-account JSON');
+      throw new Error(
+        'Invalid Base64 Google credentials'
+      );
     }
-    if (!json.client_email || !json.private_key) {
-      throw new Error('Service-account JSON needs client_email and private_key');
-    }
-    json.private_key = json.private_key.replace(/\\n/g, '\n');
 
-    // Dynamically import the client only when a sync is actually needed.
+    if (
+      !credentials.client_email ||
+      !credentials.private_key
+    ) {
+      throw new Error(
+        'Invalid Google service-account credentials'
+      );
+    }
+
+    credentials.private_key =
+      credentials.private_key.replace(/\\n/g, '\n');
+
     const { google } = await import('googleapis');
+
     const auth = new google.auth.GoogleAuth({
-      credentials: json,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      credentials,
+      scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+      ],
     });
-    const sheets = google.sheets({ version: 'v4', auth });
-    const quotedTab = `'${tab.replace(/'/g, "''")}'`;
 
-    // Respect the sheet's existing header order (including custom team columns).
-    const headerResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${quotedTab}!A1:ZZ1`,
-      timeout: 8000,
+    const sheets = google.sheets({
+      version: 'v4',
+      auth,
     });
-    const existingHeaders = (headerResponse.data.values?.[0] || []).map(String);
-    if (existingHeaders.length && existingHeaders[0] !== 'ID') {
-      throw new Error(`Tab ${tab}: first header must be ID`);
+
+    const quotedTab = "'Website Enquiries'";
+
+    // Read only the header row.
+    const headerResponse =
+      await sheets.spreadsheets.values.get(
+        {
+          spreadsheetId,
+          range: `${quotedTab}!A1:U1`,
+        },
+        {
+          timeout: 8000,
+        }
+      );
+
+    const existingHeaders = (
+      headerResponse.data.values?.[0] || []
+    ).map(String);
+
+    checkHeaders(existingHeaders);
+
+    // Create headers only when sheet is empty.
+    // Never replace the user's existing A:T headings.
+    if (!existingHeaders.length) {
+      await sheets.spreadsheets.values.update(
+        {
+          spreadsheetId,
+          range: `${quotedTab}!A1:U1`,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [[...HEADERS, ID_HEADER]],
+          },
+        },
+        {
+          timeout: 8000,
+        }
+      );
+    } else if (!existingHeaders[20]) {
+      // U is reserved for an internal unique lead ID.
+      await sheets.spreadsheets.values.update(
+        {
+          spreadsheetId,
+          range: `${quotedTab}!U1`,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [[ID_HEADER]],
+          },
+        },
+        {
+          timeout: 8000,
+        }
+      );
     }
 
-    const headers = existingHeaders.length ? [...existingHeaders] : Object.keys(row);
-    for (const key of Object.keys(row)) if (!headers.includes(key)) headers.push(key);
-    if (headers[0] !== 'ID') throw new Error(`Tab ${tab}: first column must be ID`);
-    if (headers.length > 702) throw new Error('Sheet exceeds 702 columns');
-    const lastCol = colLetter(headers.length);
-    if (headers.length !== existingHeaders.length) {
-      await sheets.spreadsheets.values.update({
-        spreadsheetId,
-        range: `${quotedTab}!A1:${lastCol}1`,
-        valueInputOption: 'RAW',
-        requestBody: { values: [headers] },
-        timeout: 8000,
-      });
-    }
+    // Retry safety: check whether this MongoDB lead
+    // already exists in the hidden ID column.
+    const idsResponse =
+      await sheets.spreadsheets.values.get(
+        {
+          spreadsheetId,
+          range: `${quotedTab}!U2:U`,
+        },
+        {
+          timeout: 8000,
+        }
+      );
 
-    // Find the ID in column A: retrying after an uncertain network response is an upsert.
-    const keysResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${quotedTab}!A2:A`,
-      timeout: 8000,
-    });
-    const idIndex = (keysResponse.data.values || []).findIndex((cells) => String(cells[0] ?? '') === row.ID);
-    const rowNumber = idIndex >= 0 ? idIndex + 2 : null;
+    const leadId = String(row.ID);
 
-    let existingCells: unknown[] = [];
-    if (rowNumber) {
-      const oldRow = await sheets.spreadsheets.values.get({
-        spreadsheetId,
-        range: `${quotedTab}!A${rowNumber}:${lastCol}${rowNumber}`,
-        timeout: 8000,
-      });
-      existingCells = oldRow.data.values?.[0] || [];
-    }
-
-    const values = headers.map((key, i) =>
-      Object.prototype.hasOwnProperty.call(row, key)
-        ? toValue(row[key])
-        : String(existingCells[i] ?? ''), // Keep extra columns the team edits manually.
+    const existingIndex = (
+      idsResponse.data.values || []
+    ).findIndex(
+      (cells: string[]) =>
+        String(cells[0] || '') === leadId
     );
 
-    const response = rowNumber
-      ? await sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${quotedTab}!A${rowNumber}:${lastCol}${rowNumber}`,
-          valueInputOption: 'RAW',
-          requestBody: { values: [values] },
-          timeout: 8000,
-        })
-      : await sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: `${quotedTab}!A:${lastCol}`,
-          valueInputOption: 'RAW', // User input MUST NOT be parsed as a sheet formula.
-          insertDataOption: 'INSERT_ROWS',
-          requestBody: { values: [values] },
-          timeout: 8000,
-        });
-
-    // values.update and values.append have DIFFERENT response shapes.
-    const updates = rowNumber
-      ? (response.data as { updatedRows?: number; updatedRange?: string })
-      : (response.data as { updates?: { updatedRows?: number; updatedRange?: string } }).updates;
-    if (updates?.updatedRows !== 1) {
-      throw new Error('Google Sheets API did not confirm exactly one updated row');
+    if (existingIndex !== -1) {
+      // Already appended successfully.
+      // Do not overwrite any of its fields.
+      return {
+        ok: true,
+        at,
+        provider: 'google-api',
+        updatedRange: `${quotedTab}!A${existingIndex + 2}:U${existingIndex + 2}`,
+      };
     }
+
+    // Append new row at the bottom of the table.
+    const response =
+      await sheets.spreadsheets.values.append(
+        {
+          spreadsheetId,
+          range: `${quotedTab}!A:U`,
+          valueInputOption: 'RAW',
+          insertDataOption: 'INSERT_ROWS',
+          requestBody: {
+            values: [rowValues(row)],
+          },
+        },
+        {
+          timeout: 8000,
+        }
+      );
+
+    const updates = response.data.updates;
+
+    if (updates?.updatedRows !== 1) {
+      throw new Error(
+        'Google Sheets did not confirm one appended row'
+      );
+    }
+
     return {
       ok: true,
       at,
       provider: 'google-api',
-      updatedRange: updates.updatedRange,
+      updatedRange: updates.updatedRange || undefined,
     };
   } catch (error) {
-    return { ok: false, at, provider: 'google-api', error: asError(error) };
+    return {
+      ok: false,
+      at,
+      provider: 'google-api',
+      error: errorMessage(error),
+    };
   }
 }
 
-async function upsertAppsScript(tab: SheetTab, row: SheetRow): Promise<SheetResult> {
+/* =========================================
+   GOOGLE APPS SCRIPT WEBHOOK
+========================================= */
+
+async function appendAppsScript(
+  tab: SheetTab,
+  row: SheetRow
+): Promise<SheetResult> {
   const at = new Date();
   const url = process.env.SHEETS_WEBHOOK_URL;
-  if (!url) return { ok: false, skipped: true, at, error: 'SHEETS_WEBHOOK_URL not configured' };
+
+  if (!url) {
+    return {
+      ok: false,
+      at,
+      skipped: true,
+      error: 'SHEETS_WEBHOOK_URL not configured',
+    };
+  }
+
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  const timeout = setTimeout(
+    () => controller.abort(),
+    10000
+  );
+
   try {
-    const res = await fetch(url, {
+    validateRow(tab, row);
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
       body: JSON.stringify({
         secret: process.env.SHEETS_WEBHOOK_SECRET || '',
-        action: 'upsert',
+        action: 'append',
         tab,
         row,
       }),
@@ -173,24 +368,73 @@ async function upsertAppsScript(tab: SheetTab, row: SheetRow): Promise<SheetResu
       signal: controller.signal,
       cache: 'no-store',
     });
-    const text = await res.text();
-    let body: { ok?: boolean; error?: string };
+
+    const raw = await response.text();
+
+    let result: {
+      ok?: boolean;
+      error?: string;
+      updatedRange?: string;
+    };
+
     try {
-      body = JSON.parse(text) as typeof body;
+      result = JSON.parse(raw);
     } catch {
-      throw new Error(`Apps Script returned non-JSON (HTTP ${res.status}); check deployment access`);
+      throw new Error(
+        `Apps Script returned invalid JSON (HTTP ${response.status})`
+      );
     }
-    if (!res.ok || !body.ok) throw new Error(body.error || `Apps Script HTTP ${res.status}`);
-    return { ok: true, at, provider: 'apps-script' };
+
+    if (!response.ok || !result.ok) {
+      throw new Error(
+        result.error ||
+          `Apps Script returned HTTP ${response.status}`
+      );
+    }
+
+    return {
+      ok: true,
+      at,
+      provider: 'apps-script',
+      updatedRange: result.updatedRange,
+    };
   } catch (error) {
-    return { ok: false, at, provider: 'apps-script', error: asError(error) };
+    return {
+      ok: false,
+      at,
+      provider: 'apps-script',
+      error: errorMessage(error),
+    };
   } finally {
     clearTimeout(timeout);
   }
 }
 
-export async function upsertSheetRow(tab: SheetTab, row: SheetRow): Promise<SheetResult> {
-  if (B64() && SHEET_ID()) return upsertGoogleApi(tab, row);
-  if (process.env.SHEETS_WEBHOOK_URL) return upsertAppsScript(tab, row);
-  return { ok: false, skipped: true, at: new Date(), error: 'No Google Sheets provider configured' };
+/* =========================================
+   PUBLIC DELIVERY FUNCTION
+========================================= */
+
+export async function upsertSheetRow(
+  tab: SheetTab,
+  row: SheetRow
+): Promise<SheetResult> {
+  // Function name kept for compatibility with
+  // existing lead-delivery.ts / admin actions.
+  //
+  // Behaviour is now append-only with ID check.
+
+  if (B64() && SHEET_ID()) {
+    return appendGoogleApi(tab, row);
+  }
+
+  if (process.env.SHEETS_WEBHOOK_URL) {
+    return appendAppsScript(tab, row);
+  }
+
+  return {
+    ok: false,
+    at: new Date(),
+    skipped: true,
+    error: 'No Google Sheets provider configured',
+  };
 }
