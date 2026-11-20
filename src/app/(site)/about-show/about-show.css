@@ -1,0 +1,245 @@
+/* ABOUT SHOW PAGE — self-contained page styling.
+   Imports in app/about-show/page.tsx using './about-show.css'.
+   Design tokens, buttons, typography and block components remain from global CSS. */
+
+.about-page {
+  --about-ease: cubic-bezier(.22, 1, .36, 1);
+  --about-section-space: clamp(64px, 6.8vw, 104px);
+  min-width: 0;
+}
+
+.about-page :is(.about-intro, .about-pillars, .about-journey, .about-record).section {
+  padding-block: var(--about-section-space);
+}
+
+.about-page :is(.about-intro, .about-pillars, .about-journey, .about-record) .container {
+  min-width: 0;
+}
+
+.about-page :is(.about-intro, .about-pillars, .about-journey, .about-record) :is(h2, h3, p) {
+  overflow-wrap: break-word;
+}
+
+.about-page .h-lg {
+  font-size: clamp(32px, 3.6vw, 51px);
+  line-height: 1.13;
+}
+
+.about-page .h-xl {
+  font-size: clamp(36px, 4.1vw, 58px);
+  line-height: 1.1;
+}
+
+/* INTRO: text and photo share a balanced, vertically centered row. */
+.about-page .about-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+  gap: clamp(32px, 5vw, 74px);
+  align-items: center;
+}
+
+.about-page .about-intro__copy { min-width: 0; }
+.about-page .about-intro__copy .eyebrow { margin-bottom: 17px; }
+.about-page .about-intro__copy h2 { max-width: 21ch; margin: 0 0 25px; }
+.about-page .about-intro__prose { max-width: 66ch; }
+.about-page .about-intro__prose p {
+  margin: 0 0 16px;
+  font-size: clamp(15px, 1.18vw, 17px);
+  line-height: 1.76;
+  color: var(--ink-soft);
+}
+.about-page .about-intro__prose p:last-child { margin-bottom: 0; }
+.about-page .about-intro__prose a {
+  color: var(--maroon-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.about-page .about-intro__media {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: 4 / 4.4;
+  max-height: 570px;
+  border-radius: var(--radius-lg, 16px);
+  background: var(--bark-800);
+}
+.about-page .about-intro__media img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform .8s var(--about-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .about-page .about-intro__media:hover img { transform: scale(1.035); }
+}
+
+/* THREE PILLARS */
+.about-page .about-pillars .section-head { margin-bottom: 32px; }
+
+/* GROWTH RINGS — entire set of classes supplied here; not in home.css. */
+.about-page .about-journey {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--bark-900);
+  color: var(--cream-100);
+}
+.about-page .rings__grid {
+  display: grid;
+  grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr);
+  gap: clamp(34px, 5.4vw, 84px);
+  align-items: start;
+}
+.about-page .rings__visual {
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
+}
+.about-page .rings__sticky {
+  position: sticky;
+  top: calc(var(--header-h, 80px) + 24px);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+.about-page .rings__svg { width: 100%; height: 100%; }
+.about-page .rings__svg .tree-rings__ring {
+  stroke-width: 1.6;
+  opacity: .5;
+  transition: opacity .5s ease, stroke .5s ease, stroke-width .5s ease;
+}
+.about-page .rings__svg .tree-rings__ring.is-lit { opacity: .85; }
+.about-page .rings__svg .tree-rings__ring.is-edge {
+  opacity: 1;
+  stroke: var(--cream-50);
+  stroke-width: 2.6;
+}
+.about-page .rings__readout {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.about-page .rings__readout span {
+  color: var(--cream-50);
+  font: 800 clamp(55px, 6.2vw, 82px)/.95 var(--font-display);
+  letter-spacing: -.05em;
+  text-shadow: 0 4px 24px rgba(18,10,7,.5);
+}
+.about-page .rings__readout small {
+  margin-top: 10px;
+  color: var(--copper-400);
+  font: 600 13px/1.3 var(--font-body);
+  letter-spacing: .19em;
+}
+.about-page .rings__content { min-width: 0; }
+.about-page .rings__content .eyebrow { margin-bottom: 16px; }
+.about-page .rings__content h2 {
+  margin: 0;
+  max-width: 19ch;
+  color: var(--cream-50);
+}
+.about-page .rings__intro {
+  max-width: 51ch;
+  margin: 22px 0 0;
+  color: rgba(251,241,231,.74);
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.7;
+}
+
+/* 2-column milestones avoid an unnecessarily tall middle section. */
+.about-page .timeline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(16px, 2.5vw, 32px);
+  margin: 32px 0 29px;
+  padding: 0;
+  list-style: none;
+}
+.about-page .timeline__item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 17px 0;
+  border-top: 1px solid var(--line-dark);
+  transition: border-color .35s ease, opacity .35s ease;
+}
+.about-page .timeline__item.is-active,
+.about-page .timeline__item.is-current {
+  border-top-color: var(--copper-400);
+}
+.about-page .timeline__ed {
+  padding-top: 1px;
+  color: var(--copper-400);
+  font: 700 clamp(24px, 2.1vw, 31px)/1.15 var(--font-display);
+  letter-spacing: -.04em;
+}
+.about-page .timeline__dates {
+  margin: 1px 0 6px;
+  color: var(--cream-50);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.about-page .timeline__note {
+  margin: 0;
+  color: rgba(251,241,231,.68);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.about-page .timeline__item.is-current .timeline__ed { color: var(--cream-50); }
+.about-page .rings__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--copper-300);
+  font-size: 14px;
+  font-weight: 600;
+}
+.about-page .rings__link svg { width: 18px; height: 18px; }
+.about-page .rings__link:hover { color: var(--cream-50); }
+.about-page .about-record .section-head { margin-bottom: 30px; }
+
+@media (max-width: 1100px) {
+  .about-page .rings__grid { grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); gap: 30px; }
+  .about-page .timeline { grid-template-columns: 1fr; }
+  .about-page .timeline__item { padding: 13px 0; }
+}
+
+@media (max-width: 800px) {
+  .about-page { --about-section-space: clamp(52px, 7vw, 76px); }
+  .about-page .about-intro__grid { grid-template-columns: 1fr; gap: 30px; }
+  .about-page .about-intro__media { aspect-ratio: 16 / 10; max-height: 430px; }
+  .about-page .rings__grid { grid-template-columns: 1fr; gap: 24px; }
+  .about-page .rings__visual { height: auto; }
+  .about-page .rings__sticky {
+    position: relative;
+    top: auto;
+    max-width: 280px;
+    margin-inline: auto;
+  }
+  .about-page .rings__readout span { font-size: 57px; }
+  .about-page .timeline { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width: 560px) {
+  .about-page .h-lg { font-size: clamp(30px, 8vw, 39px); }
+  .about-page .h-xl { font-size: clamp(34px, 8.5vw, 43px); }
+  .about-page .about-intro__media { aspect-ratio: 4 / 3; }
+  .about-page .rings__sticky { max-width: 240px; }
+  .about-page .timeline { grid-template-columns: 1fr; margin-top: 26px; }
+  .about-page .timeline__item { grid-template-columns: 52px minmax(0,1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-page .about-intro__media img,
+  .about-page .rings__svg .tree-rings__ring,
+  .about-page .timeline__item { transition: none !important; }
+}
