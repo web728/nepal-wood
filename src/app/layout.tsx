@@ -21,6 +21,11 @@ export const viewport: Viewport = { themeColor: '#1c110c', width: 'device-width'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${serif.variable}`}>
+      <head>
+        {/* Resolving these hosts early helps when the form mounts. */}
+        <link rel="preconnect" href="https://www.google.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         {children}

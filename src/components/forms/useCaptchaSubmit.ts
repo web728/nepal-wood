@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 
 type FormState = 'idle' | 'sending' | 'done' | 'error';
 
-/** Shared reCAPTCHA v2 state and retry handling for lead forms. */
+/** Shared token/error handling. Keep the existing useLeadForm API unchanged. */
 export function useCaptchaSubmit(
   status: FormState,
   submit: (event?: FormEvent, token?: string) => Promise<unknown>,
@@ -30,7 +30,7 @@ export function useCaptchaSubmit(
     event.preventDefault();
     if (status === 'sending' || status === 'done') return;
     if (!token) {
-      setError('Please complete the “I’m not a robot” verification.');
+      setError('Please complete the “I’m not a robot” checkbox.');
       return;
     }
     setError('');
