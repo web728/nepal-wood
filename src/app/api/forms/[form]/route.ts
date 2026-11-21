@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { schemas, antiSpam, fieldErrors, type FormKind } from '@/lib/forms';
 import { saveExhibitor, saveVisitor, saveEnquiry, saveBrochure, type LeadMeta } from '@/lib/leads';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
-import { verifyRecaptcha } from '@/lib/recaptcha';
+import { verifyRecaptchaDetailed } from '@/lib/recaptcha';
 import { dbConfigured } from '@/lib/db';
 import { downloads } from '@/lib/site';
 
@@ -70,8 +70,19 @@ export async function POST(request: NextRequest, ctx: Context) {
   if (!dbConfigured()) return fail('Registration is temporarily unavailable.', 503);
 
   // Crucial: server verification, not just client-side checkbox state.
-  if (!(await verifyRecaptcha(body.recaptchaToken))) {
-    return fail('Human verification failed or expired. Please try again.', 422);
+  const captcha = await verifyRecaptchaDetailed(body.recaptchaToken);
+  if (!captcha.ok) {
+    // Configuration/network failures are operational errors, not invalid user input.
+    if (captcha.reason === 'secret_missing' || captcha.reason === 'verification_unavailable') {
+      return fail('Verification service is temporarily unavailable. Please try again shortly.', 503);
+    }
+    if (captcha.reason === 'hostname_mismatch' || captcha.reason === 'hostname_missing') {
+      return fail('Verification is not configured correctly for this website. Please contact the organisers.', 503);
+    }
+    if (captcha.reason === 'google_rejected' && captcha.codes?.includes('invalid-input-secret')) {
+      return fail('Verification service configuration error. Please contact the organisers.', 503);
+    }
+    return fail('Human verification failed or expired. Please tick the checkbox again.', 422);
   }
 
   const rawMeta = body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
