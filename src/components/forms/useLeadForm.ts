@@ -1,39 +1,47 @@
 'use client';
+
 import { useRef, useState } from 'react';
+import type { FormEvent } from 'react';
 import type { ZodType } from 'zod';
 import { fieldErrors, type FormKind } from '@/lib/forms';
 import { attribution, track } from '@/lib/track';
 
-type Result = { ok: boolean; ref?: string; badgeUrl?: string; download?: string; existing?: boolean; error?: string; errors?: Record<string, string> };
+type Result = {
+  ok: boolean;
+  badgeUrl?: string;
+  download?: string;
+  existing?: boolean;
+  error?: string;
+  errors?: Record<string, string>;
+};
 
-/** State + submit logic shared by every lead form: client-side zod checks, anti-spam fields, attribution, analytics. */
-export function useLeadForm<T extends Record<string, unknown>>(kind: FormKind, schema: ZodType, initial: T) {
+export function useLeadForm<T extends Record<string, unknown>>(
+  kind: FormKind,
+  schema: ZodType,
+  initial: T,
+) {
   const [values, setValues] = useState<T>(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [result, setResult] = useState<Result | null>(null);
-  const startedAt = useRef<number>(Date.now());
+  const startedAt = useRef(Date.now());
   const honeypot = useRef<HTMLInputElement>(null);
+  const inFlight = useRef(false);
 
   const set = <K extends keyof T>(key: K, value: T[K]) => {
-    setValues((v) => ({ ...v, [key]: value }));
-    if (errors[key as string]) setErrors((e) => { const n = { ...e }; delete n[key as string]; return n; });
+    setValues((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => {
+      if (!prev[String(key)]) return prev;
+      const next = { ...prev };
+      delete next[String(key)];
+      return next;
+    });
+    if (status === 'error') setStatus('idle');
   };
 
   const toggleIn = (key: keyof T, item: string) => {
-    const arr = (values[key] as unknown as string[]) || [];
-    set(key, (arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]) as T[keyof T]);
-  };
-
-  /** Validates a subset of fields (for multi-step forms). Returns true when they pass. */
-  const validateFields = (keys: (keyof T)[]) => {
-    const parsed = schema.safeParse(values);
-    if (parsed.success) return true;
-    const all = fieldErrors(parsed.error);
-    const subset = Object.fromEntries(Object.entries(all).filter(([k]) => keys.includes(k as keyof T)));
-    setErrors((e) => ({ ...e, ...subset }));
-    focusFirst(Object.keys(subset));
-    return Object.keys(subset).length === 0;
+    const current = (values[key] as string[] | undefined) || [];
+    set(key, (current.includes(item) ? current.filter((x) => x !== item) : [...current, item]) as T[keyof T]);
   };
 
   const focusFirst = (keys: string[]) => {
@@ -45,38 +53,73 @@ export function useLeadForm<T extends Record<string, unknown>>(kind: FormKind, s
     });
   };
 
-  const submit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (status === 'sending') return;
+  const validateFields = (keys: (keyof T)[]) => {
+    const parsed = schema.safeParse(values);
+    if (parsed.success) return true;
+    const all = fieldErrors(parsed.error);
+    const subset = Object.fromEntries(Object.entries(all).filter(([key]) => keys.includes(key as keyof T)));
+    setErrors((prev) => ({ ...prev, ...subset }));
+    focusFirst(Object.keys(subset));
+    return !Object.keys(subset).length;
+  };
+
+  // Every form must pass its own fresh reCAPTCHA token as the second argument.
+  const submit = async (event?: FormEvent, recaptchaToken?: string) => {
+    event?.preventDefault();
+    if (inFlight.current || status === 'done') return;
+
     const parsed = schema.safeParse(values);
     if (!parsed.success) {
-      const errs = fieldErrors(parsed.error);
-      setErrors(errs);
-      focusFirst(Object.keys(errs));
+      const validation = fieldErrors(parsed.error);
+      setErrors(validation);
+      focusFirst(Object.keys(validation));
       return;
     }
+    if (!recaptchaToken) {
+      setResult({ ok: false, error: 'Please complete the “I’m not a robot” verification.' });
+      setStatus('error');
+      return;
+    }
+
+    inFlight.current = true;
     setStatus('sending');
+    setErrors({});
+    setResult(null);
+
     try {
-      const res = await fetch(`/api/forms/${kind}`, {
+      const response = await fetch(`/api/forms/${kind}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: parsed.data, meta: attribution(), website_url: honeypot.current?.value || '', startedAt: startedAt.current }),
+        cache: 'no-store',
+        body: JSON.stringify({
+          data: parsed.data,
+          recaptchaToken,
+          meta: attribution(),
+          website_url: honeypot.current?.value || '',
+          startedAt: startedAt.current,
+        }),
       });
-      const json: Result = await res.json().catch(() => ({ ok: false, error: 'Unexpected response' }));
-      if (!res.ok || !json.ok) {
-        if (json.errors) { setErrors(json.errors); focusFirst(Object.keys(json.errors)); }
+      const json = (await response.json().catch(() => ({ ok: false, error: 'Unexpected server response.' }))) as Result;
+      if (!response.ok || !json.ok) {
+        if (json.errors) {
+          setErrors(json.errors);
+          focusFirst(Object.keys(json.errors));
+        }
         setResult(json);
         setStatus('error');
         return;
       }
+
       setResult(json);
       setStatus('done');
       track('generate_lead', { form: kind, value: kind === 'exhibitor' ? 1 : 0 });
       if (kind === 'brochure') track('file_download', { file_name: 'nepal-wood-expo-2027-brochure.pdf' });
       return json;
     } catch {
-      setResult({ ok: false, error: 'Network problem. Please check your connection and try again.' });
+      setResult({ ok: false, error: 'Connection problem. Please try again.' });
       setStatus('error');
+    } finally {
+      inFlight.current = false;
     }
   };
 

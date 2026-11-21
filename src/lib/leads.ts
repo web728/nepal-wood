@@ -1,137 +1,89 @@
 import 'server-only';
 import { getDb, COLLECTIONS } from './db';
-import { scheduleLeadDeliveries, initialDeliveries } from './lead-delivery';
+import { initialDeliveries, scheduleLeadDeliveries } from './lead-delivery';
 import { shortCode, urlToken } from './ids';
 import { event } from './site';
 import type { ExhibitorInput, VisitorInput, EnquiryInput, BrochureInput } from './forms';
 
-// Preserve existing exports for admin/directory integrations.
 export { exhibitorRow, visitorRow, enquiryRow, brochureRow, sheetFor } from './lead-content';
 export { syncToSheet } from './lead-delivery';
-
 export type LeadMeta = {
-  source?: string;
-  medium?: string;
-  campaign?: string;
-  referrer?: string;
-  page?: string;
-  ip?: string;
-  ua?: string;
+  source?: string; medium?: string; campaign?: string; referrer?: string;
+  page?: string; ip?: string; ua?: string;
 };
 
-// If after() cannot be scheduled, do NOT turn a successfully saved lead into a 500.
-// The cron processor will still find its pending tasks in MongoDB.
-function kick(...args: Parameters<typeof scheduleLeadDeliveries>): void {
+function duplicateKey(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === 11000;
+}
+function kick(...args: Parameters<typeof scheduleLeadDeliveries>) {
   try { scheduleLeadDeliveries(...args); }
-  catch (error) { console.error('[leads] post-response scheduling failed; cron will retry', error); }
+  catch (err) { console.error('[leads] delivery scheduling failed; cron should retry', err); }
 }
 
-const duplicateKey = (error: unknown) =>
-  typeof error === 'object' && error !== null && 'code' in error && error.code === 11000;
-
 export async function saveExhibitor(input: ExhibitorInput, meta: LeadMeta) {
-  const db = await getDb();
-  const col = db.collection(COLLECTIONS.exhibitors);
-  for (let i = 0; i < 5; i++) {
-    const doc = {
-      ...input,
-      ref: `EX-${shortCode(8)}`,
-      status: 'new',
-      notes: '',
-      meta,
-      createdAt: new Date(),
-      deliveries: initialDeliveries(COLLECTIONS.exhibitors),
-    };
+  const col = (await getDb()).collection(COLLECTIONS.exhibitors);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const doc = { ...input, ref: `EX-${shortCode(8)}`, status: 'new', notes: '',
+      meta, createdAt: new Date(), deliveries: initialDeliveries(COLLECTIONS.exhibitors) };
     try {
       const { insertedId } = await col.insertOne(doc);
       kick(COLLECTIONS.exhibitors, insertedId);
       return { ref: doc.ref };
-    } catch (error) {
-      if (!duplicateKey(error)) throw error;
-    }
+    } catch (error) { if (!duplicateKey(error)) throw error; }
   }
-  throw new Error('Could not allocate exhibitor enquiry reference');
+  throw new Error('Could not allocate exhibitor reference');
 }
 
 export async function saveVisitor(input: VisitorInput, meta: LeadMeta) {
-  const db = await getDb();
-  const col = db.collection(COLLECTIONS.visitors);
-  const existing = await col.findOne({ email: input.email });
-  if (existing) return {
-    badgeId: existing.badgeId as string,
-    token: existing.token as string,
-    existing: true,
-  };
-
+  const col = (await getDb()).collection(COLLECTIONS.visitors);
+  // CRITICAL: never return an existing badge token based solely on an email entered in a form.
+  // Use email OTP / expiring verification link before releasing an existing badge.
+  if (await col.findOne({ email: input.email }, { projection: { _id: 1 } })) {
+    return { existing: true as const, token: null, badgeId: null };
+  }
   for (let attempt = 0; attempt < 5; attempt++) {
-    const doc = {
-      ...input,
-      badgeId: `${event.badgePrefix}-${shortCode(8)}`,
-      token: urlToken(),
-      checkedInAt: null,
-      meta,
-      createdAt: new Date(),
-      deliveries: initialDeliveries(COLLECTIONS.visitors),
-    };
+    const doc = { ...input, badgeId: `${event.badgePrefix}-${shortCode(8)}`,
+      token: urlToken(), checkedInAt: null, meta, createdAt: new Date(),
+      deliveries: initialDeliveries(COLLECTIONS.visitors) };
     try {
       const { insertedId } = await col.insertOne(doc);
       kick(COLLECTIONS.visitors, insertedId);
-      return { badgeId: doc.badgeId, token: doc.token, existing: false };
+      return { existing: false as const, badgeId: doc.badgeId, token: doc.token };
     } catch (error) {
       if (!duplicateKey(error)) throw error;
-      const duplicate = await col.findOne({ email: input.email });
-      if (duplicate) return {
-        badgeId: duplicate.badgeId as string,
-        token: duplicate.token as string,
-        existing: true,
-      };
-      // Rare badgeId/token collision: retry with fresh IDs.
+      if (await col.findOne({ email: input.email }, { projection: { _id: 1 } })) {
+        return { existing: true as const, badgeId: null, token: null };
+      }
+      // Badge code/token collision: retry with newly generated values.
     }
   }
   throw new Error('Could not allocate visitor badge');
 }
 
 export async function saveEnquiry(input: EnquiryInput, meta: LeadMeta) {
-  const db = await getDb();
-  const col = db.collection(COLLECTIONS.enquiries);
-  for (let i = 0; i < 5; i++) {
-    const doc = {
-      ...input,
-      ref: `EN-${shortCode(8)}`,
-      status: 'new',
-      meta,
-      createdAt: new Date(),
-      deliveries: initialDeliveries(COLLECTIONS.enquiries),
-    };
+  const col = (await getDb()).collection(COLLECTIONS.enquiries);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const doc = { ...input, ref: `EN-${shortCode(8)}`, status: 'new', meta,
+      createdAt: new Date(), deliveries: initialDeliveries(COLLECTIONS.enquiries) };
     try {
       const { insertedId } = await col.insertOne(doc);
       kick(COLLECTIONS.enquiries, insertedId);
       return { ref: doc.ref };
-    } catch (error) {
-      if (!duplicateKey(error)) throw error;
-    }
+    } catch (error) { if (!duplicateKey(error)) throw error; }
   }
   throw new Error('Could not allocate enquiry reference');
 }
 
 export async function saveBrochure(input: BrochureInput, meta: LeadMeta) {
-  const db = await getDb();
-  const col = db.collection(COLLECTIONS.brochure);
-  for (let i = 0; i < 5; i++) {
-    const doc = {
-      ...input,
-      ref: `BR-${shortCode(8)}`,
-      meta,
-      createdAt: new Date(),
-      deliveries: initialDeliveries(COLLECTIONS.brochure),
-    };
+  const col = (await getDb()).collection(COLLECTIONS.brochure);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const doc = { ...input, ref: `BR-${shortCode(8)}`, meta,
+      createdAt: new Date(), deliveries: initialDeliveries(COLLECTIONS.brochure) };
     try {
       const { insertedId } = await col.insertOne(doc);
       kick(COLLECTIONS.brochure, insertedId);
       return { ref: doc.ref };
-    } catch (error) {
-      if (!duplicateKey(error)) throw error;
-    }
+    } catch (error) { if (!duplicateKey(error)) throw error; }
   }
   throw new Error('Could not allocate brochure reference');
 }

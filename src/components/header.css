@@ -1,0 +1,371 @@
+/* Nepal Wood header — scoped styles. No footer or page-wide overrides. */
+
+/* ---------- Ticker (right to left, infinite) ---------- */
+
+.nw-ticker {
+  height: var(--ticker-h, 38px);
+  background: var(--bark-950, #120a07);
+  color: var(--cream-200, #f3e4d4);
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.nw-ticker__inner {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.nw-ticker__track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 40px;
+  padding-right: 40px;
+  min-width: 100%;
+  width: max-content;
+  will-change: transform;
+  animation: nw-ticker-scroll 70s linear infinite;
+}
+
+.nw-ticker:hover .nw-ticker__track { animation-play-state: paused; }
+
+.nw-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+
+.nw-ticker__item::before {
+  content: '';
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--copper-400, #dd9d59);
+}
+
+.nw-ticker__item--live::before {
+  background: #64c77b;
+  box-shadow: 0 0 0 0 rgba(100,199,123,.6);
+  animation: nw-live-pulse 1.8s ease-out infinite;
+}
+
+/* Two identical tracks: each moves by its own width, so the loop is seamless. */
+@keyframes nw-ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes nw-live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(100,199,123,.55); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(100,199,123,0); }
+}
+
+/* ---------- Header ---------- */
+
+.nw-header {
+  --nw-header-height: 80px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nw-header-height);
+  border-bottom: 1px solid var(--line, rgba(26,17,13,.12));
+  background: rgba(255,250,245,.96);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.nw-header__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 32px);
+  height: 100%;
+  min-width: 0;
+}
+
+.nw-header__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: none;
+  min-width: 0;
+}
+
+.nw-header__brand img {
+  display: block;
+  width: auto;
+  height: 60px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* ---------- Desktop nav ---------- */
+
+/* The nav and its items take the full header height, so there is no dead gap
+   between a link and its dropdown (the menu no longer flickers shut). */
+.nw-nav { margin-left: auto; align-self: stretch; min-width: 0; }
+.nw-nav__list {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  height: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nw-nav__item { position: relative; display: flex; align-items: center; }
+
+.nw-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft, #4a3a32);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+/* Small underline for the active page. */
+.nw-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--maroon-600, #9b2a29);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s ease;
+}
+
+.nw-nav__link:hover,
+.nw-nav__item.is-open > .nw-nav__link {
+  background: rgba(26,17,13,.05);
+  color: var(--maroon-700, #842322);
+}
+
+.nw-nav__link[aria-current='page'],
+.nw-nav__link.is-active { color: var(--maroon-700, #842322); }
+
+.nw-nav__link[aria-current='page']::after,
+.nw-nav__link.is-active::after { transform: scaleX(1); }
+
+.nw-nav__link:focus-visible,
+.nw-nav__sub-link:focus-visible,
+.nw-header__button:focus-visible,
+.nw-menu-toggle:focus-visible {
+  outline: 2px solid var(--maroon-600, #9b2a29);
+  outline-offset: 2px;
+}
+
+.nw-nav__link svg { width: 13px; height: 13px; transition: transform .25s ease; }
+.nw-nav__item.is-open > .nw-nav__link svg { transform: rotate(180deg); }
+
+.nw-nav__menu {
+  position: absolute;
+  top: calc(100% - 10px);
+  left: 0;
+  width: min(320px, 90vw);
+  padding: 8px;
+  border: 1px solid var(--line, rgba(26,17,13,.12));
+  border-radius: 14px;
+  background: var(--cream-50, #fffaf5);
+  box-shadow: 0 20px 50px rgba(18,10,7,.16);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity .2s ease, transform .25s ease, visibility 0s linear .25s;
+}
+
+/* The last dropdowns open towards the left so they never leave the screen. */
+.nw-nav__item--dropdown:nth-last-child(-n+2) .nw-nav__menu { left: auto; right: 0; }
+
+.nw-nav__item.is-open > .nw-nav__menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity .2s ease, transform .25s ease, visibility 0s;
+}
+
+.nw-nav__sub-link {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 9px;
+  color: var(--ink, #1a110d);
+  transition: background-color .18s ease;
+}
+.nw-nav__sub-link:hover,
+.nw-nav__sub-link:focus-visible { background: var(--cream-100, #fbf1e7); }
+.nw-nav__sub-link[aria-current='page'] { background: var(--cream-100, #fbf1e7); color: var(--maroon-700, #842322); }
+.nw-nav__sub-link span { display: block; font-size: 14px; font-weight: 650; line-height: 1.35; }
+.nw-nav__sub-link small { display: block; margin-top: 4px; color: var(--ink-muted, #75645a); font-size: 12px; line-height: 1.45; }
+
+/* ---------- Buttons ---------- */
+
+.nw-header__actions { display: flex; align-items: center; gap: 10px; flex: none; }
+.nw-header__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.nw-header__button:active { transform: translateY(1px); }
+.nw-header__button svg { width: 15px; height: 15px; transition: transform .2s ease; }
+.nw-header__button:hover svg { transform: translateX(3px); }
+.nw-header__button--solid { background: var(--maroon-600, #9b2a29); color: #fff; }
+.nw-header__button--solid:hover { background: var(--maroon-700, #842322); }
+.nw-header__button--outline { border-color: var(--line-strong, rgba(26,17,13,.22)); color: var(--ink, #1a110d); }
+.nw-header__button--outline:hover { background: var(--cream-200, #f3e4d4); }
+
+/* Laptop widths: slightly tighter so nothing feels crowded. */
+@media (min-width: 1201px) and (max-width: 1420px) {
+  .nw-header__inner { gap: 16px; }
+  .nw-nav__list { gap: 2px; }
+  .nw-nav__link { padding: 10px 9px; font-size: 13.5px; }
+  .nw-nav__link::after { left: 9px; right: 9px; }
+  .nw-header__button { padding: 0 13px; }
+  .nw-header__brand img { height: 56px; }
+}
+
+/* ---------- Mobile toggle ---------- */
+
+.nw-menu-toggle {
+  display: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong, rgba(26,17,13,.22));
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink, #1a110d);
+  cursor: pointer;
+}
+.nw-menu-toggle__bars,
+.nw-menu-toggle__bars::before,
+.nw-menu-toggle__bars::after {
+  display: block;
+  width: 19px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform .25s ease, opacity .2s ease;
+}
+.nw-menu-toggle__bars { position: relative; }
+.nw-menu-toggle__bars::before,
+.nw-menu-toggle__bars::after { content: ''; position: absolute; left: 0; }
+.nw-menu-toggle__bars::before { transform: translateY(-6px); }
+.nw-menu-toggle__bars::after { transform: translateY(6px); }
+.nw-menu-toggle.is-open .nw-menu-toggle__bars { background: transparent; }
+.nw-menu-toggle.is-open .nw-menu-toggle__bars::before { transform: rotate(45deg); }
+.nw-menu-toggle.is-open .nw-menu-toggle__bars::after { transform: rotate(-45deg); }
+
+.nw-mobile-menu { display: none; }
+
+@media (max-width: 1200px) {
+  .nw-nav { display: none; }
+  .nw-header__actions { margin-left: auto; }
+  .nw-menu-toggle { display: inline-flex; }
+  .nw-mobile-menu {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100dvh - var(--nw-header-height) - var(--ticker-h, 38px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 var(--gutter, 20px);
+    border-top: 1px solid var(--line-dark, rgba(243,228,212,.14));
+    background: var(--bark-900, #1c110c);
+    color: var(--cream-100, #fbf1e7);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity .23s ease, transform .28s ease, visibility 0s linear .28s;
+  }
+  .nw-mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity .23s ease, transform .28s ease, visibility 0s;
+  }
+  .nw-mobile-menu__inner { max-width: 800px; margin-inline: auto; padding: 14px 0 30px; }
+  .nw-mobile-menu__group { border-bottom: 1px solid var(--line-dark, rgba(243,228,212,.14)); }
+  .nw-mobile-menu__single,
+  .nw-mobile-menu__group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 2px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+  .nw-mobile-menu__group summary { list-style: none; }
+  .nw-mobile-menu__group summary::-webkit-details-marker { display: none; }
+  .nw-mobile-menu__group summary svg { width: 16px; height: 16px; transition: transform .2s ease; }
+  .nw-mobile-menu__group[open] summary svg { transform: rotate(180deg); }
+  .nw-mobile-menu__sub-links { display: grid; gap: 2px; padding: 0 2px 14px 16px; }
+  .nw-mobile-menu__sub-links a { display: block; padding: 9px 0; color: var(--cream-200, #f3e4d4); font-size: 14.5px; }
+  .nw-mobile-menu a[aria-current='page'] { color: var(--copper-300, #ebc08f); }
+  .nw-mobile-menu__actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 24px; }
+  .nw-mobile-menu__actions .nw-header__button { min-height: 46px; }
+  .nw-mobile-menu__actions .nw-header__button--outline { color: var(--cream-100, #fbf1e7); border-color: var(--line-dark-strong, rgba(243,228,212,.26)); }
+  .nw-mobile-menu__actions .nw-header__button--outline:hover { background: rgba(255,255,255,.1); }
+}
+
+@media (max-width: 680px) {
+  .nw-header { --nw-header-height: 70px; }
+  .nw-header__brand img { height: 52px; }
+  .nw-header__actions { display: none; }
+  .nw-menu-toggle { margin-left: auto; }
+  .nw-ticker { font-size: 11px; }
+  .nw-ticker__track { gap: 28px; padding-right: 28px; animation-duration: 60s; }
+  .nw-mobile-menu__actions { display: grid; }
+  .nw-mobile-menu__actions .nw-header__button { width: 100%; }
+}
+
+/* Reduced motion: ticker is NOT stopped (it was the reason it looked frozen),
+   it just moves slower. Hover effects and menu transitions are simplified. */
+@media (prefers-reduced-motion: reduce) {
+  .nw-ticker__track { animation-duration: 130s; }
+  .nw-ticker__item--live::before { animation: none; }
+  .nw-mobile-menu, .nw-nav__menu, .nw-menu-toggle__bars,
+  .nw-menu-toggle__bars::before, .nw-menu-toggle__bars::after { transition: none; }
+}

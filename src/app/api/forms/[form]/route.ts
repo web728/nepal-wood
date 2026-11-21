@@ -1,217 +1,81 @@
-
-import {
-  NextResponse,
-  type NextRequest,
-} from 'next/server';
-
-import {
-  schemas,
-  antiSpam,
-  fieldErrors,
-  type FormKind,
-} from '@/lib/forms';
-
-import {
-  saveExhibitor,
-  saveVisitor,
-  saveEnquiry,
-  saveBrochure,
-  type LeadMeta,
-} from '@/lib/leads';
-
-import {
-  rateLimit,
-  clientIp,
-} from '@/lib/rate-limit';
-
+import { NextResponse, type NextRequest } from 'next/server';
+import { schemas, antiSpam, fieldErrors, type FormKind } from '@/lib/forms';
+import { saveExhibitor, saveVisitor, saveEnquiry, saveBrochure, type LeadMeta } from '@/lib/leads';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 import { dbConfigured } from '@/lib/db';
 import { downloads } from '@/lib/site';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-type RouteContext = {
-  params: Promise<{
-    form: string;
-  }>;
-};
-
-type FormBody = {
+const MAX_BODY_BYTES = 20_000;
+type Context = { params: Promise<{ form: string }> };
+type Body = {
   data?: unknown;
   meta?: unknown;
   website_url?: unknown;
   startedAt?: unknown;
+  recaptchaToken?: unknown;
 };
+const responseHeaders = { 'Cache-Control': 'no-store' };
+const fail = (error: string, status: number, errors?: Record<string, string>) =>
+  NextResponse.json({ ok: false, error, ...(errors ? { errors } : {}) }, { status, headers: responseHeaders });
 
-function text(
-  input: unknown,
-  maxLength = 200
-): string | undefined {
-  return typeof input === 'string'
-    ? input.slice(0, maxLength)
-    : undefined;
+function text(value: unknown, max = 200): string | undefined {
+  return typeof value === 'string' ? value.slice(0, max) : undefined;
 }
 
-export async function POST(
-  req: NextRequest,
-  ctx: RouteContext
-) {
+export async function POST(request: NextRequest, ctx: Context) {
   const { form } = await ctx.params;
-
-  /* ------------------------------------
-     VERIFY FORM TYPE
-  ------------------------------------ */
-
-  if (!Object.prototype.hasOwnProperty.call(schemas, form)) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Unknown form.',
-      },
-      {
-        status: 404,
-      }
-    );
-  }
-
+  if (!Object.prototype.hasOwnProperty.call(schemas, form)) return fail('Unknown form.', 404);
   const kind = form as FormKind;
 
-  /* ------------------------------------
-     PARSE REQUEST
-  ------------------------------------ */
-
-  let body: FormBody;
-
-  try {
-    const payload: unknown = await req.json();
-
-    if (
-      payload === null ||
-      typeof payload !== 'object' ||
-      Array.isArray(payload)
-    ) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: 'Invalid request.',
-        },
-        {
-          status: 400,
-        }
-      );
+  // Browser same-origin policy: protect against cross-site form posts.
+  const origin = request.headers.get('origin');
+  if (origin && origin !== request.nextUrl.origin) {
+    // For reverse-proxy setups, configure this with your known public domains.
+    const allowed = new Set(['https://nepalwood.com.np', 'https://www.nepalwood.com.np']);
+    if (process.env.NODE_ENV !== 'production') {
+      allowed.add('http://localhost:3000');
+      allowed.add('http://127.0.0.1:3000');
     }
+    if (!allowed.has(origin)) return fail('Invalid request origin.', 403);
+  }
 
-    body = payload as FormBody;
+  const length = Number(request.headers.get('content-length') || 0);
+  if (length > MAX_BODY_BYTES) return fail('Request too large.', 413);
+
+  let body: Body;
+  try {
+    const raw = await request.text();
+    if (Buffer.byteLength(raw, 'utf8') > MAX_BODY_BYTES) return fail('Request too large.', 413);
+    const payload: unknown = JSON.parse(raw);
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return fail('Invalid request.', 400);
+    body = payload as Body;
   } catch {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Invalid JSON request.',
-      },
-      {
-        status: 400,
-      }
-    );
+    return fail('Invalid JSON request.', 400);
   }
 
-  /* ------------------------------------
-     ANTI-SPAM VALIDATION
-  ------------------------------------ */
+  const spam = antiSpam.safeParse({ website_url: body.website_url, startedAt: body.startedAt });
+  if (!spam.success) return fail('Invalid submission.', 400);
 
-  const spam = antiSpam.safeParse({
-    website_url: body.website_url,
-    startedAt: body.startedAt,
-  });
-
-  if (!spam.success) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Invalid submission.',
-      },
-      {
-        status: 400,
-      }
-    );
+  const ip = clientIp(request.headers);
+  if (!rateLimit(`${kind}:${ip}`, kind === 'visitor' ? 12 : 8)) {
+    return fail('Too many submissions. Please try again later.', 429);
   }
-
-  // Do not return false success for fast submissions.
-  // A successful response must follow an actual DB save.
-
-  /* ------------------------------------
-     RATE LIMIT
-  ------------------------------------ */
-
-  const ip = clientIp(req.headers);
-
-  const allowed = rateLimit(
-    `${kind}:${ip}`,
-    kind === 'visitor' ? 12 : 8
-  );
-
-  if (!allowed) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          'Too many submissions. Please try again in a few minutes.',
-      },
-      {
-        status: 429,
-      }
-    );
-  }
-
-  /* ------------------------------------
-     SERVER-SIDE ZOD VALIDATION
-  ------------------------------------ */
 
   const parsed = schemas[kind].safeParse(body.data);
+  if (!parsed.success) return fail('Please check your details.', 422, fieldErrors(parsed.error));
+  if (!dbConfigured()) return fail('Registration is temporarily unavailable.', 503);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: 'Please check your details.',
-        errors: fieldErrors(parsed.error),
-      },
-      {
-        status: 422,
-      }
-    );
+  // Crucial: server verification, not just client-side checkbox state.
+  if (!(await verifyRecaptcha(body.recaptchaToken))) {
+    return fail('Human verification failed or expired. Please try again.', 422);
   }
 
-  /* ------------------------------------
-     DATABASE CONFIGURATION
-  ------------------------------------ */
-
-  if (!dbConfigured()) {
-    console.error(
-      '[forms] MONGODB_URI not configured'
-    );
-
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          'Registration is temporarily unavailable. Please contact the organisers.',
-      },
-      {
-        status: 503,
-      }
-    );
-  }
-
-  /* ------------------------------------
-     ATTRIBUTION AND REQUEST METADATA
-  ------------------------------------ */
-
-  const rawMeta =
-    body.meta &&
-    typeof body.meta === 'object' &&
-    !Array.isArray(body.meta)
-      ? (body.meta as Record<string, unknown>)
-      : {};
-
+  const rawMeta = body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
+    ? body.meta as Record<string, unknown> : {};
   const meta: LeadMeta = {
     source: text(rawMeta.source, 80),
     medium: text(rawMeta.medium, 80),
@@ -219,93 +83,34 @@ export async function POST(
     referrer: text(rawMeta.referrer, 200),
     page: text(rawMeta.page, 200),
     ip,
-    ua: text(req.headers.get('user-agent'), 300),
+    ua: text(request.headers.get('user-agent'), 300),
   };
 
-  /* ------------------------------------
-     SAVE TO MONGODB FIRST
-  ------------------------------------ */
-
+  // Keep these existing functions; they contain your MongoDB and any downstream integrations.
   try {
     switch (kind) {
       case 'exhibitor': {
-        const result = await saveExhibitor(
-          parsed.data as never,
-          meta
-        );
-
-        return NextResponse.json({
-          ok: true,
-          ref: result.ref,
-        });
+        await saveExhibitor(parsed.data as never, meta);
+        return NextResponse.json({ ok: true }, { headers: responseHeaders });
       }
-
       case 'visitor': {
-        const result = await saveVisitor(
-          parsed.data as never,
-          meta
-        );
-
-        return NextResponse.json({
-          ok: true,
-          ref: result.badgeId,
-          badgeUrl: `/badge/${result.token}`,
-          existing: result.existing,
-        });
+        const saved = await saveVisitor(parsed.data as never, meta);
+        return NextResponse.json(saved.existing
+          ? { ok: true, existing: true }
+          : { ok: true, existing: false, badgeUrl: `/badge/${saved.token}` },
+          { headers: responseHeaders });
       }
-
       case 'enquiry': {
-        const result = await saveEnquiry(
-          parsed.data as never,
-          meta
-        );
-
-        return NextResponse.json({
-          ok: true,
-          ref: result.ref,
-        });
+        await saveEnquiry(parsed.data as never, meta);
+        return NextResponse.json({ ok: true }, { headers: responseHeaders });
       }
-
       case 'brochure': {
-        const result = await saveBrochure(
-          parsed.data as never,
-          meta
-        );
-
-        return NextResponse.json({
-          ok: true,
-          ref: result.ref,
-          download: downloads.brochure.file,
-        });
-      }
-
-      default: {
-        return NextResponse.json(
-          {
-            ok: false,
-            error: 'Unsupported form.',
-          },
-          {
-            status: 400,
-          }
-        );
+        await saveBrochure(parsed.data as never, meta);
+        return NextResponse.json({ ok: true, download: downloads.brochure.file }, { headers: responseHeaders });
       }
     }
   } catch (error) {
-    console.error(
-      `[forms] ${kind} submission failed:`,
-      error
-    );
-
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          'Something went wrong while saving your registration. Please try again.',
-      },
-      {
-        status: 500,
-      }
-    );
+    console.error(`[forms] ${kind} save failed:`, error);
+    return fail('Unable to save your details. Please try again.', 500);
   }
 }

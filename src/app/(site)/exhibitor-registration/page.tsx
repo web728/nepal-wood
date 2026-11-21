@@ -41,7 +41,7 @@ export default async function ExhibitorRegistration({ searchParams }: { searchPa
               ))}
             </div>
             
-            <a className="dl" href={downloads.brochure.file} download>
+            <a className="dl" href="/downloads/event-brochure">
               <span className="dl__icon"><Icon name="download" /></span>
               <span><strong>2027 brochure</strong><span>Exhibitor & visitor profile · </span></span>
             </a>

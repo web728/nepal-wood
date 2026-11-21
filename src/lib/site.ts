@@ -227,6 +227,11 @@ export const nav: NavItem[] = [
         href: '/gallery',
         desc: 'Photos from previous editions',
       },
+      //  {
+      //   label: 'News',
+      //   href: '/news',
+      //   desc: 'Latest news and updates',
+      // },
     
     ],
   },

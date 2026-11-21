@@ -2,7 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Icon from '@/components/Icon';
 import TreeRings from '@/components/TreeRings';
-import Countdown from '@/components/Countdown';
+import ExpoCountdown from '@/components/ExpoCountdown';
+import HomeMotion from '@/components/HomeMotion';
 import JsonLd from '@/components/JsonLd';
 import { SectionHead, PartnerWall, Testimonials } from '@/components/blocks';
 import { event, headlineStats, organisers, SITE_URL } from '@/lib/site';
@@ -14,22 +15,14 @@ import '../home.css';
 import heroImg from '@/assets/photos/hero-machinery-aisle.jpg';
 import exhibitImg from '@/assets/photos/demo-laser-cutter.jpg';
 import meetingImg from '@/assets/photos/b2b-meeting.jpg';
-import hallImg from '@/assets/photos/machinery-hall.jpg';
 import ribbonImg from '@/assets/photos/ribbon-cutting.jpg';
 import seminarImg from '@/assets/photos/seminar-stage.jpg';
-import audienceImg from '@/assets/photos/seminar-audience.jpg';
 import crowdImg from '@/assets/photos/visitors-crowd.jpg';
-import flooringImg from '@/assets/photos/flooring-display.jpg';
-import roadshowImg from '@/assets/photos/roadshow.jpg';
 import textureImg from '@/assets/photos/wood-texture.jpg';
 import g1 from '@/assets/gallery/expo-29.jpg';
 import g2 from '@/assets/gallery/expo-34.jpg';
 import g3 from '@/assets/gallery/expo-19.jpg';
 import g4 from '@/assets/gallery/expo-53.jpg';
-import g5 from '@/assets/gallery/expo-13.jpg';
-import g6 from '@/assets/gallery/expo-56.jpg';
-import g7 from '@/assets/gallery/expo-32.jpg';
-import g8 from '@/assets/gallery/expo-22.jpg';
 
 export const revalidate = 300;
 
@@ -40,25 +33,36 @@ export const metadata = pageMeta({
   path: '/',
 });
 
-const storyImgs = [
-  { img: meetingImg, alt: 'Exhibitor discussing business with trade visitors' },
-  { img: exhibitImg, alt: 'Visitors at a laser-cutting machine demonstration' },
-  { img: hallImg, alt: 'Machinery aisle at the expo' },
-  { img: flooringImg, alt: 'Visitors exploring flooring and panels' },
-  { img: roadshowImg, alt: 'Nepal Wood promotional roadshow' },
-  { img: audienceImg, alt: 'Audience attending a Nepal Wood seminar' },
-];
+// One calm row of photos.
+const galleryImages = [g1, ribbonImg, g2, crowdImg, g3, seminarImg, g4, exhibitImg];
 
-const galleryRows = [
-  [g1, ribbonImg, g2, crowdImg, g3, seminarImg],
-  [g4, exhibitImg, g5, hallImg, g6, g7, g8],
-];
+// "Add to calendar" file, built from the show dates and venue already on the site.
+const calendarHref =
+  'data:text/calendar;charset=utf-8,' +
+  encodeURIComponent(
+    [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Nepal Wood International Expo//EN',
+      'BEGIN:VEVENT',
+      'UID:nepal-wood-2027@nepalwood.com.np',
+      'DTSTAMP:20261121T000000Z',
+      'DTSTART;VALUE=DATE:20270128',
+      'DTEND;VALUE=DATE:20270201',
+      'SUMMARY:Nepal Wood International Expo 2027',
+      'LOCATION:Bhrikuti Mandap Exhibition Complex\\, Kathmandu\\, Nepal',
+      'DESCRIPTION:12th Nepal Wood International Expo. https://nepalwood.com.np',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n'),
+  );
 
 export default async function Home() {
-  const testimonials = await getTestimonials(6);
+  const testimonials = await getTestimonials(3);
 
   return (
     <>
+      <HomeMotion />
       <JsonLd
         data={graph(
           ...organizationNodes(),
@@ -73,6 +77,7 @@ export default async function Home() {
         )}
       />
 
+      {/* HERO */}
       <section className="hero on-dark" aria-labelledby="hero-title">
         <div className="hero__media" aria-hidden="true">
           <Image
@@ -86,19 +91,26 @@ export default async function Home() {
           />
         </div>
         <TreeRings className="hero__rings" rings={20} seed={12} cracks={3} />
-        <div className="container hero__inner">
+
+        <div className="container hero__main">
           <div className="hero__copy">
-            <p className="hero__chip"><span className="dot" />12th Edition · First four-day show</p>
             <h1 id="hero-title" className="hero__title">
-              <span className="hero__kicker">Nepal Wood International Expo 2027</span>
+              <span className="hero__kicker">12th Edition · Nepal Wood International Expo 2027</span>
               <span className="h-display hero__headline">
                 Where Nepal’s wood industry <em>does business.</em>
               </span>
             </h1>
             <p className="lead hero__lead">
-              Plywood, laminates, woodworking machinery, furniture technology, tools and raw
-              materials: four days, one venue, and the buyers who matter.
+              Plywood, laminates, machinery, furniture technology and tools. Four days, one
+              venue, the buyers who matter.
             </p>
+            <ul className="hero__meta" aria-label="Event dates and venue">
+              <li className="hero__meta-date tnum">{event.datesLabel}</li>
+              <li>
+                <Icon name="pin" />
+                {event.venue.name}, {event.venue.city}
+              </li>
+            </ul>
             <div className="hero__ctas">
               <Link className="btn btn--copper" href="/exhibitor-registration">
                 Book a stand <Icon name="arrow" className="arrow" />
@@ -107,63 +119,45 @@ export default async function Home() {
                 Register to visit, free
               </Link>
             </div>
-            <Link className="hero__brochure" href="/downloads/event-brochure">
-              <Icon name="download" />Download the 2027 brochure
-            </Link>
           </div>
-          <aside className="hero__panel" aria-label="Event dates and venue">
-            <div className="hero__date">
-              <span className="hero__days tnum">28<span>–</span>31</span>
-              <span className="hero__month">January<br />2027</span>
-            </div>
-            <p className="hero__venue">
-              <Icon name="pin" />
-              {event.venue.full}, {event.venue.city}, {event.venue.country}
-            </p>
-            <Countdown />
-          </aside>
         </div>
+
         <div className="container">
-          <dl className="hero__stats">
-            {headlineStats.map((stat) => (
-              <div key={stat.label}>
-                <dt className="hero__stat-label">{stat.label}</dt>
-                <dd className="hero__stat-value tnum">
-                  {stat.value.toLocaleString('en-US')}{stat.suffix}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <div className="hero__foot">
+            <dl className="hero__stats">
+              {headlineStats.map((stat) => (
+                <div key={stat.label}>
+                  <dt className="hero__stat-label">{stat.label}</dt>
+                  <dd className="hero__stat-value tnum">
+                    {stat.value.toLocaleString('en-US')}{stat.suffix}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
 
+      {/* ABOUT */}
       <section className="section section--cream about" aria-labelledby="about-title">
         <div className="container about__grid">
-          <div className="about__side">
-            <p className="eyebrow" data-reveal>The expo</p>
-            <div className="about__seal" data-reveal aria-label="12 editions">
+          <div className="about__side" data-fx="0">
+            <p className="eyebrow">The expo</p>
+            <div className="about__seal" aria-label="12 editions">
               <TreeRings rings={12} seed={3} cracks={0} className="about__seal-rings" />
               <span className="about__seal-num">12</span>
               <span className="about__seal-txt">editions</span>
             </div>
           </div>
           <div className="about__main">
-            <h2 id="about-title" className="h-lg" data-reveal>
+            <h2 id="about-title" className="h-lg" data-fx="1">
               Nepal’s specialised trade show for the <em>wood and furniture</em> industry.
             </h2>
-            <div className="about__cols">
-              <p data-reveal>
-                Nepal Wood International Expo brings manufacturers, importers, traders,
-                distributors, converters and end-users together to discover products,
-                compare suppliers and close deals.
-              </p>
-              <p data-reveal>
-                The 12th edition runs for four days, with exhibitors expected from Nepal,
-                India, China, Malaysia, Germany, Taiwan and beyond. Organised by Futurex
-                Trade Fair and Events Pvt. Ltd. and Media Space Solutions Pvt. Ltd.
-              </p>
-            </div>
-            <div className="about__orgs" data-reveal>
+            <p className="about__text" data-fx="2">
+              Manufacturers, importers, traders and end-users meet face to face to discover
+              products, compare suppliers and close deals.
+            </p>
+            <div className="about__orgs" data-fx="3">
               <span className="about__orgs-label">Organised by</span>
               {organisers.map((org) => (
                 <img key={org.id} src={org.logo} alt={org.name} width={150} height={32} loading="lazy" />
@@ -176,16 +170,79 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section cats" aria-labelledby="cats-title">
+      {/* COUNTDOWN */}
+      <ExpoCountdown dates={event.datesLabel} venue={`${event.venue.name}, ${event.venue.city}`} />
+
+      {/* TWO WAYS IN */}
+      <section className="section paths" aria-labelledby="paths-title">
         <div className="container">
-          <SectionHead
-            split
-            eyebrow="Exhibitor profile"
-            id="cats-title"
-            title={<>Everything between the log <em>and the living room.</em></>}
-            lead="Five product zones, from raw boards and machines to finished interiors. The list is a guide, not a limit."
-          />
-          <div className="cats__rail" data-accordion>
+          <div data-fx="0">
+            <SectionHead
+              center
+              eyebrow="Be part of it"
+              id="paths-title"
+              title={<>One show, <em>two ways in.</em></>}
+            />
+          </div>
+          <div className="paths__grid">
+            <article className="path" data-fx="1">
+              <div className="path__media">
+                <Image
+                  src={meetingImg}
+                  alt="Exhibitor discussing business with trade visitors"
+                  fill
+                  sizes="(max-width: 760px) 100vw, 50vw"
+                />
+              </div>
+              <div className="path__body">
+                <p className="path__tag">For exhibitors</p>
+                <h3 className="h-sm">Meet the buyers who sign the orders.</h3>
+                <p>Show your machines live to dealers, importers and decision-makers.</p>
+                <div className="path__actions">
+                  <Link className="btn" href="/exhibitor-registration">
+                    Book a stand <Icon name="arrow" className="arrow" />
+                  </Link>
+                </div>
+              </div>
+            </article>
+
+            <article className="path" data-fx="2">
+              <div className="path__media">
+                <Image
+                  src={crowdImg}
+                  alt="Trade visitors at the expo"
+                  fill
+                  sizes="(max-width: 760px) 100vw, 50vw"
+                />
+              </div>
+              <div className="path__body">
+                <p className="path__tag">For visitors</p>
+                <h3 className="h-sm">Find suppliers and close deals.</h3>
+                <p>Free entry for registered trade visitors.</p>
+                <div className="path__actions">
+                  <Link className="btn" href="/visitor-registration">
+                    Register to visit, free <Icon name="arrow" className="arrow" />
+                  </Link>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* EXHIBITOR ZONES */}
+      <section className="section section--cream cats" aria-labelledby="cats-title">
+        <div className="container">
+          <div data-fx="0">
+            <SectionHead
+              split
+              eyebrow="Exhibitor profile"
+              id="cats-title"
+              title={<>Everything between the log <em>and the living room.</em></>}
+              lead="Five product zones, from raw boards and machines to finished interiors."
+            />
+          </div>
+          <div className="cats__rail" data-accordion data-fx="1">
             {zones.map((zone, index) => (
               <Link
                 href={`/exhibitor-profile/${zone.slug}`}
@@ -203,18 +260,12 @@ export default async function Home() {
                 <span className="cat__shade" />
                 <span className="cat__body">
                   <span className="cat__title">{zone.title}</span>
-                  <span className="cat__items">
-                    {zone.items.slice(0, 4).map((item) => <span key={item}>{item}</span>)}
-                  </span>
                   <span className="cat__more">Explore the zone <Icon name="arrow" /></span>
                 </span>
               </Link>
             ))}
           </div>
-          <div className="cats__foot" data-reveal>
-            <Link className="btn" href="/exhibitor-registration">
-              Book a stand in your zone <Icon name="arrow" className="arrow" />
-            </Link>
+          <div className="cats__foot" data-fx="2">
             <Link className="link-arrow" href="/exhibitor-profile">
               See the full exhibitor profile <Icon name="arrow" />
             </Link>
@@ -222,120 +273,98 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section section--cream why" aria-labelledby="why-title" data-story>
-        <div className="container why__grid">
-          <div className="why__content">
-            <p className="eyebrow" data-reveal>Why exhibit</p>
-            <h2 id="why-title" className="h-xl" data-reveal>
-              Your gateway to one of the region’s <em>fastest-growing markets.</em>
-            </h2>
-            <ol className="reasons">
-              {whyExhibit.map((reason, index) => (
-                <li className="reason" data-step={index} key={reason.t}>
-                  <span className="reason__no tnum">{String(index + 1).padStart(2, '0')}</span>
-                  <div>
-                    <h3 className="h-sm">{reason.t}</h3>
-                    <p>{reason.d}</p>
-                  </div>
-                  <div className="reason__img-mobile">
-                    <Image
-                      src={storyImgs[index % storyImgs.length].img}
-                      alt={storyImgs[index % storyImgs.length].alt}
-                      sizes="(max-width: 700px) 90vw, 45vw"
-                    />
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="why__ctas">
-              <Link className="btn" href="/exhibitor-registration">
-                Book a stand <Icon name="arrow" className="arrow" />
-              </Link>
-              <Link className="btn btn--ghost" href="/why-exhibit">All the reasons</Link>
-            </div>
+      {/* WHY EXHIBIT: three reasons only */}
+      <section className="section why" aria-labelledby="why-title">
+        <div className="container">
+          <div data-fx="0">
+            <SectionHead
+              split
+              eyebrow="Why exhibit"
+              id="why-title"
+              title={<>Your gateway to one of the region’s <em>fastest-growing markets.</em></>}
+            />
           </div>
-          <div className="why__media" aria-hidden="true">
-            <div className="why__sticky">
-              {storyImgs.map((story, index) => (
-                <div
-                  className={`why__frame${index === 0 ? ' is-active' : ''}`}
-                  data-frame={index}
-                  key={index}
-                >
-                  <Image
-                    src={story.img}
-                    alt=""
-                    fill
-                    sizes="(max-width: 900px) 90vw, 42vw"
-                  />
-                </div>
-              ))}
-              <div className="why__progress"><span data-story-progress /></div>
-            </div>
+          <ol className="reasons">
+            {whyExhibit.slice(0, 3).map((reason, index) => (
+              <li className="reason" data-fx={String(index + 1)} key={reason.t}>
+               
+                <h3 className="h-sm">{reason.t}</h3>
+                <p>{reason.d}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="why__ctas" data-fx="2">
+            <Link className="btn" href="/exhibitor-registration">
+              Book a stand <Icon name="arrow" className="arrow" />
+            </Link>
+            <Link className="link-arrow" href="/why-exhibit">
+              All the reasons <Icon name="arrow" />
+            </Link>
           </div>
         </div>
       </section>
 
+      {/* GALLERY */}
       <section className="gallery-band section--darkest" aria-labelledby="gal-title">
-        <div className="container gallery-band__head">
+        <div className="container gallery-band__head" data-fx="0">
           <p className="eyebrow">Glimpses</p>
           <h2 id="gal-title" className="h-lg">Inside past editions</h2>
           <Link className="link-arrow" href="/gallery">
             Open the gallery <Icon name="arrow" />
           </Link>
         </div>
-        {galleryRows.map((row, rowIndex) => (
-          <div
-            className={`marquee${rowIndex ? ' marquee--reverse' : ''}`}
-            aria-hidden="true"
-            key={rowIndex}
-          >
-            {[0, 1].map((copy) => (
-              <div className="marquee__track" key={copy}>
-                {row.map((img, index) => (
-                  <Image
-                    key={index}
-                    src={img}
-                    alt=""
-                    sizes="(max-width: 700px) 210px, 300px"
-                    className="marquee__img"
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        ))}
+        <div className="marquee" aria-hidden="true">
+          {[0, 1].map((copy) => (
+            <div className="marquee__track" key={copy}>
+              {galleryImages.map((img, index) => (
+                <Image
+                  key={index}
+                  src={img}
+                  alt=""
+                  sizes="(max-width: 700px) 235px, 365px"
+                  className="marquee__img"
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </section>
 
       <Testimonials items={testimonials} />
 
+      {/* PARTNERS */}
       <section className="section partners" aria-labelledby="partners-title">
         <div className="container">
-          <SectionHead
-            center
-            eyebrow="Partners"
-            id="partners-title"
-            title={<>Backed by <em>the industry.</em></>}
-          />
-          <PartnerWall />
+          <div data-fx="0">
+            <SectionHead
+              center
+              eyebrow="Partners"
+              id="partners-title"
+              title={<>Backed by <em>the industry.</em></>}
+            />
+          </div>
+          <div data-fx="1">
+            <PartnerWall />
+          </div>
         </div>
       </section>
 
+      {/* FINAL CTA */}
       <section className="final on-dark" aria-labelledby="final-title">
         <div className="final__bg" aria-hidden="true">
           <Image src={textureImg} alt="" fill sizes="100vw" />
         </div>
         <TreeRings className="final__rings" rings={18} seed={5} cracks={2} />
         <div className="container final__inner">
-          <p className="eyebrow" data-reveal>12th edition · {event.datesLabel}</p>
-          <h2 id="final-title" className="h-display" data-reveal>
+          <p className="eyebrow" data-fx="0">12th edition · {event.datesLabel}</p>
+          <h2 id="final-title" className="h-display" data-fx="1">
             Mark your <em>presence.</em>
           </h2>
-          <p className="lead" data-reveal>
-            Stalls for the 12th edition are being allotted now. Tell us what you want to show,
-            and the team will come back with availability and options.
+          <p className="lead" data-fx="2">
+            Stalls are being allotted now. Tell us what you want to show and we will come back
+            with availability and options.
           </p>
-          <div className="final__ctas" data-reveal>
+          <div className="final__ctas" data-fx="3">
             <Link className="btn btn--copper" href="/exhibitor-registration">
               Book a stand <Icon name="arrow" className="arrow" />
             </Link>
@@ -343,7 +372,14 @@ export default async function Home() {
               Register to visit
             </Link>
           </div>
-          <div className="final__count" data-reveal><Countdown compact /></div>
+          <div className="final__links" data-fx="3">
+            <Link className="final__link" href="/downloads/event-brochure">
+              <Icon name="download" />Download the 2027 brochure
+            </Link>
+            <a className="final__link" href={calendarHref} download="nepal-wood-expo-2027.ics">
+              <Icon name="download" />Add to calendar
+            </a>
+          </div>
         </div>
       </section>
     </>
