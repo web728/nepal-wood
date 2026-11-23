@@ -1,14 +1,8 @@
 import 'server-only';
 
-
-
 import { google } from 'googleapis';
 
-
-
 export type SheetTab = 'Website Enquiries';
-
-
 
 export type SheetRow = Record<
 
@@ -17,8 +11,6 @@ export type SheetRow = Record<
   string | number | boolean | null | undefined
 
 >;
-
-
 
 export type SheetResult = {
 
@@ -36,11 +28,7 @@ export type SheetResult = {
 
 };
 
-
-
 const TAB: SheetTab = 'Website Enquiries';
-
-
 
 const HEADERS = [
 
@@ -86,13 +74,10 @@ const HEADERS = [
 
 ] as const;
 
-
-
 const ID_HEADER = 'Lead ID';
+const SOURCE_HEADER = 'Ad Source';
 
 const API_TIMEOUT_MS = 10000;
-
-
 
 const getBase64 = () =>
 
@@ -100,15 +85,11 @@ const getBase64 = () =>
 
   process.env.GOOGLE_CREDENTIALS_BASE64;
 
-
-
 const getSheetId = () =>
 
   process.env.GOOGLE_SHEET_ID ||
 
   process.env.GOOGLE_SHEETS_ID;
-
-
 
 function getError(error: unknown): string {
 
@@ -120,23 +101,17 @@ function getError(error: unknown): string {
 
 }
 
-
-
 export function sheetsConfigured(): boolean {
 
   return Boolean(getBase64() && getSheetId());
 
 }
 
-
-
 /* =====================================
 
    SERVICE ACCOUNT AUTHENTICATION
 
-\===================================== */
-
-
+===================================== */
 
 function getCredentials(): {
 
@@ -148,8 +123,6 @@ function getCredentials(): {
 
   const encoded = getBase64();
 
-
-
   if (!encoded) {
 
     throw new Error(
@@ -160,11 +133,7 @@ function getCredentials(): {
 
   }
 
-
-
   let parsed: unknown;
-
-
 
   try {
 
@@ -190,8 +159,6 @@ function getCredentials(): {
 
   }
 
-
-
   if (
 
     !parsed ||
@@ -212,8 +179,6 @@ function getCredentials(): {
 
   }
 
-
-
   const data = parsed as {
 
     client_email?: unknown;
@@ -221,8 +186,6 @@ function getCredentials(): {
     private_key?: unknown;
 
   };
-
-
 
   if (
 
@@ -240,15 +203,13 @@ function getCredentials(): {
 
   }
 
-
-
   return {
 
     client_email: data.client_email,
 
     private_key: data.private_key.replace(
 
-      /\\\n/g,
+      /\\\\\n/g,
 
       '\n'
 
@@ -258,13 +219,9 @@ function getCredentials(): {
 
 }
 
-
-
 function createSheetsClient() {
 
   const credentials = getCredentials();
-
-
 
   const auth = new google.auth.GoogleAuth({
 
@@ -272,13 +229,11 @@ function createSheetsClient() {
 
     scopes: [
 
-      'https\://www.googleapis.com/auth/spreadsheets',
+      'https://www.googleapis.com/auth/spreadsheets',
 
     ],
 
   });
-
-
 
   return google.sheets({
 
@@ -290,15 +245,11 @@ function createSheetsClient() {
 
 }
 
-
-
 /* =====================================
 
    ROW FORMATTING
 
-\===================================== */
-
-
+===================================== */
 
 function sheetValue(
 
@@ -313,8 +264,6 @@ function sheetValue(
     : input;
 
 }
-
-
 
 function makeValues(
 
@@ -331,12 +280,11 @@ function makeValues(
     ),
 
     String(row.ID),
+    sheetValue(row[SOURCE_HEADER] ?? 'direct'),
 
   ];
 
 }
-
-
 
 function validateHeaders(existing: string[]) {
 
@@ -346,8 +294,6 @@ function validateHeaders(existing: string[]) {
 
   }
 
-
-
   for (let i = 0; i < HEADERS.length; i++) {
 
     const actual = String(
@@ -355,8 +301,6 @@ function validateHeaders(existing: string[]) {
       existing[i] || ''
 
     ).trim();
-
-
 
     if (actual !== HEADERS[i]) {
 
@@ -374,15 +318,16 @@ function validateHeaders(existing: string[]) {
 
   }
 
-
+  const columnV = String(existing[21] || '').trim();
+  if (columnV && columnV !== SOURCE_HEADER) {
+    throw new Error('Column V is already used. Reserve column V for Ad Source.');
+  }
 
   const columnU = String(
 
     existing[20] || ''
 
   ).trim();
-
-
 
   if (
 
@@ -404,15 +349,11 @@ function validateHeaders(existing: string[]) {
 
 }
 
-
-
 /* =====================================
 
    CHECK FOR EXISTING LEAD
 
-\===================================== */
-
-
+===================================== */
 
 async function findLeadRow(
 
@@ -444,13 +385,9 @@ async function findLeadRow(
 
     );
 
-
-
   const ids: unknown[][] =
 
     result.data.values || [];
-
-
 
   const index = ids.findIndex(
 
@@ -460,21 +397,15 @@ async function findLeadRow(
 
   );
 
-
-
   return index >= 0 ? index + 2 : null;
 
 }
-
-
 
 /* =====================================
 
    PREPARE SHEET HEADERS
 
-\===================================== */
-
-
+===================================== */
 
 async function prepareSheet(
 
@@ -506,8 +437,6 @@ async function prepareSheet(
 
     );
 
-
-
   const target = metadata.data.sheets?.find(
 
     (item) =>
@@ -515,8 +444,6 @@ async function prepareSheet(
       item.properties?.title === TAB
 
   );
-
-
 
   if (!target?.properties) {
 
@@ -528,11 +455,7 @@ async function prepareSheet(
 
   }
 
-
-
   const sheetId = target.properties.sheetId;
-
-
 
   if (
 
@@ -550,21 +473,17 @@ async function prepareSheet(
 
   }
 
-
-
   const columnCount =
 
     target.properties.gridProperties
 
       ?.columnCount ?? 0;
 
-
-
   // Add only missing columns, if column U
 
   // does not exist in the sheet grid yet.
 
-  if (columnCount < 21) {
+  if (columnCount < 22) {
 
     await sheets.spreadsheets.batchUpdate(
 
@@ -584,7 +503,7 @@ async function prepareSheet(
 
                 dimension: 'COLUMNS',
 
-                length: 21 - columnCount,
+                length: 22 - columnCount,
 
               },
 
@@ -606,8 +525,6 @@ async function prepareSheet(
 
   }
 
-
-
   const headerResponse =
 
     await sheets.spreadsheets.values.get(
@@ -616,7 +533,7 @@ async function prepareSheet(
 
         spreadsheetId,
 
-        range: "'Website Enquiries'!A1:U1",
+        range: "'Website Enquiries'!A1:V1",
 
       },
 
@@ -628,19 +545,13 @@ async function prepareSheet(
 
     );
 
-
-
   const existing: string[] = (
 
     headerResponse.data.values?.[0] || []
 
   ).map(String);
 
-
-
   validateHeaders(existing);
-
-
 
   const completelyEmpty =
 
@@ -652,8 +563,6 @@ async function prepareSheet(
 
     );
 
-
-
   if (completelyEmpty) {
 
     await sheets.spreadsheets.values.update(
@@ -662,7 +571,7 @@ async function prepareSheet(
 
         spreadsheetId,
 
-        range: "'Website Enquiries'!A1:U1",
+        range: "'Website Enquiries'!A1:V1",
 
         valueInputOption: 'RAW',
 
@@ -670,7 +579,7 @@ async function prepareSheet(
 
           values: [
 
-            [...HEADERS, ID_HEADER],
+            [...HEADERS, ID_HEADER, SOURCE_HEADER],
 
           ],
 
@@ -686,13 +595,9 @@ async function prepareSheet(
 
     );
 
-
-
     return;
 
   }
-
-
 
   // Do not modify the existing A:T headers.
 
@@ -726,17 +631,25 @@ async function prepareSheet(
 
   }
 
+  if (!existing[21]) {
+    await sheets.spreadsheets.values.update(
+      {
+        spreadsheetId,
+        range: "'Website Enquiries'!V1",
+        valueInputOption: 'RAW',
+        requestBody: { values: [[SOURCE_HEADER]] },
+      },
+      { timeout: API_TIMEOUT_MS }
+    );
+  }
+
 }
-
-
 
 /* =====================================
 
    APPEND-ONLY GOOGLE SHEETS DELIVERY
 
-\===================================== */
-
-
+===================================== */
 
 export async function upsertSheetRow(
 
@@ -747,8 +660,6 @@ export async function upsertSheetRow(
 ): Promise<SheetResult> {
 
   const at = new Date();
-
-
 
   if (!sheetsConfigured()) {
 
@@ -770,8 +681,6 @@ export async function upsertSheetRow(
 
   }
 
-
-
   try {
 
     if (tab !== TAB) {
@@ -783,8 +692,6 @@ export async function upsertSheetRow(
       );
 
     }
-
-
 
     if (
 
@@ -802,11 +709,7 @@ export async function upsertSheetRow(
 
     }
 
-
-
     const spreadsheetId = getSheetId();
-
-
 
     if (!spreadsheetId) {
 
@@ -818,11 +721,7 @@ export async function upsertSheetRow(
 
     }
 
-
-
     const sheets = createSheetsClient();
-
-
 
     await prepareSheet(
 
@@ -831,8 +730,6 @@ export async function upsertSheetRow(
       spreadsheetId
 
     );
-
-
 
     // If this lead was appended earlier,
 
@@ -848,8 +745,6 @@ export async function upsertSheetRow(
 
     );
 
-
-
     if (existingRow !== null) {
 
       return {
@@ -862,13 +757,11 @@ export async function upsertSheetRow(
 
         updatedRange:
 
-          `'Website Enquiries'!A${existingRow}:U${existingRow}`,
+          `'Website Enquiries'!A${existingRow}:V${existingRow}`,
 
       };
 
     }
-
-
 
     const result =
 
@@ -878,7 +771,7 @@ export async function upsertSheetRow(
 
           spreadsheetId,
 
-          range: "'Website Enquiries'!A:U",
+          range: "'Website Enquiries'!A:V",
 
           valueInputOption: 'RAW',
 
@@ -900,8 +793,6 @@ export async function upsertSheetRow(
 
       );
 
-
-
     if (
 
       result.data.updates?.updatedRows !== 1
@@ -915,8 +806,6 @@ export async function upsertSheetRow(
       );
 
     }
-
-
 
     return {
 
@@ -938,8 +827,6 @@ export async function upsertSheetRow(
 
     const message = getError(error);
 
-
-
     console.error(
 
       '[Google Sheets] Delivery failed:',
@@ -947,8 +834,6 @@ export async function upsertSheetRow(
       message
 
     );
-
-
 
     return {
 

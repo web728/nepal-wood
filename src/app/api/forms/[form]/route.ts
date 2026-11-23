@@ -5,6 +5,7 @@ import { rateLimit, clientIp } from '@/lib/rate-limit';
 import { verifyRecaptchaDetailed } from '@/lib/recaptcha';
 import { dbConfigured } from '@/lib/db';
 import { downloads } from '@/lib/site';
+import { getLeadAdSource } from '@/lib/ad-source';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,10 +32,8 @@ export async function POST(request: NextRequest, ctx: Context) {
   if (!Object.prototype.hasOwnProperty.call(schemas, form)) return fail('Unknown form.', 404);
   const kind = form as FormKind;
 
-  // Browser same-origin policy: protect against cross-site form posts.
   const origin = request.headers.get('origin');
   if (origin && origin !== request.nextUrl.origin) {
-    // For reverse-proxy setups, configure this with your known public domains.
     const allowed = new Set(['https://nepalwood.com.np', 'https://www.nepalwood.com.np']);
     if (process.env.NODE_ENV !== 'production') {
       allowed.add('http://localhost:3000');
@@ -69,10 +68,8 @@ export async function POST(request: NextRequest, ctx: Context) {
   if (!parsed.success) return fail('Please check your details.', 422, fieldErrors(parsed.error));
   if (!dbConfigured()) return fail('Registration is temporarily unavailable.', 503);
 
-  // Crucial: server verification, not just client-side checkbox state.
   const captcha = await verifyRecaptchaDetailed(body.recaptchaToken);
   if (!captcha.ok) {
-    // Configuration/network failures are operational errors, not invalid user input.
     if (captcha.reason === 'secret_missing' || captcha.reason === 'verification_unavailable') {
       return fail('Verification service is temporarily unavailable. Please try again shortly.', 503);
     }
@@ -88,7 +85,7 @@ export async function POST(request: NextRequest, ctx: Context) {
   const rawMeta = body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
     ? body.meta as Record<string, unknown> : {};
   const meta: LeadMeta = {
-    source: text(rawMeta.source, 80),
+    source: getLeadAdSource(request),
     medium: text(rawMeta.medium, 80),
     campaign: text(rawMeta.campaign, 120),
     referrer: text(rawMeta.referrer, 200),
@@ -97,7 +94,6 @@ export async function POST(request: NextRequest, ctx: Context) {
     ua: text(request.headers.get('user-agent'), 300),
   };
 
-  // Keep these existing functions; they contain your MongoDB and any downstream integrations.
   try {
     switch (kind) {
       case 'exhibitor': {

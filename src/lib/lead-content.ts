@@ -7,6 +7,7 @@ import type { SheetRow, SheetTab } from './sheets';
 type MailContent = { to: string | string[]; subject: string; html: string; text: string; replyTo?: string };
 type SheetMapping = { tab: SheetTab; row: (doc: Document) => SheetRow };
 const EVENT = 'Nepal Wood International Expo 2027';
+
 function value(v: unknown): string {
   if (v === null || v === undefined) return '';
   if (v instanceof Date) return v.toISOString();
@@ -27,6 +28,9 @@ function meta(doc: Document): Record<string, unknown> {
   const m = doc.meta;
   return m && typeof m === 'object' && !Array.isArray(m) ? m as Record<string, unknown> : {};
 }
+function adSource(doc: Document): string {
+  return value(meta(doc).source).trim() || 'direct';
+}
 function isConclave(doc: Document): boolean {
   return doc.form === 'conclave' && (doc.registration_type === 'speaker' || doc.registration_type === 'attendee');
 }
@@ -42,6 +46,7 @@ function baseRow(doc: Document, registerAs: string): SheetRow {
     'Area of Interest': '', 'Info. Get From': value(m.source || m.medium || m.referrer),
     Message: '', Corrections: '',
     'STATUS 1': '', 'STATUS 2': '', 'STATUS 3': '', 'STATUS 4': '', 'STATUS 5': '',
+    'Ad Source': adSource(doc),
   };
 }
 export function exhibitorRow(doc: Document): SheetRow {
@@ -79,7 +84,7 @@ export const sheetFor: Record<LeadCollection, SheetMapping> = {
   [COLLECTIONS.brochure]: { tab: 'Website Enquiries', row: brochureRow },
 };
 function textTable(rows: [string, unknown][]): string {
-  return rows.filter(([,v]) => v !== null && v !== undefined && v !== '')
+  return rows.filter(([, v]) => v !== null && v !== undefined && v !== '')
     .map(([key, v]) => `${key}: ${value(v)}`).join('\n');
 }
 function createEmail(to: string | string[], subject: string, title: string,
@@ -104,20 +109,21 @@ export function adminEmail(collection: LeadCollection, doc: Document): MailConte
   const recipients = leadRecipients();
   if (!recipients.length) return null;
   const replyTo = typeof doc.email === 'string' && doc.email.includes('@') ? doc.email : undefined;
+  const source: [string, unknown] = ['Ad Source', adSource(doc)];
   if (collection === COLLECTIONS.exhibitors) return createEmail(recipients,
     `New Exhibitor Enquiry | ${EVENT}`, 'New exhibitor enquiry received',
-    [['Reference', doc.ref], ...details(doc), ['Products and Services', doc.products], ['Preferred Booth Size', doc.boothSize]], replyTo);
+    [['Reference', doc.ref], ...details(doc), ['Products and Services', doc.products], ['Preferred Booth Size', doc.boothSize], source], replyTo);
   if (collection === COLLECTIONS.visitors) return createEmail(recipients,
     `New Visitor Registration | ${EVENT}`, 'New visitor registration received',
-    [['Badge ID', doc.badgeId], ...details(doc), ['Business / Category', doc.businessType]], replyTo);
+    [['Badge ID', doc.badgeId], ...details(doc), ['Business / Category', doc.businessType], source], replyTo);
   if (collection === COLLECTIONS.enquiries) {
     if (isConclave(doc)) {
       const kind = doc.registration_type === 'speaker' ? 'Speaker' : 'Attendee';
       return createEmail(recipients, `New Conclave ${kind} | ${EVENT}`,
-        `New Technical Conclave ${kind.toLowerCase()} registration`, conferenceDetails(doc), replyTo);
+        `New Technical Conclave ${kind.toLowerCase()} registration`, [...conferenceDetails(doc), source], replyTo);
     }
     return createEmail(recipients, `New Website Enquiry | ${EVENT}`, 'New website enquiry received',
-      [...details(doc), ['Topic', doc.topic], ['Message', doc.message]], replyTo);
+      [...details(doc), ['Topic', doc.topic], ['Message', doc.message], source], replyTo);
   }
   return null;
 }

@@ -11,7 +11,6 @@ export type LeadMeta = {
   source?: string; medium?: string; campaign?: string; referrer?: string;
   page?: string; ip?: string; ua?: string;
 };
-
 function duplicateKey(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && error.code === 11000;
 }
@@ -19,7 +18,6 @@ function kick(...args: Parameters<typeof scheduleLeadDeliveries>) {
   try { scheduleLeadDeliveries(...args); }
   catch (err) { console.error('[leads] delivery scheduling failed; cron should retry', err); }
 }
-
 export async function saveExhibitor(input: ExhibitorInput, meta: LeadMeta) {
   const col = (await getDb()).collection(COLLECTIONS.exhibitors);
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -33,11 +31,8 @@ export async function saveExhibitor(input: ExhibitorInput, meta: LeadMeta) {
   }
   throw new Error('Could not allocate exhibitor reference');
 }
-
 export async function saveVisitor(input: VisitorInput, meta: LeadMeta) {
   const col = (await getDb()).collection(COLLECTIONS.visitors);
-  // CRITICAL: never return an existing badge token based solely on an email entered in a form.
-  // Use email OTP / expiring verification link before releasing an existing badge.
   if (await col.findOne({ email: input.email }, { projection: { _id: 1 } })) {
     return { existing: true as const, token: null, badgeId: null };
   }
@@ -54,12 +49,10 @@ export async function saveVisitor(input: VisitorInput, meta: LeadMeta) {
       if (await col.findOne({ email: input.email }, { projection: { _id: 1 } })) {
         return { existing: true as const, badgeId: null, token: null };
       }
-      // Badge code/token collision: retry with newly generated values.
     }
   }
   throw new Error('Could not allocate visitor badge');
 }
-
 export async function saveEnquiry(input: EnquiryInput, meta: LeadMeta) {
   const col = (await getDb()).collection(COLLECTIONS.enquiries);
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -73,7 +66,6 @@ export async function saveEnquiry(input: EnquiryInput, meta: LeadMeta) {
   }
   throw new Error('Could not allocate enquiry reference');
 }
-
 export async function saveBrochure(input: BrochureInput, meta: LeadMeta) {
   const col = (await getDb()).collection(COLLECTIONS.brochure);
   for (let attempt = 0; attempt < 5; attempt++) {

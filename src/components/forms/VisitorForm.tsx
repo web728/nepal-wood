@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Icon from '../Icon';
 import { useLeadForm } from './useLeadForm';
@@ -20,10 +20,18 @@ export default function VisitorForm() {
   const v = form.values;
   const badgeUrl = form.result?.badgeUrl;
   const existing = form.result?.existing;
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (form.status !== 'done' || existing || tracked.current) return;
+    tracked.current = true;
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'visitor_form_submit');
+    }
+  }, [form.status, existing]);
 
   useEffect(() => {
     if (form.status !== 'done' || !badgeUrl) return;
-    // API-controlled badge URL should always be a local /badge/ route.
     if (!badgeUrl.startsWith('/badge/') || badgeUrl.startsWith('//')) return;
     router.replace(`${badgeUrl}${badgeUrl.includes('?') ? '&' : '?'}${existing ? 'existing=1' : 'new=1'}`);
   }, [form.status, badgeUrl, existing, router]);
@@ -32,7 +40,7 @@ export default function VisitorForm() {
     return (
       <section className="form-done" role="status" aria-live="polite">
         <span className="form-done__icon"><Icon name="badge" /></span>
-        <h2 className="h-md">{existing ? "Already registered" : "Registration successful."}</h2>
+        <h2 className="h-md">{existing ? 'Already registered' : 'Registration successful.'}</h2>
         <p>{badgeUrl ? 'Opening your visitor QR badge…' : 'This email is already registered. Contact the organisers from your registered email to recover your badge securely.'}</p>
         {badgeUrl?.startsWith('/badge/') && !badgeUrl.startsWith('//') && (
           <div className="form-done__actions"><a className="btn" href={badgeUrl}>Open QR badge <Icon name="arrow" className="arrow" /></a></div>

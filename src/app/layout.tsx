@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import { Bricolage_Grotesque, Inter, Instrument_Serif } from 'next/font/google';
 import { SITE_URL } from '@/lib/site';
+import LeadSourceTracker from '@/components/LeadSourceTracker';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import './globals.css';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
@@ -22,12 +25,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${serif.variable}`}>
       <head>
-        {/* Resolving these hosts early helps when the form mounts. */}
         <link rel="preconnect" href="https://www.google.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <Suspense fallback={null}><LeadSourceTracker /></Suspense>
+        <GoogleAnalytics />
         {children}
       </body>
     </html>

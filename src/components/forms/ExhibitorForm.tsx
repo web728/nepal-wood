@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '../Icon';
 import { useLeadForm } from './useLeadForm';
 import { useCaptchaSubmit } from './useCaptchaSubmit';
@@ -27,6 +27,15 @@ export default function ExhibitorForm({ defaultZone }: { defaultZone?: string })
   const [sizeChoice, setSizeChoice] = useState('');
   const captcha = useCaptchaSubmit(form.status, form.submit);
   const v = form.values;
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (form.status !== 'done' || tracked.current) return;
+    tracked.current = true;
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'exhibitor_form_submit');
+    }
+  }, [form.status]);
 
   if (form.status === 'done') {
     return (
